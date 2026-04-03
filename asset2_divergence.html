@@ -4,430 +4,272 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap');
 
   :root {
-    --navy: #0a1628;
-    --gold: #c9a84c;
-    --gold-dim: #8a6f2e;
-    --slate: #1e3258;
-    --mist: #8a9ab8;
-    --cream: #f0e6cc;
-    --blue: #4a7ab8;
-    --blue-dim: #2a4a78;
+    --white:    #ffffff;
+    --off:      #f7f4ef;
+    --navy:     #0a1628;
+    --navy-mid: #1e3258;
+    --navy-dim: #4a6080;
+    --gold:     #b8930a;
+    --gold-mid: #c9a84c;
+    --blue:     #2a5a9a;
+    --rule:     #ddd8d0;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; color: var(--navy); }
 
-  body {
-    background: var(--navy);
-    font-family: 'Anonymous Pro', monospace;
-    min-height: 100vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 32px 16px 48px;
+  .asset { width: 100%; aspect-ratio: 16/9; display: flex; flex-direction: column; background: var(--white); overflow: hidden; }
+
+  .asset-header {
+    padding: clamp(8px,1.8vw,16px) clamp(14px,3vw,28px);
+    border-bottom: 2px solid var(--navy);
+    display: flex; align-items: flex-end; flex-shrink: 0;
   }
+  .header-left { display: flex; flex-direction: column; gap: 3px; }
+  .asset-eyebrow { font-size: clamp(11px,1.2vw,13px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+  .asset-title { font-family: 'Playfair Display', serif; font-size: clamp(15px,2.2vw,24px); color: var(--navy); font-weight: 700; line-height: 1.15; }
+  .asset-title em { font-style: italic; color: var(--gold); }
+  .gold-rule { width: clamp(24px,4vw,48px); height: 2px; background: var(--gold-mid); margin-top: 3px; }
 
-  .canvas { width: 100%; max-width: 720px; }
-
-  .title-block {
-    margin-bottom: 32px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--gold-dim);
-    opacity: 0;
-    animation: rise 0.7s forwards;
-  }
-
-  .eyebrow {
-    font-size: clamp(9px, 2vw, 11px);
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 8px;
-  }
-
-  .headline {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(22px, 5vw, 36px);
-    color: var(--cream);
-    line-height: 1.15;
-    font-weight: 700;
-  }
-
-  .deck {
-    margin-top: 10px;
-    font-size: clamp(12px, 2.5vw, 14px);
-    color: var(--mist);
-    line-height: 1.6;
-  }
-
-  /* Chart */
-  .chart-wrap {
-    position: relative;
-    width: 100%;
-    margin-bottom: 8px;
-    opacity: 0;
-    animation: rise 0.6s 0.3s forwards;
-  }
-
-  canvas { display: block; width: 100%; }
-
-  /* Conflict cards below chart */
-  .conflicts {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    margin-top: 20px;
-    opacity: 0;
-    animation: rise 0.6s 0.8s forwards;
-  }
-
-  .conflict-card {
-    display: grid;
-    grid-template-columns: clamp(120px, 30%, 180px) 1fr 1fr;
-    gap: 3px;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-
-  .conflict-card:hover { opacity: 0.85; }
-  .conflict-card.active .name-cell { border-left-color: var(--gold); }
-
-  .name-cell {
-    background: #0d1e38;
-    border: 1px solid var(--slate);
-    border-left: 3px solid transparent;
-    padding: clamp(10px, 2vw, 14px) clamp(10px, 2vw, 16px);
-    transition: border-color 0.2s;
-  }
-
-  .conflict-name {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(12px, 2.5vw, 15px);
-    color: var(--cream);
-    line-height: 1.2;
-    margin-bottom: 3px;
-  }
-
-  .conflict-years {
-    font-size: clamp(9px, 2vw, 11px);
-    color: #3a5070;
-    letter-spacing: 0.08em;
-  }
-
-  .score-cell {
-    background: #0d1e38;
-    border: 1px solid var(--slate);
-    padding: clamp(10px, 2vw, 14px) clamp(10px, 2vw, 16px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 6px;
-  }
-
-  .model-label {
-    font-size: clamp(8px, 1.8vw, 10px);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-  }
-
-  .score-num {
-    font-size: clamp(18px, 4.5vw, 26px);
-    font-weight: 700;
-    line-height: 1;
-  }
-
-  .score-bar {
-    height: 3px;
-    background: #1a2a44;
-    position: relative;
+  .asset-body {
+    flex: 1; min-height: 0;
+    display: flex; gap: clamp(8px,1.5vw,16px);
+    padding: clamp(8px,1.5vw,14px) clamp(14px,3vw,28px);
     overflow: hidden;
   }
 
-  .score-fill {
-    height: 100%;
-    width: 0%;
-    transition: width 0.8s ease;
+  /* Chart area */
+  .chart-wrap { flex: 1; min-width: 0; position: relative; }
+  canvas { position: absolute; top:0; left:0; width:100%; height:100%; }
+
+  /* Right panel: conflict list */
+  .conflicts-col {
+    width: clamp(130px,24vw,220px);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3px,0.6vw,5px);
+    overflow: hidden;
   }
 
-  .verdict {
-    font-size: clamp(9px, 2vw, 10px);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+  .conflict-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: clamp(4px,0.8vw,7px) clamp(6px,1.2vw,10px);
+    border: 1px solid var(--rule);
+    border-left: 3px solid transparent;
+    background: var(--white);
   }
+
+  .conflict-item.current { border-left-color: var(--gold); background: var(--off); }
+
+  .ci-name { font-family: 'Playfair Display', serif; font-size: clamp(11px,1.2vw,13px); color: var(--navy); line-height: 1.2; }
+  .ci-scores { display: flex; gap: 8px; }
+  .ci-score { font-size: clamp(11px,1.2vw,13px); font-weight: 700; }
+  .ci-cow { color: var(--blue); }
+  .ci-eco { color: var(--gold); }
+  .ci-year { font-size: clamp(9px,1vw,11px); color: var(--navy-dim); }
 
   /* Legend */
-  .legend {
+  .legend-row {
     display: flex;
-    gap: clamp(16px, 4vw, 28px);
-    padding: 14px 0;
-    border-top: 1px solid var(--slate);
-    margin-top: 20px;
-    opacity: 0;
-    animation: rise 0.5s 1.1s forwards;
-  }
-
-  .leg-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: clamp(10px, 2vw, 12px);
-  }
-
-  .leg-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+    gap: clamp(10px,2vw,18px);
+    padding-top: clamp(3px,0.6vw,6px);
+    border-top: 1px solid var(--rule);
+    margin-top: auto;
     flex-shrink: 0;
   }
 
-  /* Divergence callout */
-  .divergence-note {
-    margin-top: 20px;
-    padding: clamp(14px, 3vw, 20px);
-    background: #c9a84c0d;
-    border-left: 3px solid var(--gold);
-    opacity: 0;
-    animation: rise 0.5s 1.2s forwards;
-  }
+  .leg { display: flex; align-items: center; gap: 5px; font-size: clamp(10px,1.1vw,12px); }
+  .leg-line { width: 20px; height: 3px; flex-shrink: 0; }
 
-  .div-label {
-    font-size: clamp(9px, 2vw, 10px);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 8px;
+  .asset-footer {
+    padding: clamp(5px,1vw,9px) clamp(14px,3vw,28px);
+    border-top: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0; background: var(--off);
   }
-
-  .div-text {
-    font-size: clamp(12px, 2.5vw, 14px);
-    color: var(--mist);
-    line-height: 1.6;
-  }
-
-  .div-text strong { color: var(--cream); }
-
-  @keyframes rise {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  .footer-note { font-size: clamp(10px,1vw,11px); color: var(--navy-dim); letter-spacing: 0.08em; font-style: italic; }
+  .footer-brand { font-size: clamp(10px,1vw,11px); letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
 </style>
 </head>
 <body>
-<div class="canvas">
+<div class="asset">
 
-  <div class="title-block">
-    <div class="eyebrow">Scoring Matrix</div>
-    <div class="headline">The Same Facts.<br>Two Different Answers.</div>
-    <div class="deck">The Correlates of War model and the economic restructuring model agree on every observable event. They disagree on what the observations mean.</div>
-  </div>
-
-  <div class="chart-wrap">
-    <canvas id="divergeChart"></canvas>
-  </div>
-
-  <div class="conflicts" id="conflictCards">
-    <!-- Injected by JS -->
-  </div>
-
-  <div class="legend">
-    <div class="leg-item">
-      <div class="leg-dot" style="background:#4a7ab8"></div>
-      <span style="color:#4a7ab8">Correlates of War</span>
-    </div>
-    <div class="leg-item">
-      <div class="leg-dot" style="background:#c9a84c"></div>
-      <span style="color:#c9a84c">Economic Restructuring</span>
-    </div>
-    <div class="leg-item">
-      <div style="width:24px;height:1px;background:repeating-linear-gradient(90deg,#8a9ab8 0,#8a9ab8 4px,transparent 4px,transparent 8px)"></div>
-      <span style="color:#8a9ab8">0.70 threshold</span>
+  <div class="asset-header">
+    <div class="header-left">
+      <div class="asset-eyebrow">Parlay Economics | Home Economics Journal</div>
+      <div class="asset-title">The Same Facts. <em>Two Different Answers.</em></div>
+      <div class="gold-rule"></div>
     </div>
   </div>
 
-  <div class="divergence-note">
-    <div class="div-label">The gap</div>
-    <div class="div-text">WWI and WWII: both models agree. Korea and Vietnam: the grouping question splits them. The present conflict: <strong>a 0.27 gap</strong> — the widest in the dataset. The instrument determines the answer.</div>
+  <div class="asset-body">
+
+    <div class="chart-wrap">
+      <canvas id="chart"></canvas>
+    </div>
+
+    <div class="conflicts-col">
+      <div class="conflict-item">
+        <div class="ci-name">World War I</div>
+        <div class="ci-year">1914 | 1918</div>
+        <div class="ci-scores">
+          <span class="ci-score ci-cow">0.96</span>
+          <span class="ci-score ci-eco">0.97</span>
+        </div>
+      </div>
+      <div class="conflict-item">
+        <div class="ci-name">World War II</div>
+        <div class="ci-year">1939 | 1945</div>
+        <div class="ci-scores">
+          <span class="ci-score ci-cow">0.98</span>
+          <span class="ci-score ci-eco">0.99</span>
+        </div>
+      </div>
+      <div class="conflict-item">
+        <div class="ci-name">Korea + Vietnam</div>
+        <div class="ci-year">Grouped campaign</div>
+        <div class="ci-scores">
+          <span class="ci-score ci-cow">0.84</span>
+          <span class="ci-score ci-eco">0.86</span>
+        </div>
+      </div>
+      <div class="conflict-item">
+        <div class="ci-name">Korea / Vietnam</div>
+        <div class="ci-year">Individual conflicts</div>
+        <div class="ci-scores">
+          <span class="ci-score" style="color:var(--navy-dim)">0.50</span>
+          <span class="ci-score" style="color:var(--navy-dim)">0.55</span>
+        </div>
+      </div>
+      <div class="conflict-item current">
+        <div class="ci-name">Present Conflict</div>
+        <div class="ci-year">2022 | present</div>
+        <div class="ci-scores">
+          <span class="ci-score ci-cow">0.61</span>
+          <span class="ci-score ci-eco">0.88</span>
+        </div>
+      </div>
+      <div class="legend-row">
+        <div class="leg"><div class="leg-line" style="background:var(--blue)"></div><span style="color:var(--blue)">CoW</span></div>
+        <div class="leg"><div class="leg-line" style="background:var(--gold-mid)"></div><span style="color:var(--gold)">Econ.</span></div>
+        <div class="leg"><div class="leg-line" style="background:repeating-linear-gradient(90deg,var(--navy-dim) 0,var(--navy-dim) 4px,transparent 4px,transparent 8px);height:1px"></div><span style="color:var(--navy-dim)">0.70</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="asset-footer">
+    <div class="footer-note">Analytical framework only. Not investment advice.</div>
+    <div class="footer-brand">© Breadcoins.com</div>
   </div>
 
 </div>
 
 <script>
-const conflicts = [
-  { name: 'World War I',    years: '1914–1918', cow: 0.96, eco: 0.97, verdict: ['Classified','Classified'] },
-  { name: 'World War II',   years: '1939–1945', cow: 0.98, eco: 0.99, verdict: ['Classified','Classified'] },
-  { name: 'Korea + Vietnam',years: '1950–1975 · grouped', cow: 0.84, eco: 0.86, verdict: ['Above threshold','Above threshold'] },
-  { name: 'Korea / Vietnam',years: '1950–1975 · individual', cow: 0.50, eco: 0.55, verdict: ['Ambiguous','Ambiguous'] },
-  { name: 'Present Conflict',years: '2022–present', cow: 0.61, eco: 0.88, verdict: ['Below threshold','Above threshold'], highlight: true },
-];
-
-// Build cards
-const container = document.getElementById('conflictCards');
-conflicts.forEach((c, i) => {
-  const card = document.createElement('div');
-  card.className = 'conflict-card' + (c.highlight ? ' active' : '');
-  card.innerHTML = `
-    <div class="name-cell" style="border-left-color:${c.highlight ? 'var(--gold)' : 'transparent'}">
-      <div class="conflict-name">${c.name}</div>
-      <div class="conflict-years">${c.years}</div>
-    </div>
-    <div class="score-cell">
-      <div class="model-label" style="color:#4a7ab8">Correlates of War</div>
-      <div class="score-num" style="color:${c.cow >= 0.70 ? '#4a7ab8' : '#3a4a62'}">${c.cow.toFixed(2)}</div>
-      <div class="score-bar"><div class="score-fill" data-w="${c.cow*100}" style="background:#4a7ab8"></div></div>
-      <div class="verdict" style="color:${c.cow >= 0.70 ? '#4a7ab8' : '#3a4a62'}">${c.verdict[0]}</div>
-    </div>
-    <div class="score-cell">
-      <div class="model-label" style="color:var(--gold-dim)">Econ. Restructuring</div>
-      <div class="score-num" style="color:${c.eco >= 0.70 ? 'var(--gold)' : '#3a4a62'}">${c.eco.toFixed(2)}</div>
-      <div class="score-bar"><div class="score-fill" data-w="${c.eco*100}" style="background:var(--gold)"></div></div>
-      <div class="verdict" style="color:${c.eco >= 0.70 ? 'var(--gold)' : '#3a4a62'}">${c.verdict[1]}</div>
-    </div>
-  `;
-  container.appendChild(card);
-});
-
-// Animate bars on load
-setTimeout(() => {
-  document.querySelectorAll('.score-fill').forEach(el => {
-    el.style.width = el.dataset.w + '%';
-  });
-}, 900);
-
-// Chart
-const canvas = document.getElementById('divergeChart');
+const canvas = document.getElementById('chart');
 const ctx = canvas.getContext('2d');
 
-function drawChart() {
-  const W = canvas.parentElement.clientWidth;
-  const H = Math.round(W * 0.52);
+function draw() {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const W = rect.width, H = rect.height;
   canvas.width = W * devicePixelRatio;
   canvas.height = H * devicePixelRatio;
   canvas.style.width = W + 'px';
   canvas.style.height = H + 'px';
   ctx.scale(devicePixelRatio, devicePixelRatio);
 
-  const PAD = { top: 24, right: 20, bottom: 44, left: 44 };
+  const PAD = { top: 16, right: 16, bottom: 32, left: 36 };
   const cW = W - PAD.left - PAD.right;
   const cH = H - PAD.top - PAD.bottom;
 
-  const labels = ['WWI','WWII','Korea+VN\n(grouped)','Korea/VN\n(indiv.)','Present'];
   const cowScores = [0.96, 0.98, 0.84, 0.50, 0.61];
   const ecoScores = [0.97, 0.99, 0.86, 0.55, 0.88];
-  const n = labels.length;
+  const labels = ['WWI','WWII','Korea+VN\ngrouped','Korea/VN\nindiv.','Present'];
+  const n = 5;
 
-  function xPos(i) { return PAD.left + (i / (n-1)) * cW; }
-  function yPos(v) { return PAD.top + cH - (v - 0.3) / 0.75 * cH; }
+  function xP(i) { return PAD.left + (i/(n-1)) * cW; }
+  function yP(v) { return PAD.top + cH - ((v-0.3)/0.75)*cH; }
 
-  // Grid lines
-  ctx.strokeStyle = '#1a2a44';
+  // Grid
+  ctx.strokeStyle = '#e8e4de';
   ctx.lineWidth = 1;
-  [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0].forEach(v => {
-    if (v < 0.31 || v > 1.01) return;
-    const y = yPos(v);
-    ctx.beginPath();
-    ctx.moveTo(PAD.left, y);
-    ctx.lineTo(PAD.left + cW, y);
-    ctx.stroke();
-    ctx.fillStyle = '#2a3a52';
-    ctx.font = `${10}px Anonymous Pro`;
+  [0.4,0.5,0.6,0.7,0.8,0.9,1.0].forEach(v => {
+    const y = yP(v);
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left+cW, y); ctx.stroke();
+    ctx.fillStyle = '#8a9ab8';
+    ctx.font = `${Math.max(10, W*0.018)}px Anonymous Pro`;
     ctx.textAlign = 'right';
-    ctx.fillText(v.toFixed(1), PAD.left - 6, y + 4);
+    ctx.fillText(v.toFixed(1), PAD.left-5, y+4);
   });
 
-  // Threshold line
-  const ty = yPos(0.70);
-  ctx.strokeStyle = '#8a9ab855';
+  // Threshold
+  const ty = yP(0.70);
+  ctx.strokeStyle = '#4a608066';
   ctx.lineWidth = 1;
-  ctx.setLineDash([5, 7]);
-  ctx.beginPath();
-  ctx.moveTo(PAD.left, ty);
-  ctx.lineTo(PAD.left + cW, ty);
-  ctx.stroke();
+  ctx.setLineDash([5,7]);
+  ctx.beginPath(); ctx.moveTo(PAD.left,ty); ctx.lineTo(PAD.left+cW,ty); ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle = '#8a9ab888';
-  ctx.font = `9px Anonymous Pro`;
+  const fs = Math.max(10, W*0.018);
+  ctx.fillStyle = '#4a6080';
+  ctx.font = `${fs}px Anonymous Pro`;
   ctx.textAlign = 'left';
-  ctx.fillText('0.70 threshold', PAD.left + 4, ty - 5);
+  ctx.fillText('0.70 threshold', PAD.left+4, ty-4);
 
-  // Fill gap between lines for present conflict
-  const gapIdx = 4;
-  const gx = xPos(gapIdx);
-  const gy1 = yPos(cowScores[gapIdx]);
-  const gy2 = yPos(ecoScores[gapIdx]);
-  ctx.fillStyle = 'rgba(201,168,76,0.08)';
-  ctx.fillRect(gx - 2, Math.min(gy1, gy2), 4, Math.abs(gy1 - gy2));
-
-  // Shade gap between all points
+  // Gap fill at present
+  ctx.fillStyle = 'rgba(184,147,10,0.07)';
   ctx.beginPath();
-  cowScores.forEach((v, i) => {
-    if (i === 0) ctx.moveTo(xPos(i), yPos(v));
-    else ctx.lineTo(xPos(i), yPos(v));
-  });
-  ecoScores.slice().reverse().forEach((v, i) => {
-    ctx.lineTo(xPos(n-1-i), yPos(v));
-  });
-  ctx.closePath();
-  ctx.fillStyle = 'rgba(201,168,76,0.04)';
-  ctx.fill();
+  cowScores.forEach((v,i) => { i===0 ? ctx.moveTo(xP(i),yP(v)) : ctx.lineTo(xP(i),yP(v)); });
+  ecoScores.slice().reverse().forEach((v,i) => { ctx.lineTo(xP(n-1-i),yP(v)); });
+  ctx.closePath(); ctx.fill();
 
-  // Draw lines
   function drawLine(scores, color, lw) {
-    ctx.strokeStyle = color;
-    ctx.lineWidth = lw;
+    ctx.strokeStyle = color; ctx.lineWidth = lw;
     ctx.beginPath();
-    scores.forEach((v, i) => {
-      if (i === 0) ctx.moveTo(xPos(i), yPos(v));
-      else ctx.lineTo(xPos(i), yPos(v));
-    });
+    scores.forEach((v,i) => { i===0 ? ctx.moveTo(xP(i),yP(v)) : ctx.lineTo(xP(i),yP(v)); });
     ctx.stroke();
-    // Dots
-    scores.forEach((v, i) => {
-      ctx.fillStyle = i === 4 ? color : color + 'aa';
-      ctx.beginPath();
-      ctx.arc(xPos(i), yPos(v), i === 4 ? 6 : 4, 0, Math.PI*2);
-      ctx.fill();
-      ctx.strokeStyle = '#0a1628';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
+    scores.forEach((v,i) => {
+      ctx.fillStyle = i===4 ? color : color+'99';
+      ctx.beginPath(); ctx.arc(xP(i),yP(v), i===4?6:4, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth=1.5; ctx.stroke();
     });
   }
 
-  drawLine(cowScores, '#4a7ab8', 2);
-  drawLine(ecoScores, '#c9a84c', 2.5);
+  drawLine(cowScores, '#2a5a9a', 2);
+  drawLine(ecoScores, '#b8930a', 2.5);
 
-  // Gap annotation at present
-  const pgx = xPos(4);
-  const pgy1 = yPos(cowScores[4]);
-  const pgy2 = yPos(ecoScores[4]);
-  ctx.strokeStyle = '#c9a84c55';
+  // Delta annotation at present
+  const px = xP(4);
+  const py1 = yP(cowScores[4]);
+  const py2 = yP(ecoScores[4]);
+  ctx.strokeStyle = '#b8930a88';
   ctx.lineWidth = 1;
-  ctx.setLineDash([2, 3]);
-  ctx.beginPath();
-  ctx.moveTo(pgx + 10, pgy1);
-  ctx.lineTo(pgx + 10, pgy2);
-  ctx.stroke();
+  ctx.setLineDash([2,3]);
+  ctx.beginPath(); ctx.moveTo(px+10,py1); ctx.lineTo(px+10,py2); ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle = '#c9a84c';
-  ctx.font = `bold 11px Anonymous Pro`;
+  ctx.fillStyle = '#b8930a';
+  ctx.font = `bold ${fs}px Anonymous Pro`;
   ctx.textAlign = 'left';
-  ctx.fillText('Δ0.27', pgx + 14, (pgy1 + pgy2) / 2 + 4);
+  ctx.fillText('Δ0.27', px+14, (py1+py2)/2+4);
 
   // X labels
   ctx.fillStyle = '#4a6080';
-  ctx.font = `10px Anonymous Pro`;
+  ctx.font = `${fs}px Anonymous Pro`;
   ctx.textAlign = 'center';
-  labels.forEach((l, i) => {
-    const lines = l.split('\n');
-    lines.forEach((line, li) => {
-      ctx.fillText(line, xPos(i), PAD.top + cH + 14 + li * 13);
+  labels.forEach((l,i) => {
+    l.split('\n').forEach((line,li) => {
+      ctx.fillText(line, xP(i), PAD.top+cH+14+li*(fs+2));
     });
   });
 }
 
-drawChart();
-window.addEventListener('resize', drawChart);
+draw();
+window.addEventListener('resize', draw);
 </script>
 </body>
 </html>

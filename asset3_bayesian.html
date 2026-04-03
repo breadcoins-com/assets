@@ -4,256 +4,227 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
 
   :root {
-    --white:    #ffffff;
-    --off:      #f7f4ef;
-    --navy:     #0a1628;
-    --navy-mid: #1e3258;
-    --navy-dim: #4a6080;
-    --gold:     #b8930a;
+    --navy: #0a1628;
+    --gold: #b8930a;
     --gold-mid: #c9a84c;
-    --blue:     #2a5a9a;
-    --rule:     #ddd8d0;
+    --navy-dim: #4a6080;
+    --blue: #2a5a9a;
+    --rule: #ddd8d0;
+    --off: #f7f4ef;
+    --white: #ffffff;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 100%; height: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; color: var(--navy); }
+  html, body { width: 100%; height: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; }
 
-  .asset { width: 100%; aspect-ratio: 16/9; display: flex; flex-direction: column; background: var(--white); overflow: hidden; }
+  .asset { width: 100%; aspect-ratio: 4/3; display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
 
-  .asset-header {
-    padding: clamp(8px,1.8vw,16px) clamp(14px,3vw,28px);
-    border-bottom: 2px solid var(--navy);
-    display: flex; align-items: flex-end; flex-shrink: 0; justify-content: space-between;
-  }
-  .header-left { display: flex; flex-direction: column; gap: 3px; }
-  .asset-eyebrow { font-size: clamp(11px,1.2vw,13px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
-  .asset-title { font-family: 'Playfair Display', serif; font-size: clamp(15px,2.2vw,24px); color: var(--navy); font-weight: 700; line-height: 1.15; }
-  .asset-title em { font-style: italic; color: var(--gold); }
-  .gold-rule { width: clamp(24px,4vw,48px); height: 2px; background: var(--gold-mid); margin-top: 3px; }
-  .header-hint { font-size: clamp(10px,1.1vw,12px); color: var(--navy-dim); font-style: italic; align-self: flex-end; }
+  .hdr { padding: clamp(8px,2vw,16px) clamp(12px,3vw,24px); border-bottom: 2px solid var(--navy); flex-shrink: 0; display: flex; justify-content: space-between; align-items: flex-end; }
+  .hdr-left { display: flex; flex-direction: column; gap: 3px; }
+  .eyebrow { font-size: clamp(9px,1.8vw,12px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+  .title { font-family: 'Playfair Display', serif; font-size: clamp(14px,2.8vw,22px); color: var(--navy); font-weight: 700; line-height: 1.15; }
+  .title em { font-style: italic; color: var(--gold); }
+  .gold-rule { width: clamp(20px,4vw,40px); height: 2px; background: var(--gold-mid); margin-top: 4px; }
+  .tap-hint { font-size: clamp(9px,1.5vw,11px); color: var(--navy-dim); font-style: italic; }
 
-  .asset-body {
-    flex: 1; min-height: 0;
-    display: flex; gap: clamp(8px,1.5vw,14px);
-    padding: clamp(8px,1.5vw,14px) clamp(14px,3vw,28px);
-    overflow: hidden;
-  }
+  .body { flex: 1; min-height: 0; display: flex; gap: clamp(8px,2vw,14px); padding: clamp(6px,1.2vw,12px) clamp(12px,3vw,24px); overflow: hidden; }
 
   /* Prior */
-  .prior-block {
-    display: flex; flex-direction: column; justify-content: center;
-    width: clamp(80px,14vw,130px); flex-shrink: 0;
+  .prior {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    width: clamp(60px,14vw,100px); flex-shrink: 0;
     border-right: 1px solid var(--rule);
-    padding-right: clamp(8px,1.5vw,14px);
-    gap: 4px;
+    padding-right: clamp(6px,1.5vw,12px);
+    gap: 3px; text-align: center;
   }
-
-  .prior-label { font-size: clamp(10px,1.1vw,12px); letter-spacing: 0.15em; text-transform: uppercase; color: var(--navy-dim); }
-  .prior-num { font-family: 'Playfair Display', serif; font-size: clamp(28px,5vw,48px); font-weight: 700; color: var(--navy-dim); line-height: 1; }
-  .prior-desc { font-size: clamp(10px,1vw,11px); color: var(--navy-dim); line-height: 1.3; }
+  .prior-label { font-size: clamp(8px,1.4vw,10px); letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy-dim); }
+  .prior-num { font-family: 'Playfair Display', serif; font-size: clamp(24px,5.5vw,40px); font-weight: 700; color: var(--navy-dim); line-height: 1; }
+  .prior-desc { font-size: clamp(8px,1.3vw,10px); color: var(--navy-dim); line-height: 1.3; }
 
   /* Chain */
-  .chain-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: clamp(3px,0.6vw,5px); overflow: hidden; }
+  .chain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: clamp(3px,0.6vw,5px); overflow: hidden; }
 
-  .event-node {
+  .node {
     border: 1px solid var(--rule);
-    background: var(--white);
     cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
     flex-shrink: 0;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    transition: border-color 0.2s, background 0.2s;
   }
 
-  .event-node:hover { border-color: var(--gold-mid); background: var(--off); }
-  .event-node.open { border-color: var(--gold); background: var(--off); }
+  .node:hover, .node.open { border-color: var(--gold-mid); background: var(--off); }
+  .node.open { border-color: var(--gold); }
 
   .node-main {
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 8px;
-    padding: clamp(5px,1vw,9px) clamp(8px,1.5vw,14px);
+    gap: clamp(6px,1.5vw,10px);
+    padding: clamp(4px,1vw,8px) clamp(6px,1.5vw,12px);
     align-items: center;
   }
 
-  .event-text { font-size: clamp(11px,1.2vw,13px); color: var(--navy); line-height: 1.3; }
+  .event-text { font-size: clamp(10px,1.8vw,13px); color: var(--navy); line-height: 1.3; }
 
-  .node-scores { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; flex-shrink: 0; }
-  .score-cow { font-size: clamp(13px,1.8vw,18px); font-weight: 700; color: var(--blue); line-height: 1; }
-  .score-eco { font-size: clamp(13px,1.8vw,18px); font-weight: 700; color: var(--gold); line-height: 1; }
-  .score-lbl { font-size: clamp(9px,1vw,10px); color: var(--navy-dim); letter-spacing: 0.1em; text-transform: uppercase; text-align: right; }
+  .scores { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; flex-shrink: 0; }
+  .s-cow { font-size: clamp(12px,2.2vw,17px); font-weight: 700; color: var(--blue); line-height: 1; }
+  .s-eco { font-size: clamp(12px,2.2vw,17px); font-weight: 700; color: var(--gold); line-height: 1; }
+  .s-lbl { font-size: clamp(8px,1.3vw,10px); color: var(--navy-dim); letter-spacing: 0.1em; text-transform: uppercase; text-align: right; }
 
-  .progress-track { height: 3px; background: var(--rule); position: relative; }
-  .thresh-mark { position: absolute; top:0; bottom:0; left:70%; width:1px; background: var(--navy-dim); opacity:0.4; }
-  .fill-cow { position: absolute; top:0; left:0; height:50%; transition: width 0.5s ease; }
-  .fill-eco { position: absolute; bottom:0; left:0; height:50%; transition: width 0.5s ease; }
+  .prog { height: 3px; background: var(--rule); position: relative; }
+  .prog-thresh { position: absolute; top:0; bottom:0; left:70%; width:1px; background: var(--navy-dim); opacity:0.3; }
+  .prog-cow { position: absolute; top:0; left:0; height:50%; background: var(--blue); transition: width 0.5s; }
+  .prog-eco { position: absolute; bottom:0; left:0; height:50%; background: var(--gold); transition: width 0.5s; }
 
-  /* Expand panel */
-  .node-detail { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s; opacity: 0; }
-  .event-node.open .node-detail { max-height: 200px; opacity: 1; }
+  .node-detail { max-height:0; overflow:hidden; transition: max-height 0.3s ease, opacity 0.2s; opacity:0; }
+  .node.open .node-detail { max-height:200px; opacity:1; }
 
   .detail-inner {
-    padding: clamp(6px,1.2vw,10px) clamp(8px,1.5vw,14px);
+    padding: clamp(5px,1.2vw,10px) clamp(6px,1.5vw,12px);
     border-top: 1px solid var(--rule);
-    display: grid;
-    grid-template-columns: 1fr 1fr 2fr;
-    gap: clamp(6px,1.2vw,10px);
+    font-size: clamp(9px,1.6vw,12px);
+    color: var(--navy-dim);
+    line-height: 1.5;
+    display: flex; gap: clamp(6px,1.5vw,10px);
   }
 
-  .bf-box { padding: clamp(5px,1vw,8px); background: var(--white); border: 1px solid var(--rule); }
-  .bf-label { font-size: clamp(9px,1vw,11px); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 3px; }
-  .bf-val { font-family: 'Playfair Display', serif; font-size: clamp(16px,2.5vw,22px); font-weight: 700; line-height: 1; }
-  .bf-jump { font-size: clamp(10px,1.1vw,12px); color: var(--navy-dim); margin-top: 3px; }
-  .detail-text { font-size: clamp(10px,1.1vw,12px); color: var(--navy-dim); line-height: 1.5; }
+  .bf-box { flex-shrink: 0; }
+  .bf-label { font-size: clamp(8px,1.3vw,10px); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
+  .bf-val { font-family: 'Playfair Display', serif; font-size: clamp(14px,2.5vw,20px); font-weight: 700; line-height: 1; }
+  .bf-jump { font-size: clamp(8px,1.3vw,10px); margin-top: 2px; }
 
-  /* Final row */
-  .final-row {
-    display: flex;
-    gap: clamp(4px,0.8vw,8px);
-    margin-top: auto;
-    flex-shrink: 0;
+  /* Final */
+  .final {
+    display: flex; gap: clamp(3px,0.8vw,6px);
+    margin-top: auto; flex-shrink: 0;
   }
 
-  .final-cell {
-    flex: 1;
-    padding: clamp(5px,1vw,8px) clamp(8px,1.5vw,14px);
-    border-top: 3px solid transparent;
-    background: var(--off);
-  }
+  .final-cell { flex:1; padding: clamp(5px,1.2vw,10px) clamp(6px,1.5vw,12px); border-top: 3px solid transparent; background: var(--off); }
+  .fc-cow { border-top-color: var(--blue); }
+  .fc-eco { border-top-color: var(--gold); }
+  .fc-model { font-size: clamp(8px,1.3vw,10px); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px; }
+  .fc-score { font-family: 'Playfair Display', serif; font-size: clamp(20px,4vw,32px); font-weight: 700; line-height: 1; }
+  .fc-verdict { font-size: clamp(9px,1.5vw,11px); color: var(--navy-dim); line-height: 1.3; margin-top: 3px; }
 
-  .final-cell.cow { border-top-color: var(--blue); }
-  .final-cell.eco { border-top-color: var(--gold); }
-  .final-model { font-size: clamp(10px,1.1vw,12px); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
-  .final-score { font-family: 'Playfair Display', serif; font-size: clamp(20px,3.5vw,32px); font-weight: 700; line-height: 1; }
-  .final-verdict { font-size: clamp(10px,1.1vw,12px); color: var(--navy-dim); line-height: 1.3; margin-top: 3px; }
-
-  .asset-footer {
-    padding: clamp(5px,1vw,9px) clamp(14px,3vw,28px);
-    border-top: 1px solid var(--rule);
-    display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0; background: var(--off);
-  }
-  .footer-note { font-size: clamp(10px,1vw,11px); color: var(--navy-dim); font-style: italic; }
-  .footer-brand { font-size: clamp(10px,1vw,11px); letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+  .ftr { padding: clamp(4px,1vw,8px) clamp(12px,3vw,24px); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; background: var(--off); }
+  .ftr-note { font-size: clamp(8px,1.4vw,11px); color: var(--navy-dim); font-style: italic; }
+  .ftr-brand { font-size: clamp(8px,1.4vw,11px); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
 </style>
 </head>
 <body>
 <div class="asset">
 
-  <div class="asset-header">
-    <div class="header-left">
-      <div class="asset-eyebrow">Parlay Economics | Home Economics Journal</div>
-      <div class="asset-title">Evidence Arrives. <em>The Posterior Climbs.</em></div>
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="eyebrow">Parlay Economics | Home Economics Journal</div>
+      <div class="title">Evidence Arrives. <em>The Posterior Climbs.</em></div>
       <div class="gold-rule"></div>
     </div>
-    <div class="header-hint">Tap any event to expand</div>
+    <div class="tap-hint">Tap to expand</div>
   </div>
 
-  <div class="asset-body">
+  <div class="body">
 
-    <div class="prior-block">
+    <div class="prior">
       <div class="prior-label">Prior P(WW)</div>
       <div class="prior-num">0.15</div>
-      <div class="prior-desc">Base rate from historical frequency of world war classification</div>
+      <div class="prior-desc">Historical base rate</div>
     </div>
 
-    <div class="chain-wrap" id="chain"></div>
+    <div class="chain" id="chain"></div>
 
   </div>
 
-  <div class="asset-footer">
-    <div class="footer-note">Analytical framework only. Not investment advice.</div>
-    <div class="footer-brand">© Breadcoins.com</div>
+  <div class="ftr">
+    <div class="ftr-note">Analytical framework only. Not investment advice.</div>
+    <div class="ftr-brand">© Breadcoins.com</div>
   </div>
 
 </div>
 
 <script>
 const events = [
-  { text: 'Russia-Ukraine: 40+ NATO states with active material support, fourth year of sustained combat',
-    cow:0.36, eco:0.43, prevCow:0.15, prevEco:0.15, bfCow:3.2, bfEco:4.1,
-    detail:'S1 threshold cleared. Great-power proxy engagement confirmed. Coalition continuity factor active.' },
-  { text: 'Houthi attacks: 100+ vessel strikes across 60+ nations. Hormuz under pressure.',
-    cow:0.49, eco:0.68, prevCow:0.36, prevEco:0.43, bfCow:2.1, bfEco:3.8,
+  { text: 'Russia-Ukraine: 40+ NATO states, fourth year of sustained combat',
+    cow:0.36, eco:0.43, prev:[0.15,0.15], bf:[3.2,4.1],
+    detail:'S1 cleared. Great-power proxy engagement confirmed. Largest single Bayes factor in the chain.' },
+  { text: 'Houthi attacks: 100+ vessel strikes, 60+ nations, Hormuz under pressure',
+    cow:0.49, eco:0.68, prev:[0.36,0.43], bf:[2.1,3.8],
     detail:'S2 domain count rises. 20% of global petroleum transit affected. Economic model weights chokepoint control heavily.' },
   { text: 'Iranian cyber operations against US and Canadian critical infrastructure',
-    cow:0.53, eco:0.79, prevCow:0.49, prevEco:0.68, bfCow:1.4, bfEco:2.2,
-    detail:'S2 domain 3 confirmed: cyber. CoW model discounts cyber heavily. Economic model treats infrastructure targeting as equivalent to kinetic supply disruption.' },
-  { text: 'BRICS de-dollarization: coordinated reserve diversification across Russia, China, Iran, Gulf states',
-    cow:0.57, eco:0.84, prevCow:0.53, prevEco:0.79, bfCow:1.2, bfEco:3.1,
-    detail:'Largest model divergence on a single factor. Economic model treats reserve currency pressure as the primary strategic objective, not a side effect.' },
-  { text: 'Documented Chinese and Russian material support to Iran. 2025 Russia-Iran treaty signed.',
-    cow:0.59, eco:0.86, prevCow:0.57, prevEco:0.84, bfCow:1.1, bfEco:1.4,
-    detail:'Actor set overlap confirmed. No mutual defense obligation in treaty. Proxy penalty partially applied. Both models update modestly.' },
-  { text: 'Direct US-Iran combat, late February 2026. China and Russia remain in supporting set.',
-    cow:0.61, eco:0.88, prevCow:0.59, prevEco:0.86, bfCow:1.05, bfEco:1.3,
-    detail:'The decisive observable. CoW: principal powers not co-belligerent, posterior holds below threshold. Economic model: proxy doing strategic work. Final gap: 0.27.' },
+    cow:0.53, eco:0.79, prev:[0.49,0.68], bf:[1.4,2.2],
+    detail:'S2 domain 3 confirmed: cyber. Models diverge — CoW discounts cyber, economic model treats it as supply disruption.' },
+  { text: 'BRICS de-dollarization: coordinated reserve diversification across four powers',
+    cow:0.57, eco:0.84, prev:[0.53,0.79], bf:[1.2,3.1],
+    detail:'Largest model divergence on a single factor. Economic model treats reserve pressure as the primary strategic objective.' },
+  { text: 'Chinese and Russian material support to Iran. 2025 Russia-Iran treaty signed.',
+    cow:0.59, eco:0.86, prev:[0.57,0.84], bf:[1.1,1.4],
+    detail:'Actor set overlap confirmed. No mutual defense obligation. Proxy penalty partially applied.' },
+  { text: 'Direct US-Iran combat, February 2026. China and Russia remain in supporting set.',
+    cow:0.61, eco:0.88, prev:[0.59,0.86], bf:[1.05,1.3],
+    detail:'The decisive observable. CoW: principal powers not co-belligerent. Economic model: proxy doing strategic work. Gap: 0.27.' },
 ];
 
 const chain = document.getElementById('chain');
 
 events.forEach(e => {
   const node = document.createElement('div');
-  node.className = 'event-node';
-  const jc = ((e.cow-e.prevCow)*100).toFixed(0);
-  const je = ((e.eco-e.prevEco)*100).toFixed(0);
-
+  node.className = 'node';
+  const jc = ((e.cow-e.prev[0])*100).toFixed(0);
+  const je = ((e.eco-e.prev[1])*100).toFixed(0);
   node.innerHTML = `
     <div class="node-main">
       <div class="event-text">${e.text}</div>
-      <div class="node-scores">
-        <div class="score-cow">${e.cow.toFixed(2)}</div>
-        <div class="score-eco">${e.eco.toFixed(2)}</div>
-        <div class="score-lbl">posterior</div>
+      <div class="scores">
+        <div class="s-cow">${e.cow.toFixed(2)}</div>
+        <div class="s-eco">${e.eco.toFixed(2)}</div>
+        <div class="s-lbl">post.</div>
       </div>
     </div>
-    <div class="progress-track">
-      <div class="thresh-mark"></div>
-      <div class="fill-cow" style="width:${e.cow*100}%;background:#2a5a9a"></div>
-      <div class="fill-eco" style="width:${e.eco*100}%;background:#b8930a"></div>
+    <div class="prog">
+      <div class="prog-thresh"></div>
+      <div class="prog-cow" style="width:${e.cow*100}%"></div>
+      <div class="prog-eco" style="width:${e.eco*100}%"></div>
     </div>
     <div class="node-detail">
       <div class="detail-inner">
         <div class="bf-box">
           <div class="bf-label" style="color:#2a5a9a">CoW BF</div>
-          <div class="bf-val" style="color:#2a5a9a">${e.bfCow}</div>
-          <div class="bf-jump">${e.prevCow.toFixed(2)} → ${e.cow.toFixed(2)} (+${jc}pp)</div>
+          <div class="bf-val" style="color:#2a5a9a">${e.bf[0]}</div>
+          <div class="bf-jump" style="color:#2a5a9a">+${jc}pp</div>
         </div>
         <div class="bf-box">
-          <div class="bf-label" style="color:#b8930a">Econ. BF</div>
-          <div class="bf-val" style="color:#b8930a">${e.bfEco}</div>
-          <div class="bf-jump">${e.prevEco.toFixed(2)} → ${e.eco.toFixed(2)} (+${je}pp)</div>
+          <div class="bf-label" style="color:#b8930a">Econ BF</div>
+          <div class="bf-val" style="color:#b8930a">${e.bf[1]}</div>
+          <div class="bf-jump" style="color:#b8930a">+${je}pp</div>
         </div>
-        <div class="detail-text">${e.detail}</div>
+        <div>${e.detail}</div>
       </div>
     </div>
   `;
-
   node.addEventListener('click', () => {
-    const isOpen = node.classList.contains('open');
-    document.querySelectorAll('.event-node').forEach(n => n.classList.remove('open'));
-    if (!isOpen) node.classList.add('open');
+    const open = node.classList.contains('open');
+    document.querySelectorAll('.node').forEach(n => n.classList.remove('open'));
+    if (!open) node.classList.add('open');
   });
-
   chain.appendChild(node);
 });
 
 // Final row
 const final = document.createElement('div');
-final.className = 'final-row';
+final.className = 'final';
 final.innerHTML = `
-  <div class="final-cell cow">
-    <div class="final-model" style="color:#2a5a9a">Correlates of War</div>
-    <div class="final-score" style="color:#2a5a9a">0.61</div>
-    <div class="final-verdict">Below threshold. China and Russia remain in the supporting set.</div>
+  <div class="final-cell fc-cow">
+    <div class="fc-model" style="color:#2a5a9a">Correlates of War</div>
+    <div class="fc-score" style="color:#2a5a9a">0.61</div>
+    <div class="fc-verdict">Below threshold. China and Russia not co-belligerent.</div>
   </div>
-  <div class="final-cell eco">
-    <div class="final-model" style="color:#b8930a">Economic Restructuring</div>
-    <div class="final-score" style="color:#b8930a">0.88</div>
-    <div class="final-verdict">Above threshold. Forced reallocation of economic sovereignty in progress.</div>
+  <div class="final-cell fc-eco">
+    <div class="fc-model" style="color:#b8930a">Economic Restructuring</div>
+    <div class="fc-score" style="color:#b8930a">0.88</div>
+    <div class="fc-verdict">Above threshold. Restructuring in progress.</div>
   </div>
 `;
 chain.appendChild(final);

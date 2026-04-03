@@ -4,169 +4,122 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
 
   :root {
-    --white:    #ffffff;
-    --off:      #f7f4ef;
-    --navy:     #0a1628;
-    --navy-mid: #1e3258;
-    --navy-dim: #4a6080;
-    --gold:     #b8930a;
+    --navy: #0a1628;
+    --gold: #b8930a;
     --gold-mid: #c9a84c;
-    --blue:     #2a5a9a;
-    --rule:     #ddd8d0;
+    --navy-dim: #4a6080;
+    --blue: #2a5a9a;
+    --rule: #ddd8d0;
+    --off: #f7f4ef;
+    --white: #ffffff;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 100%; height: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; color: var(--navy); }
+  html, body { width: 100%; height: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; }
 
-  .asset { width: 100%; aspect-ratio: 16/9; display: flex; flex-direction: column; background: var(--white); overflow: hidden; }
+  .asset { width: 100%; aspect-ratio: 4/3; display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
 
-  .asset-header {
-    padding: clamp(8px,1.8vw,16px) clamp(14px,3vw,28px);
-    border-bottom: 2px solid var(--navy);
-    display: flex; align-items: flex-end; flex-shrink: 0;
-  }
-  .header-left { display: flex; flex-direction: column; gap: 3px; }
-  .asset-eyebrow { font-size: clamp(11px,1.2vw,13px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
-  .asset-title { font-family: 'Playfair Display', serif; font-size: clamp(15px,2.2vw,24px); color: var(--navy); font-weight: 700; line-height: 1.15; }
-  .asset-title em { font-style: italic; color: var(--gold); }
-  .gold-rule { width: clamp(24px,4vw,48px); height: 2px; background: var(--gold-mid); margin-top: 3px; }
+  .hdr { padding: clamp(8px,2vw,16px) clamp(12px,3vw,24px); border-bottom: 2px solid var(--navy); flex-shrink: 0; }
+  .eyebrow { font-size: clamp(9px,1.8vw,12px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+  .title { font-family: 'Playfair Display', serif; font-size: clamp(14px,2.8vw,22px); color: var(--navy); font-weight: 700; line-height: 1.15; }
+  .title em { font-style: italic; color: var(--gold); }
+  .gold-rule { width: clamp(20px,4vw,40px); height: 2px; background: var(--gold-mid); margin-top: 4px; }
 
-  .asset-body {
-    flex: 1; min-height: 0;
-    display: flex; gap: clamp(8px,1.5vw,16px);
-    padding: clamp(8px,1.5vw,14px) clamp(14px,3vw,28px);
-    overflow: hidden;
-  }
+  .body { flex: 1; min-height: 0; display: flex; gap: clamp(8px,2vw,16px); padding: clamp(8px,1.5vw,14px) clamp(12px,3vw,24px); overflow: hidden; }
 
-  /* Chart area */
   .chart-wrap { flex: 1; min-width: 0; position: relative; }
   canvas { position: absolute; top:0; left:0; width:100%; height:100%; }
 
-  /* Right panel: conflict list */
-  .conflicts-col {
-    width: clamp(130px,24vw,220px);
+  .scores-col {
+    width: clamp(90px,22vw,160px);
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    gap: clamp(3px,0.6vw,5px);
-    overflow: hidden;
+    gap: clamp(3px,0.8vw,6px);
+    justify-content: center;
   }
 
-  .conflict-item {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: clamp(4px,0.8vw,7px) clamp(6px,1.2vw,10px);
+  .sc-item {
+    padding: clamp(4px,1vw,8px) clamp(6px,1.5vw,10px);
     border: 1px solid var(--rule);
     border-left: 3px solid transparent;
-    background: var(--white);
   }
 
-  .conflict-item.current { border-left-color: var(--gold); background: var(--off); }
+  .sc-item.current { border-left-color: var(--gold); background: var(--off); }
 
-  .ci-name { font-family: 'Playfair Display', serif; font-size: clamp(11px,1.2vw,13px); color: var(--navy); line-height: 1.2; }
-  .ci-scores { display: flex; gap: 8px; }
-  .ci-score { font-size: clamp(11px,1.2vw,13px); font-weight: 700; }
-  .ci-cow { color: var(--blue); }
-  .ci-eco { color: var(--gold); }
-  .ci-year { font-size: clamp(9px,1vw,11px); color: var(--navy-dim); }
+  .sc-name { font-family: 'Playfair Display', serif; font-size: clamp(10px,1.8vw,13px); color: var(--navy); line-height: 1.2; margin-bottom: 3px; }
+  .sc-nums { display: flex; gap: clamp(6px,1.5vw,10px); }
+  .sc-cow { font-size: clamp(12px,2.2vw,16px); font-weight: 700; color: var(--blue); }
+  .sc-eco { font-size: clamp(12px,2.2vw,16px); font-weight: 700; color: var(--gold); }
+  .sc-year { font-size: clamp(8px,1.4vw,10px); color: var(--navy-dim); }
 
-  /* Legend */
-  .legend-row {
-    display: flex;
-    gap: clamp(10px,2vw,18px);
-    padding-top: clamp(3px,0.6vw,6px);
+  .legend {
+    display: flex; gap: clamp(8px,2vw,14px);
+    padding-top: clamp(4px,1vw,8px);
     border-top: 1px solid var(--rule);
     margin-top: auto;
-    flex-shrink: 0;
   }
+  .leg { display: flex; align-items: center; gap: 5px; font-size: clamp(9px,1.5vw,11px); }
+  .leg-line { width: 16px; height: 3px; flex-shrink: 0; }
 
-  .leg { display: flex; align-items: center; gap: 5px; font-size: clamp(10px,1.1vw,12px); }
-  .leg-line { width: 20px; height: 3px; flex-shrink: 0; }
-
-  .asset-footer {
-    padding: clamp(5px,1vw,9px) clamp(14px,3vw,28px);
-    border-top: 1px solid var(--rule);
-    display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0; background: var(--off);
-  }
-  .footer-note { font-size: clamp(10px,1vw,11px); color: var(--navy-dim); letter-spacing: 0.08em; font-style: italic; }
-  .footer-brand { font-size: clamp(10px,1vw,11px); letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+  .ftr { padding: clamp(4px,1vw,8px) clamp(12px,3vw,24px); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; background: var(--off); }
+  .ftr-note { font-size: clamp(8px,1.4vw,11px); color: var(--navy-dim); font-style: italic; }
+  .ftr-brand { font-size: clamp(8px,1.4vw,11px); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
 </style>
 </head>
 <body>
 <div class="asset">
 
-  <div class="asset-header">
-    <div class="header-left">
-      <div class="asset-eyebrow">Parlay Economics | Home Economics Journal</div>
-      <div class="asset-title">The Same Facts. <em>Two Different Answers.</em></div>
-      <div class="gold-rule"></div>
-    </div>
+  <div class="hdr">
+    <div class="eyebrow">Parlay Economics | Home Economics Journal</div>
+    <div class="title">The Same Facts. <em>Two Different Answers.</em></div>
+    <div class="gold-rule"></div>
   </div>
 
-  <div class="asset-body">
+  <div class="body">
 
-    <div class="chart-wrap">
-      <canvas id="chart"></canvas>
-    </div>
+    <div class="chart-wrap"><canvas id="chart"></canvas></div>
 
-    <div class="conflicts-col">
-      <div class="conflict-item">
-        <div class="ci-name">World War I</div>
-        <div class="ci-year">1914 | 1918</div>
-        <div class="ci-scores">
-          <span class="ci-score ci-cow">0.96</span>
-          <span class="ci-score ci-eco">0.97</span>
-        </div>
+    <div class="scores-col">
+      <div class="sc-item">
+        <div class="sc-name">World War I</div>
+        <div class="sc-year">1914 | 1918</div>
+        <div class="sc-nums"><span class="sc-cow">0.96</span><span class="sc-eco">0.97</span></div>
       </div>
-      <div class="conflict-item">
-        <div class="ci-name">World War II</div>
-        <div class="ci-year">1939 | 1945</div>
-        <div class="ci-scores">
-          <span class="ci-score ci-cow">0.98</span>
-          <span class="ci-score ci-eco">0.99</span>
-        </div>
+      <div class="sc-item">
+        <div class="sc-name">World War II</div>
+        <div class="sc-year">1939 | 1945</div>
+        <div class="sc-nums"><span class="sc-cow">0.98</span><span class="sc-eco">0.99</span></div>
       </div>
-      <div class="conflict-item">
-        <div class="ci-name">Korea + Vietnam</div>
-        <div class="ci-year">Grouped campaign</div>
-        <div class="ci-scores">
-          <span class="ci-score ci-cow">0.84</span>
-          <span class="ci-score ci-eco">0.86</span>
-        </div>
+      <div class="sc-item">
+        <div class="sc-name">Korea + Vietnam</div>
+        <div class="sc-year">Grouped</div>
+        <div class="sc-nums"><span class="sc-cow">0.84</span><span class="sc-eco">0.86</span></div>
       </div>
-      <div class="conflict-item">
-        <div class="ci-name">Korea / Vietnam</div>
-        <div class="ci-year">Individual conflicts</div>
-        <div class="ci-scores">
-          <span class="ci-score" style="color:var(--navy-dim)">0.50</span>
-          <span class="ci-score" style="color:var(--navy-dim)">0.55</span>
-        </div>
+      <div class="sc-item">
+        <div class="sc-name">Korea / Vietnam</div>
+        <div class="sc-year">Individual</div>
+        <div class="sc-nums"><span class="sc-cow" style="color:var(--navy-dim)">0.50</span><span class="sc-eco" style="color:var(--navy-dim)">0.55</span></div>
       </div>
-      <div class="conflict-item current">
-        <div class="ci-name">Present Conflict</div>
-        <div class="ci-year">2022 | present</div>
-        <div class="ci-scores">
-          <span class="ci-score ci-cow">0.61</span>
-          <span class="ci-score ci-eco">0.88</span>
-        </div>
+      <div class="sc-item current">
+        <div class="sc-name">Present Conflict</div>
+        <div class="sc-year">2022 | present</div>
+        <div class="sc-nums"><span class="sc-cow">0.61</span><span class="sc-eco">0.88</span></div>
       </div>
-      <div class="legend-row">
+      <div class="legend">
         <div class="leg"><div class="leg-line" style="background:var(--blue)"></div><span style="color:var(--blue)">CoW</span></div>
         <div class="leg"><div class="leg-line" style="background:var(--gold-mid)"></div><span style="color:var(--gold)">Econ.</span></div>
-        <div class="leg"><div class="leg-line" style="background:repeating-linear-gradient(90deg,var(--navy-dim) 0,var(--navy-dim) 4px,transparent 4px,transparent 8px);height:1px"></div><span style="color:var(--navy-dim)">0.70</span></div>
       </div>
     </div>
 
   </div>
 
-  <div class="asset-footer">
-    <div class="footer-note">Analytical framework only. Not investment advice.</div>
-    <div class="footer-brand">© Breadcoins.com</div>
+  <div class="ftr">
+    <div class="ftr-note">Analytical framework only. Not investment advice.</div>
+    <div class="ftr-brand">© Breadcoins.com</div>
   </div>
 
 </div>
@@ -175,96 +128,77 @@
 const canvas = document.getElementById('chart');
 const ctx = canvas.getContext('2d');
 
+const cow = [0.96, 0.98, 0.84, 0.50, 0.61];
+const eco = [0.97, 0.99, 0.86, 0.55, 0.88];
+const labels = ['WWI','WWII','K+VN\ngrouped','K/VN\nindiv.','Present'];
+const n = 5;
+
 function draw() {
   const rect = canvas.parentElement.getBoundingClientRect();
   const W = rect.width, H = rect.height;
   canvas.width = W * devicePixelRatio;
   canvas.height = H * devicePixelRatio;
-  canvas.style.width = W + 'px';
-  canvas.style.height = H + 'px';
+  canvas.style.width = W+'px'; canvas.style.height = H+'px';
   ctx.scale(devicePixelRatio, devicePixelRatio);
 
-  const PAD = { top: 16, right: 16, bottom: 32, left: 36 };
-  const cW = W - PAD.left - PAD.right;
-  const cH = H - PAD.top - PAD.bottom;
+  const PAD = { top:14, right:14, bottom:32, left:30 };
+  const cW = W-PAD.left-PAD.right, cH = H-PAD.top-PAD.bottom;
+  const fs = Math.max(9, W*0.038);
 
-  const cowScores = [0.96, 0.98, 0.84, 0.50, 0.61];
-  const ecoScores = [0.97, 0.99, 0.86, 0.55, 0.88];
-  const labels = ['WWI','WWII','Korea+VN\ngrouped','Korea/VN\nindiv.','Present'];
-  const n = 5;
-
-  function xP(i) { return PAD.left + (i/(n-1)) * cW; }
+  function xP(i) { return PAD.left + (i/(n-1))*cW; }
   function yP(v) { return PAD.top + cH - ((v-0.3)/0.75)*cH; }
 
   // Grid
-  ctx.strokeStyle = '#e8e4de';
-  ctx.lineWidth = 1;
+  ctx.strokeStyle='#ece8e2'; ctx.lineWidth=1;
   [0.4,0.5,0.6,0.7,0.8,0.9,1.0].forEach(v => {
-    const y = yP(v);
-    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left+cW, y); ctx.stroke();
-    ctx.fillStyle = '#8a9ab8';
-    ctx.font = `${Math.max(10, W*0.018)}px Anonymous Pro`;
-    ctx.textAlign = 'right';
-    ctx.fillText(v.toFixed(1), PAD.left-5, y+4);
+    ctx.beginPath(); ctx.moveTo(PAD.left,yP(v)); ctx.lineTo(PAD.left+cW,yP(v)); ctx.stroke();
   });
 
-  // Threshold
-  const ty = yP(0.70);
-  ctx.strokeStyle = '#4a608066';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([5,7]);
-  ctx.beginPath(); ctx.moveTo(PAD.left,ty); ctx.lineTo(PAD.left+cW,ty); ctx.stroke();
-  ctx.setLineDash([]);
-  const fs = Math.max(10, W*0.018);
-  ctx.fillStyle = '#4a6080';
-  ctx.font = `${fs}px Anonymous Pro`;
-  ctx.textAlign = 'left';
-  ctx.fillText('0.70 threshold', PAD.left+4, ty-4);
+  // Y labels
+  ctx.fillStyle='#8a9ab8'; ctx.font=`${fs}px Anonymous Pro`; ctx.textAlign='right';
+  [0.4,0.6,0.8,1.0].forEach(v => ctx.fillText(v.toFixed(1), PAD.left-4, yP(v)+4));
 
-  // Gap fill at present
-  ctx.fillStyle = 'rgba(184,147,10,0.07)';
+  // Threshold
+  ctx.strokeStyle='#4a608066'; ctx.lineWidth=1; ctx.setLineDash([4,6]);
+  ctx.beginPath(); ctx.moveTo(PAD.left,yP(0.70)); ctx.lineTo(PAD.left+cW,yP(0.70)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#4a6080'; ctx.font=`${fs}px Anonymous Pro`; ctx.textAlign='left';
+  ctx.fillText('0.70', PAD.left+3, yP(0.70)-4);
+
+  // Gap fill
+  ctx.fillStyle='rgba(184,147,10,0.06)';
   ctx.beginPath();
-  cowScores.forEach((v,i) => { i===0 ? ctx.moveTo(xP(i),yP(v)) : ctx.lineTo(xP(i),yP(v)); });
-  ecoScores.slice().reverse().forEach((v,i) => { ctx.lineTo(xP(n-1-i),yP(v)); });
+  cow.forEach((v,i) => i===0 ? ctx.moveTo(xP(i),yP(v)) : ctx.lineTo(xP(i),yP(v)));
+  eco.slice().reverse().forEach((v,i) => ctx.lineTo(xP(n-1-i),yP(v)));
   ctx.closePath(); ctx.fill();
 
-  function drawLine(scores, color, lw) {
-    ctx.strokeStyle = color; ctx.lineWidth = lw;
+  function drawLine(data, color, lw) {
+    ctx.strokeStyle=color; ctx.lineWidth=lw;
     ctx.beginPath();
-    scores.forEach((v,i) => { i===0 ? ctx.moveTo(xP(i),yP(v)) : ctx.lineTo(xP(i),yP(v)); });
+    data.forEach((v,i) => i===0 ? ctx.moveTo(xP(i),yP(v)) : ctx.lineTo(xP(i),yP(v)));
     ctx.stroke();
-    scores.forEach((v,i) => {
+    data.forEach((v,i) => {
       ctx.fillStyle = i===4 ? color : color+'99';
-      ctx.beginPath(); ctx.arc(xP(i),yP(v), i===4?6:4, 0, Math.PI*2); ctx.fill();
-      ctx.strokeStyle = '#fff'; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(xP(i),yP(v),i===4?6:4,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
     });
   }
 
-  drawLine(cowScores, '#2a5a9a', 2);
-  drawLine(ecoScores, '#b8930a', 2.5);
+  drawLine(cow, '#2a5a9a', 2);
+  drawLine(eco, '#b8930a', 2.5);
 
-  // Delta annotation at present
-  const px = xP(4);
-  const py1 = yP(cowScores[4]);
-  const py2 = yP(ecoScores[4]);
-  ctx.strokeStyle = '#b8930a88';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([2,3]);
+  // Delta at present
+  const px=xP(4), py1=yP(cow[4]), py2=yP(eco[4]);
+  ctx.strokeStyle='#b8930a88'; ctx.lineWidth=1; ctx.setLineDash([2,3]);
   ctx.beginPath(); ctx.moveTo(px+10,py1); ctx.lineTo(px+10,py2); ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle = '#b8930a';
-  ctx.font = `bold ${fs}px Anonymous Pro`;
-  ctx.textAlign = 'left';
+  ctx.fillStyle='#b8930a'; ctx.font=`bold ${fs}px Anonymous Pro`; ctx.textAlign='left';
   ctx.fillText('Δ0.27', px+14, (py1+py2)/2+4);
 
   // X labels
-  ctx.fillStyle = '#4a6080';
-  ctx.font = `${fs}px Anonymous Pro`;
-  ctx.textAlign = 'center';
+  ctx.fillStyle='#4a6080'; ctx.font=`${fs}px Anonymous Pro`; ctx.textAlign='center';
   labels.forEach((l,i) => {
-    l.split('\n').forEach((line,li) => {
-      ctx.fillText(line, xP(i), PAD.top+cH+14+li*(fs+2));
-    });
+    l.split('\n').forEach((line,li) => ctx.fillText(line, xP(i), PAD.top+cH+14+li*(fs+1)));
   });
 }
 

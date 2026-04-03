@@ -4,158 +4,123 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
 
   :root {
-    --white:    #ffffff;
-    --off:      #f7f4ef;
-    --navy:     #0a1628;
-    --navy-mid: #1e3258;
-    --navy-dim: #4a6080;
-    --gold:     #b8930a;
+    --navy: #0a1628;
+    --gold: #b8930a;
     --gold-mid: #c9a84c;
-    --blue:     #2a5a9a;
-    --rule:     #ddd8d0;
+    --navy-dim: #4a6080;
+    --blue: #2a5a9a;
+    --rule: #ddd8d0;
+    --off: #f7f4ef;
+    --white: #ffffff;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 100%; height: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; color: var(--navy); }
+  html, body { width: 100%; height: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; }
 
-  .asset { width: 100%; aspect-ratio: 16/9; display: flex; flex-direction: column; background: var(--white); overflow: hidden; }
+  .asset { width: 100%; aspect-ratio: 4/3; display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
 
-  .asset-header {
-    padding: clamp(8px,1.8vw,16px) clamp(14px,3vw,28px);
-    border-bottom: 2px solid var(--navy);
-    display: flex; align-items: flex-end; flex-shrink: 0;
-  }
-  .header-left { display: flex; flex-direction: column; gap: 3px; }
-  .asset-eyebrow { font-size: clamp(11px,1.2vw,13px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
-  .asset-title { font-family: 'Playfair Display', serif; font-size: clamp(15px,2.2vw,24px); color: var(--navy); font-weight: 700; line-height: 1.15; }
-  .asset-title em { font-style: italic; color: var(--gold); }
-  .gold-rule { width: clamp(24px,4vw,48px); height: 2px; background: var(--gold-mid); margin-top: 3px; }
+  .hdr { padding: clamp(8px,2vw,16px) clamp(12px,3vw,24px); border-bottom: 2px solid var(--navy); flex-shrink: 0; }
+  .eyebrow { font-size: clamp(9px,1.8vw,12px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+  .title { font-family: 'Playfair Display', serif; font-size: clamp(13px,2.6vw,21px); color: var(--navy); font-weight: 700; line-height: 1.15; }
+  .title em { font-style: italic; color: var(--gold); }
+  .gold-rule { width: clamp(20px,4vw,40px); height: 2px; background: var(--gold-mid); margin-top: 4px; }
 
-  .asset-body {
-    flex: 1; min-height: 0;
-    display: flex; gap: clamp(8px,1.5vw,14px);
-    padding: clamp(8px,1.5vw,14px) clamp(14px,3vw,28px) clamp(4px,0.8vw,8px);
-    overflow: hidden;
-  }
+  .body { flex: 1; min-height: 0; display: flex; gap: clamp(8px,2vw,14px); padding: clamp(6px,1.2vw,12px) clamp(12px,3vw,24px); overflow: hidden; }
 
   .chart-wrap { flex: 1; min-width: 0; position: relative; }
   canvas { position: absolute; top:0; left:0; width:100%; height:100%; }
 
-  /* Right: episode stats */
-  .episodes-col {
-    width: clamp(110px,20vw,180px);
+  .ep-col {
+    width: clamp(90px,22vw,160px);
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    gap: clamp(3px,0.6vw,5px);
+    gap: clamp(3px,0.8vw,6px);
     justify-content: center;
   }
 
   .ep {
-    padding: clamp(4px,0.8vw,8px) clamp(6px,1.2vw,10px);
+    padding: clamp(4px,1vw,8px) clamp(6px,1.5vw,10px);
     border: 1px solid var(--rule);
     border-left: 3px solid transparent;
-    background: var(--white);
   }
 
-  .ep.current { border-left-color: var(--gold); background: var(--off); }
-  .ep-period { font-size: clamp(9px,1vw,11px); color: var(--navy-dim); letter-spacing: 0.08em; margin-bottom: 2px; }
-  .ep-name { font-family: 'Playfair Display', serif; font-size: clamp(11px,1.2vw,13px); color: var(--navy); line-height: 1.2; margin-bottom: 4px; }
+  .ep.now { border-left-color: var(--gold); background: var(--off); }
 
-  .ep-stats { display: flex; gap: clamp(6px,1.2vw,10px); }
-  .ep-stat { display: flex; flex-direction: column; }
-  .ep-stat-val { font-size: clamp(12px,1.5vw,15px); font-weight: 700; line-height: 1; }
-  .ep-stat-label { font-size: clamp(9px,1vw,10px); color: var(--navy-dim); letter-spacing: 0.05em; }
-  .pos { color: var(--gold); }
-  .neg { color: var(--blue); }
-  .cur { color: var(--navy-dim); font-style: italic; font-size: clamp(10px,1vw,11px) !important; }
+  .ep-period { font-size: clamp(8px,1.4vw,10px); color: var(--navy-dim); margin-bottom: 2px; }
+  .ep-name { font-family: 'Playfair Display', serif; font-size: clamp(10px,1.8vw,13px); color: var(--navy); line-height: 1.2; margin-bottom: 4px; }
+  .ep-stats { display: flex; gap: clamp(6px,1.5vw,10px); }
+  .ep-hard { font-size: clamp(11px,2vw,14px); font-weight: 700; color: var(--gold); }
+  .ep-paper { font-size: clamp(11px,2vw,14px); font-weight: 700; color: var(--blue); }
+  .ep-lbl { font-size: clamp(8px,1.3vw,10px); color: var(--navy-dim); }
+  .ep-cur { font-size: clamp(10px,1.8vw,12px); font-style: italic; color: var(--navy-dim); }
 
-  /* Legend */
-  .legend-row {
-    display: flex; gap: clamp(10px,2vw,18px);
-    margin-top: auto;
-    padding-top: clamp(4px,0.8vw,6px);
-    border-top: 1px solid var(--rule);
-    flex-shrink: 0;
-  }
+  .legend { display: flex; gap: clamp(8px,2vw,14px); padding-top: clamp(4px,1vw,8px); border-top: 1px solid var(--rule); margin-top: auto; }
+  .leg { display: flex; align-items: center; gap: 5px; font-size: clamp(9px,1.5vw,11px); }
+  .leg-line { width: 16px; height: 3px; flex-shrink: 0; }
 
-  .leg { display: flex; align-items: center; gap: 5px; font-size: clamp(10px,1.1vw,12px); }
-  .leg-line { width: 22px; height: 3px; flex-shrink: 0; }
-
-  .asset-footer {
-    padding: clamp(5px,1vw,9px) clamp(14px,3vw,28px);
-    border-top: 1px solid var(--rule);
-    display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0; background: var(--off);
-  }
-  .footer-note { font-size: clamp(10px,1vw,11px); color: var(--navy-dim); font-style: italic; }
-  .footer-brand { font-size: clamp(10px,1vw,11px); letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+  .ftr { padding: clamp(4px,1vw,8px) clamp(12px,3vw,24px); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; background: var(--off); }
+  .ftr-note { font-size: clamp(8px,1.4vw,11px); color: var(--navy-dim); font-style: italic; }
+  .ftr-brand { font-size: clamp(8px,1.4vw,11px); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
 </style>
 </head>
 <body>
 <div class="asset">
 
-  <div class="asset-header">
-    <div class="header-left">
-      <div class="asset-eyebrow">Parlay Economics | Home Economics Journal</div>
-      <div class="asset-title">When the System Is Under Pressure, <em>the Claims Reprice.</em></div>
-      <div class="gold-rule"></div>
-    </div>
+  <div class="hdr">
+    <div class="eyebrow">Parlay Economics | Home Economics Journal</div>
+    <div class="title">When the System Is Under Pressure, <em>the Claims Reprice.</em></div>
+    <div class="gold-rule"></div>
   </div>
 
-  <div class="asset-body">
+  <div class="body">
 
-    <div class="chart-wrap">
-      <canvas id="chart"></canvas>
-    </div>
+    <div class="chart-wrap"><canvas id="chart"></canvas></div>
 
-    <div class="episodes-col">
+    <div class="ep-col">
       <div class="ep">
         <div class="ep-period">1914 | 1918</div>
         <div class="ep-name">WWI Restructuring</div>
         <div class="ep-stats">
-          <div class="ep-stat"><div class="ep-stat-val pos">+34%</div><div class="ep-stat-label">Hard</div></div>
-          <div class="ep-stat"><div class="ep-stat-val neg">-18%</div><div class="ep-stat-label">Paper</div></div>
+          <div><div class="ep-hard">+34%</div><div class="ep-lbl">Hard</div></div>
+          <div><div class="ep-paper">-18%</div><div class="ep-lbl">Paper</div></div>
         </div>
       </div>
       <div class="ep">
         <div class="ep-period">1939 | 1945</div>
         <div class="ep-name">WWII | Bretton Woods</div>
         <div class="ep-stats">
-          <div class="ep-stat"><div class="ep-stat-val pos">+58%</div><div class="ep-stat-label">Hard</div></div>
-          <div class="ep-stat"><div class="ep-stat-val neg">-31%</div><div class="ep-stat-label">Paper</div></div>
+          <div><div class="ep-hard">+58%</div><div class="ep-lbl">Hard</div></div>
+          <div><div class="ep-paper">-31%</div><div class="ep-lbl">Paper</div></div>
         </div>
       </div>
       <div class="ep">
         <div class="ep-period">1968 | 1982</div>
         <div class="ep-name">Bretton Woods Collapse</div>
         <div class="ep-stats">
-          <div class="ep-stat"><div class="ep-stat-val pos">+412%</div><div class="ep-stat-label">Hard</div></div>
-          <div class="ep-stat"><div class="ep-stat-val neg">-42%</div><div class="ep-stat-label">Paper</div></div>
+          <div><div class="ep-hard">+412%</div><div class="ep-lbl">Hard</div></div>
+          <div><div class="ep-paper">-42%</div><div class="ep-lbl">Paper</div></div>
         </div>
       </div>
-      <div class="ep current">
+      <div class="ep now">
         <div class="ep-period">2022 | present</div>
         <div class="ep-name">Multipolar Transition</div>
-        <div class="ep-stats">
-          <div class="ep-stat"><div class="ep-stat-val cur">Rising</div><div class="ep-stat-label">Hard</div></div>
-          <div class="ep-stat"><div class="ep-stat-val cur">Pressure</div><div class="ep-stat-label">Paper</div></div>
-        </div>
+        <div class="ep-cur">Hard rising. Paper under pressure.</div>
       </div>
-      <div class="legend-row">
-        <div class="leg"><div class="leg-line" style="background:var(--gold-mid)"></div><span style="color:var(--gold)">Hard assets</span></div>
+      <div class="legend">
+        <div class="leg"><div class="leg-line" style="background:var(--gold-mid)"></div><span style="color:var(--gold)">Hard</span></div>
         <div class="leg"><div class="leg-line" style="background:var(--blue)"></div><span style="color:var(--blue)">Paper</span></div>
       </div>
     </div>
 
   </div>
 
-  <div class="asset-footer">
-    <div class="footer-note">Analytical framework only. Not investment advice.</div>
-    <div class="footer-brand">© Breadcoins.com</div>
+  <div class="ftr">
+    <div class="ftr-note">Analytical framework only. Not investment advice.</div>
+    <div class="ftr-brand">© Breadcoins.com</div>
   </div>
 
 </div>
@@ -164,110 +129,91 @@
 const canvas = document.getElementById('chart');
 const ctx = canvas.getContext('2d');
 
-const hardData = [
-  [1908,0.44],[1912,0.44],[1914,0.50],[1917,0.60],[1918,0.66],
-  [1920,0.52],[1925,0.47],[1929,0.54],[1932,0.74],[1934,0.82],
-  [1937,0.66],[1939,0.72],[1942,0.80],[1945,0.84],[1948,0.64],
-  [1955,0.54],[1960,0.50],[1965,0.47],[1968,0.52],[1971,0.64],
-  [1973,0.82],[1979,0.96],[1982,0.83],[1985,0.62],[1990,0.58],
-  [1995,0.47],[2000,0.42],[2008,0.70],[2010,0.76],[2015,0.57],
-  [2019,0.58],[2020,0.72],[2022,0.80],[2024,0.88],[2026,0.92]
+const hard = [
+  [1908,0.44],[1914,0.50],[1917,0.60],[1918,0.66],[1920,0.52],[1925,0.47],
+  [1929,0.54],[1932,0.74],[1934,0.82],[1939,0.72],[1942,0.80],[1945,0.84],
+  [1948,0.64],[1955,0.54],[1960,0.50],[1968,0.52],[1971,0.64],[1973,0.82],
+  [1979,0.96],[1982,0.83],[1985,0.62],[1995,0.47],[2000,0.42],[2008,0.70],
+  [2015,0.57],[2019,0.58],[2022,0.80],[2024,0.88],[2026,0.92]
 ];
 
-const paperData = [
-  [1908,0.62],[1912,0.64],[1914,0.55],[1917,0.44],[1918,0.37],
-  [1920,0.54],[1925,0.66],[1929,0.73],[1932,0.44],[1934,0.36],
-  [1937,0.53],[1939,0.46],[1942,0.34],[1945,0.38],[1948,0.64],
-  [1955,0.73],[1960,0.79],[1965,0.82],[1968,0.72],[1971,0.58],
-  [1973,0.44],[1979,0.30],[1982,0.46],[1985,0.64],[1990,0.70],
-  [1995,0.79],[2000,0.84],[2008,0.50],[2010,0.70],[2015,0.76],
-  [2019,0.80],[2020,0.64],[2022,0.54],[2024,0.46],[2026,0.42]
+const paper = [
+  [1908,0.62],[1914,0.55],[1917,0.44],[1918,0.37],[1920,0.54],[1925,0.66],
+  [1929,0.73],[1932,0.44],[1934,0.36],[1939,0.46],[1942,0.34],[1945,0.38],
+  [1948,0.64],[1955,0.73],[1960,0.79],[1968,0.72],[1971,0.58],[1973,0.44],
+  [1979,0.30],[1982,0.46],[1985,0.64],[1995,0.79],[2000,0.84],[2008,0.50],
+  [2015,0.76],[2019,0.80],[2022,0.54],[2024,0.46],[2026,0.42]
 ];
 
 const episodes = [[1914,1918],[1939,1945],[1968,1982],[2022,2026]];
-const epLabels = [[1916,'WWI'],[1942,'WWII'],[1975,'Bretton\nWoods'],[2024,'Now']];
 
 function draw() {
   const rect = canvas.parentElement.getBoundingClientRect();
   const W = rect.width, H = rect.height;
-  canvas.width = W * devicePixelRatio;
-  canvas.height = H * devicePixelRatio;
+  canvas.width = W*devicePixelRatio; canvas.height = H*devicePixelRatio;
   canvas.style.width = W+'px'; canvas.style.height = H+'px';
   ctx.scale(devicePixelRatio, devicePixelRatio);
 
   const startY=1907, endY=2028;
-  const PAD = { top:20, right:10, bottom:28, left:32 };
-  const cW = W-PAD.left-PAD.right, cH = H-PAD.top-PAD.bottom;
+  const PAD = { top:16, right:8, bottom:24, left:28 };
+  const cW=W-PAD.left-PAD.right, cH=H-PAD.top-PAD.bottom;
+  const fs = Math.max(9, W*0.038);
 
-  function xP(yr) { return PAD.left + ((yr-startY)/(endY-startY))*cW; }
-  function yP(v)  { return PAD.top + cH - ((v-0.25)/0.80)*cH; }
-
-  const fs = Math.max(10, W*0.018);
+  function xP(yr) { return PAD.left+((yr-startY)/(endY-startY))*cW; }
+  function yP(v)  { return PAD.top+cH-((v-0.25)/0.80)*cH; }
 
   // Grid
-  ctx.strokeStyle = '#ece8e2'; ctx.lineWidth = 1;
-  [0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0].forEach(v => {
-    const y = yP(v);
-    ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(PAD.left+cW,y); ctx.stroke();
+  ctx.strokeStyle='#ece8e2'; ctx.lineWidth=1;
+  [0.3,0.5,0.7,0.9].forEach(v => {
+    ctx.beginPath(); ctx.moveTo(PAD.left,yP(v)); ctx.lineTo(PAD.left+cW,yP(v)); ctx.stroke();
   });
 
   // Y labels
-  ctx.fillStyle = '#8a9ab8'; ctx.font = `${fs}px Anonymous Pro`; ctx.textAlign = 'right';
-  ['Low','','Mid','','High'].forEach((l,i) => {
-    if (!l) return;
-    ctx.fillText(l, PAD.left-4, yP(0.30+(i/4)*0.70)+4);
-  });
+  ctx.fillStyle='#8a9ab8'; ctx.font=`${fs}px Anonymous Pro`; ctx.textAlign='right';
+  [['Low',0.30],['Mid',0.60],['High',0.90]].forEach(([l,v]) => ctx.fillText(l,PAD.left-4,yP(v)+4));
 
   // Episode shading
-  episodes.forEach(([s,e], i) => {
+  episodes.forEach(([s,e],i) => {
     ctx.fillStyle = i===3 ? 'rgba(184,147,10,0.10)' : 'rgba(184,147,10,0.05)';
-    ctx.fillRect(xP(s), PAD.top, xP(e)-xP(s), cH);
-    ctx.strokeStyle = '#c9a84c44'; ctx.lineWidth=1; ctx.setLineDash([3,5]);
-    ctx.beginPath(); ctx.moveTo(xP(s),PAD.top); ctx.lineTo(xP(s),PAD.top+cH); ctx.stroke();
-    ctx.setLineDash([]);
+    ctx.fillRect(xP(s),PAD.top,xP(e)-xP(s),cH);
   });
 
   // Episode labels
-  ctx.fillStyle = '#b8930a99'; ctx.font = `bold ${fs}px Anonymous Pro`; ctx.textAlign = 'center';
-  epLabels.forEach(([yr,label]) => {
-    label.split('\n').forEach((line,li) => {
-      ctx.fillText(line, xP(yr), PAD.top+12+li*(fs+2));
-    });
-  });
+  const epLabels = [[1916,'WWI'],[1942,'WWII'],[1975,'B.Woods'],[2024,'Now']];
+  ctx.fillStyle='#b8930a99'; ctx.font=`bold ${fs}px Anonymous Pro`; ctx.textAlign='center';
+  epLabels.forEach(([yr,l]) => ctx.fillText(l, xP(yr), PAD.top+fs));
 
-  // Smooth line
+  // Smooth lines
   function drawLine(data, color, lw) {
-    ctx.strokeStyle = color; ctx.lineWidth = lw;
+    ctx.strokeStyle=color; ctx.lineWidth=lw;
     ctx.beginPath();
     data.forEach(([yr,v],i) => {
       if (i===0) { ctx.moveTo(xP(yr),yP(v)); return; }
-      const [px,pv] = data[i-1];
-      const cpx = (xP(px)+xP(yr))/2;
+      const [px,pv]=data[i-1];
+      const cpx=(xP(px)+xP(yr))/2;
       ctx.bezierCurveTo(cpx,yP(pv),cpx,yP(v),xP(yr),yP(v));
     });
     ctx.stroke();
   }
 
-  drawLine(paperData, '#2a5a9acc', 2);
-  drawLine(hardData, '#b8930a', 2.5);
+  drawLine(paper,'#2a5a9acc',2);
+  drawLine(hard,'#b8930a',2.5);
 
   // Crossover dots
   [[1914,0.52],[1939,0.59],[1968,0.62],[2022,0.67]].forEach(([yr,v]) => {
-    ctx.fillStyle = '#b8930a';
+    ctx.fillStyle='#b8930a';
     ctx.beginPath(); ctx.arc(xP(yr),yP(v),5,0,Math.PI*2); ctx.fill();
     ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
   });
 
   // NOW marker
-  ctx.strokeStyle='#b8930a55'; ctx.lineWidth=1.5; ctx.setLineDash([2,5]);
+  ctx.strokeStyle='#b8930a55'; ctx.lineWidth=1.5; ctx.setLineDash([2,4]);
   ctx.beginPath(); ctx.moveTo(xP(2026),PAD.top); ctx.lineTo(xP(2026),PAD.top+cH); ctx.stroke();
   ctx.setLineDash([]);
 
-  // X axis years
+  // X years
   ctx.fillStyle='#8a9ab8'; ctx.font=`${fs}px Anonymous Pro`; ctx.textAlign='center';
-  [1910,1930,1950,1970,1990,2010,2026].forEach(yr => {
-    ctx.fillText(yr, xP(yr), PAD.top+cH+18);
-  });
+  [1910,1940,1970,2000,2026].forEach(yr => ctx.fillText(yr,xP(yr),PAD.top+cH+16));
 }
 
 draw();

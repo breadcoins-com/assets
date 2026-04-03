@@ -4,247 +4,203 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
 
   :root {
-    --white:    #ffffff;
-    --off:      #f7f4ef;
-    --navy:     #0a1628;
-    --navy-mid: #1e3258;
-    --navy-dim: #4a6080;
-    --gold:     #b8930a;
+    --navy: #0a1628;
+    --gold: #b8930a;
     --gold-mid: #c9a84c;
-    --rule:     #ddd8d0;
+    --navy-dim: #4a6080;
+    --rule: #ddd8d0;
+    --off: #f7f4ef;
+    --white: #ffffff;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 100%; height: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; color: var(--navy); }
+  html, body { width: 100%; height: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; }
 
-  .asset { width: 100%; aspect-ratio: 16/9; display: flex; flex-direction: column; background: var(--white); overflow: hidden; }
+  .asset { width: 100%; aspect-ratio: 4/3; display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
 
-  .asset-header {
-    padding: clamp(8px,1.8vw,16px) clamp(14px,3vw,28px);
-    border-bottom: 2px solid var(--navy);
-    display: flex; align-items: flex-end;
-    flex-shrink: 0; gap: 12px;
-  }
-  .header-left { display: flex; flex-direction: column; gap: 3px; }
-  .asset-eyebrow { font-size: clamp(11px,1.2vw,13px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
-  .asset-title { font-family: 'Playfair Display', serif; font-size: clamp(15px,2.2vw,24px); color: var(--navy); font-weight: 700; line-height: 1.15; }
-  .asset-title em { font-style: italic; color: var(--gold); }
-  .gold-rule { width: clamp(24px,4vw,48px); height: 2px; background: var(--gold-mid); margin-top: 3px; }
+  .hdr { padding: clamp(8px,2vw,16px) clamp(12px,3vw,24px); border-bottom: 2px solid var(--navy); flex-shrink: 0; }
+  .eyebrow { font-size: clamp(9px,1.8vw,12px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+  .title { font-family: 'Playfair Display', serif; font-size: clamp(14px,2.8vw,22px); color: var(--navy); font-weight: 700; line-height: 1.15; }
+  .title em { font-style: italic; color: var(--gold); }
+  .gold-rule { width: clamp(20px,4vw,40px); height: 2px; background: var(--gold-mid); margin-top: 4px; }
 
-  .asset-body { flex: 1; min-height: 0; display: flex; gap: clamp(6px,1.2vw,14px); padding: clamp(8px,1.5vw,16px) clamp(14px,3vw,28px); overflow: hidden; }
+  .body { flex: 1; min-height: 0; position: relative; overflow: hidden; }
 
-  /* Left column: three source nodes */
-  .sources-col {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(4px,0.8vw,8px);
-    width: clamp(100px,20vw,190px);
-    flex-shrink: 0;
-    justify-content: center;
-  }
+  svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-  .src-node {
-    border: 1px solid var(--rule);
-    border-left: 3px solid var(--gold-mid);
-    background: var(--off);
-    padding: clamp(5px,1vw,10px) clamp(6px,1.2vw,12px);
-  }
-
-  .src-tag { font-size: clamp(11px,1.1vw,12px); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 2px; }
-  .src-name { font-family: 'Playfair Display', serif; font-size: clamp(12px,1.4vw,15px); color: var(--navy); line-height: 1.2; }
-  .src-desc { font-size: clamp(10px,1vw,11px); color: var(--navy-dim); line-height: 1.3; margin-top: 2px; }
-
-  /* SVG converge */
-  .converge-svg { width: clamp(28px,4vw,44px); flex-shrink: 0; align-self: stretch; }
-
-  /* Center: gates */
-  .gates-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: clamp(4px,0.8vw,8px); justify-content: center; }
-
-  .gate {
-    border: 1px solid var(--navy-mid);
-    background: var(--white);
-    padding: clamp(5px,1vw,10px) clamp(8px,1.5vw,14px);
-    position: relative;
-  }
-
-  .gate.primary { border-color: var(--navy); border-width: 2px; }
-
-  .gate-tag { font-size: clamp(10px,1vw,11px); letter-spacing: 0.15em; text-transform: uppercase; color: var(--navy-dim); margin-bottom: 3px; }
-  .gate-q { font-family: 'Playfair Display', serif; font-size: clamp(12px,1.4vw,15px); color: var(--navy); line-height: 1.3; font-style: italic; }
-
-  .branch-row {
-    display: flex;
-    gap: clamp(4px,0.8vw,8px);
-  }
-
-  .branch {
-    flex: 1;
-    padding: clamp(4px,0.8vw,8px) clamp(6px,1.2vw,10px);
-    font-size: clamp(10px,1.1vw,12px);
-    line-height: 1.4;
-  }
-
-  .branch-yes { background: #f0f7f0; border: 1px solid #8ab88a; border-left: 3px solid #4a8a4a; color: var(--navy-dim); }
-  .branch-no  { background: #fff4f0; border: 1px solid #c8a0a0; border-left: 3px solid #8a4a4a; color: var(--navy-dim); }
-  .branch-tag { font-weight: 700; margin-bottom: 2px; font-size: clamp(10px,1.1vw,12px); }
-  .yes-tag { color: #2a6a2a; }
-  .no-tag  { color: #8a2a2a; }
-
-  /* Right: Bayes block */
-  .bayes-col {
-    width: clamp(110px,22vw,200px);
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    gap: clamp(4px,0.8vw,8px);
-    justify-content: center;
-  }
-
-  .bayes-header {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(12px,1.4vw,15px);
-    color: var(--navy);
-    font-style: italic;
-    padding-bottom: clamp(4px,0.8vw,8px);
-    border-bottom: 1px solid var(--rule);
-    margin-bottom: clamp(2px,0.5vw,4px);
-  }
-
-  .factor-row {
-    display: flex;
-    align-items: center;
-    gap: clamp(5px,1vw,8px);
-    padding: clamp(3px,0.6vw,6px) clamp(5px,1vw,8px);
-    background: var(--off);
-    border-left: 2px solid var(--gold-mid);
-  }
-
-  .factor-num { font-size: clamp(11px,1.3vw,14px); font-weight: 700; color: var(--gold); min-width: 18px; }
-  .factor-text { font-size: clamp(10px,1.1vw,12px); color: var(--navy-dim); line-height: 1.2; }
-
-  .threshold-box {
-    margin-top: clamp(3px,0.6vw,6px);
-    padding: clamp(4px,0.8vw,8px) clamp(5px,1vw,8px);
-    background: var(--navy);
-    display: flex;
-    align-items: center;
-    gap: clamp(6px,1.2vw,10px);
-  }
-
-  .thresh-num { font-family: 'Playfair Display', serif; font-size: clamp(18px,3vw,28px); font-weight: 700; color: var(--gold-mid); line-height: 1; }
-  .thresh-label { font-size: clamp(10px,1.1vw,12px); color: #8a9ab8; line-height: 1.3; }
-  .thresh-label strong { color: #f0e6cc; display: block; }
-
-  .asset-footer {
-    padding: clamp(5px,1vw,9px) clamp(14px,3vw,28px);
-    border-top: 1px solid var(--rule);
-    display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0; background: var(--off);
-  }
-  .footer-note { font-size: clamp(10px,1vw,11px); color: var(--navy-dim); letter-spacing: 0.08em; font-style: italic; }
-  .footer-brand { font-size: clamp(10px,1vw,11px); letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+  .ftr { padding: clamp(4px,1vw,8px) clamp(12px,3vw,24px); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; background: var(--off); }
+  .ftr-note { font-size: clamp(8px,1.4vw,11px); color: var(--navy-dim); font-style: italic; }
+  .ftr-brand { font-size: clamp(8px,1.4vw,11px); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
 </style>
 </head>
 <body>
 <div class="asset">
 
-  <div class="asset-header">
-    <div class="header-left">
-      <div class="asset-eyebrow">Parlay Economics | Home Economics Journal</div>
-      <div class="asset-title">How Do You Measure <em>a War You Cannot See?</em></div>
-      <div class="gold-rule"></div>
-    </div>
+  <div class="hdr">
+    <div class="eyebrow">Parlay Economics | Home Economics Journal</div>
+    <div class="title">How Do You Measure <em>a War You Cannot See?</em></div>
+    <div class="gold-rule"></div>
   </div>
 
-  <div class="asset-body">
+  <div class="body">
+    <svg id="sankey" viewBox="0 0 800 480" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Flow gradients -->
+        <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#1e3258" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#b8930a" stop-opacity="0.5"/>
+        </linearGradient>
+        <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#2a5a9a" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#b8930a" stop-opacity="0.5"/>
+        </linearGradient>
+        <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#4a6080" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#b8930a" stop-opacity="0.5"/>
+        </linearGradient>
+        <linearGradient id="gPass" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#b8930a" stop-opacity="0.7"/>
+          <stop offset="100%" stop-color="#2a6a2a" stop-opacity="0.8"/>
+        </linearGradient>
+        <linearGradient id="gFail" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#b8930a" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#8a2a2a" stop-opacity="0.7"/>
+        </linearGradient>
+        <linearGradient id="gThresh" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#2a6a2a" stop-opacity="0.8"/>
+          <stop offset="100%" stop-color="#b8930a" stop-opacity="0.9"/>
+        </linearGradient>
+      </defs>
 
-    <!-- Source nodes -->
-    <div class="sources-col">
-      <div class="src-node">
-        <div class="src-tag">S1</div>
-        <div class="src-name">Nation Set</div>
-        <div class="src-desc">6+ sovereign states with active belligerent roles</div>
-      </div>
-      <div class="src-node">
-        <div class="src-tag">S2</div>
-        <div class="src-name">Domain Set</div>
-        <div class="src-desc">3+ conflict domains active simultaneously</div>
-      </div>
-      <div class="src-node">
-        <div class="src-tag">S3</div>
-        <div class="src-name">Economic Set</div>
-        <div class="src-desc">2+ economic instruments as deliberate weapons</div>
-      </div>
-    </div>
+      <!-- ═══════════════════════════════════════════
+           COLUMN 1: Source nodes (x=20–140)
+           S1: y=40–120  (flow width 50)
+           S2: y=190–270 (flow width 50)
+           S3: y=340–420 (flow width 50)
+      ═══════════════════════════════════════════ -->
 
-    <!-- Converging SVG -->
-    <div class="converge-svg">
-      <svg viewBox="0 0 44 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
-        <line x1="22" y1="14" x2="22" y2="50" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/>
-        <line x1="22" y1="50" x2="22" y2="50" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/>
-        <line x1="22" y1="86" x2="22" y2="50" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/>
-        <line x1="4" y1="14" x2="22" y2="50" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/>
-        <line x1="40" y1="86" x2="22" y2="50" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/>
-        <circle cx="22" cy="50" r="4" fill="#b8930a"/>
-        <line x1="22" y1="50" x2="44" y2="50" stroke="#b8930a" stroke-width="1.5"/>
-      </svg>
-    </div>
+      <!-- S1 node -->
+      <rect x="20" y="40" width="120" height="80" rx="3" fill="#1e3258"/>
+      <text x="80" y="68" text-anchor="middle" font-family="Anonymous Pro" font-size="11" fill="#c9a84c" letter-spacing="2" font-weight="700">S1</text>
+      <text x="80" y="85" text-anchor="middle" font-family="Playfair Display" font-size="13" fill="#f0e6cc" font-weight="700">Nation Set</text>
+      <text x="80" y="100" text-anchor="middle" font-family="Anonymous Pro" font-size="10" fill="#8a9ab8">6+ belligerent states</text>
+      <text x="80" y="114" text-anchor="middle" font-family="Anonymous Pro" font-size="10" fill="#8a9ab8">across theaters</text>
 
-    <!-- Gates -->
-    <div class="gates-col">
-      <div class="gate primary">
-        <div class="gate-tag">Gate 1 | Necessary condition</div>
-        <div class="gate-q">Do all three sets hold simultaneously?</div>
-      </div>
-      <div class="branch-row">
-        <div class="branch branch-yes">
-          <div class="branch-tag yes-tag">Yes | Continue</div>
-          All threshold conditions met. Bayesian classifier runs.
-        </div>
-        <div class="branch branch-no">
-          <div class="branch-tag no-tag">No | Terminate</div>
-          Not a world war candidate. Classification ends.
-        </div>
-      </div>
-      <div class="gate">
-        <div class="gate-tag">Gate 2 | Proxy penalty applied</div>
-        <div class="gate-q">Supporting states discounted against direct belligerents?</div>
-      </div>
-      <div class="branch-row">
-        <div class="branch branch-yes">
-          <div class="branch-tag yes-tag">Applied</div>
-          Prevents Cold War classifying as one 45-year world war.
-        </div>
-        <div class="branch branch-no">
-          <div class="branch-tag no-tag">Ignored</div>
-          Framework collapses. Sympathy equals co-belligerence.
-        </div>
-      </div>
-    </div>
+      <!-- S2 node -->
+      <rect x="20" y="190" width="120" height="80" rx="3" fill="#2a4268"/>
+      <text x="80" y="218" text-anchor="middle" font-family="Anonymous Pro" font-size="11" fill="#c9a84c" letter-spacing="2" font-weight="700">S2</text>
+      <text x="80" y="235" text-anchor="middle" font-family="Playfair Display" font-size="13" fill="#f0e6cc" font-weight="700">Domain Set</text>
+      <text x="80" y="250" text-anchor="middle" font-family="Anonymous Pro" font-size="10" fill="#8a9ab8">3+ conflict domains</text>
+      <text x="80" y="264" text-anchor="middle" font-family="Anonymous Pro" font-size="10" fill="#8a9ab8">active simultaneously</text>
 
-    <!-- Bayes panel -->
-    <div class="bayes-col">
-      <div class="bayes-header">Six Bayes factors update the posterior</div>
-      <div class="factor-row"><div class="factor-num">01</div><div class="factor-text">Great-power involvement</div></div>
-      <div class="factor-row"><div class="factor-num">02</div><div class="factor-text">Multi-theater activity</div></div>
-      <div class="factor-row"><div class="factor-num">03</div><div class="factor-text">Coalition continuity</div></div>
-      <div class="factor-row"><div class="factor-num">04</div><div class="factor-text">Economic shock magnitude</div></div>
-      <div class="factor-row"><div class="factor-num">05</div><div class="factor-text">Mobilization depth</div></div>
-      <div class="factor-row"><div class="factor-num">06</div><div class="factor-text">Proxy penalty</div></div>
-      <div class="threshold-box">
-        <div class="thresh-num">0.70</div>
-        <div class="thresh-label"><strong>Classification threshold</strong>P(WW | evidence) required</div>
-      </div>
-    </div>
+      <!-- S3 node -->
+      <rect x="20" y="340" width="120" height="80" rx="3" fill="#1a2e50"/>
+      <text x="80" y="368" text-anchor="middle" font-family="Anonymous Pro" font-size="11" fill="#c9a84c" letter-spacing="2" font-weight="700">S3</text>
+      <text x="80" y="385" text-anchor="middle" font-family="Playfair Display" font-size="13" fill="#f0e6cc" font-weight="700">Economic Set</text>
+      <text x="80" y="400" text-anchor="middle" font-family="Anonymous Pro" font-size="10" fill="#8a9ab8">2+ economic weapons</text>
+      <text x="80" y="414" text-anchor="middle" font-family="Anonymous Pro" font-size="10" fill="#8a9ab8">deliberately deployed</text>
 
+      <!-- ═══════════════════════════════════════════
+           FLOWS: Source nodes → Gate node
+           Gate center x=320, y center=230
+           Gate node: x=280–360, y=155–305
+      ═══════════════════════════════════════════ -->
+
+      <!-- S1 flow (top, width 48) -->
+      <!-- From: right edge of S1 (x=140), y=56 to y=104 (center 80) -->
+      <!-- To: left edge of gate (x=280), y=155 to y=203 (center 179) -->
+      <path d="M140,56 C220,56 220,155 280,155
+               L280,203 C220,203 220,104 140,104 Z"
+            fill="url(#g1)" opacity="0.85"/>
+
+      <!-- S2 flow (middle, width 48) -->
+      <!-- From: right edge of S2 (x=140), y=206 to y=254 (center 230) -->
+      <!-- To: gate y=203 to y=257 (center 230) -->
+      <path d="M140,206 C220,206 220,203 280,203
+               L280,257 C220,257 220,254 140,254 Z"
+            fill="url(#g2)" opacity="0.85"/>
+
+      <!-- S3 flow (bottom, width 48) -->
+      <!-- From: right edge of S3 (x=140), y=356 to y=404 (center 380) -->
+      <!-- To: gate y=257 to y=305 (center 281) -->
+      <path d="M140,356 C220,356 220,305 280,305
+               L280,257 C220,257 220,404 140,404 Z"
+            fill="url(#g3)" opacity="0.85"/>
+
+      <!-- ═══════════════════════════════════════════
+           GATE NODE (x=280–420, y=155–305)
+           "ALL THREE MUST HOLD"
+      ═══════════════════════════════════════════ -->
+
+      <rect x="280" y="155" width="140" height="150" rx="3" fill="#0a1628" stroke="#b8930a" stroke-width="2"/>
+      <text x="350" y="185" text-anchor="middle" font-family="Anonymous Pro" font-size="9" fill="#c9a84c" letter-spacing="2" font-weight="700">THRESHOLD GATE</text>
+      <line x1="295" y1="192" x2="405" y2="192" stroke="#b8930a" stroke-width="0.5" opacity="0.5"/>
+      <text x="350" y="213" text-anchor="middle" font-family="Playfair Display" font-size="14" fill="#f0e6cc" font-style="italic">All three sets</text>
+      <text x="350" y="230" text-anchor="middle" font-family="Playfair Display" font-size="14" fill="#f0e6cc" font-style="italic">must hold</text>
+      <text x="350" y="252" text-anchor="middle" font-family="Anonymous Pro" font-size="10" fill="#8a9ab8">If any one fails,</text>
+      <text x="350" y="266" text-anchor="middle" font-family="Anonymous Pro" font-size="10" fill="#8a9ab8">classification ends.</text>
+      <text x="350" y="283" text-anchor="middle" font-family="Anonymous Pro" font-size="10" fill="#8a9ab8">Proxy penalty applied.</text>
+
+      <!-- ═══════════════════════════════════════════
+           FLOWS: Gate → Pass / Fail
+           Pass (top, thick): x=420 → 560, y=155–245 (center 200)
+           Fail (bottom, thin): x=420 → 560, y=245–305 (center 275)
+      ═══════════════════════════════════════════ -->
+
+      <!-- PASS flow (width 80) -->
+      <path d="M420,155 C490,155 490,130 560,130
+               L560,210 C490,210 490,235 420,235 Z"
+            fill="url(#gPass)" opacity="0.9"/>
+
+      <!-- FAIL flow (width 50) -->
+      <path d="M420,255 C490,255 490,280 560,280
+               L560,330 C490,330 490,305 420,305 Z"
+            fill="url(#gFail)" opacity="0.7"/>
+
+      <!-- ═══════════════════════════════════════════
+           PASS NODE (x=560–700, y=90–250)
+      ═══════════════════════════════════════════ -->
+
+      <rect x="560" y="90" width="140" height="160" rx="3" fill="#1a3a1a" stroke="#4a8a4a" stroke-width="1.5"/>
+      <text x="630" y="118" text-anchor="middle" font-family="Anonymous Pro" font-size="9" fill="#8ab88a" letter-spacing="2" font-weight="700">CLASSIFIED</text>
+      <line x1="575" y1="125" x2="685" y2="125" stroke="#4a8a4a" stroke-width="0.5" opacity="0.5"/>
+      <text x="630" y="148" text-anchor="middle" font-family="Playfair Display" font-size="13" fill="#f0e6cc" font-style="italic">Bayesian layer</text>
+      <text x="630" y="164" text-anchor="middle" font-family="Playfair Display" font-size="13" fill="#f0e6cc" font-style="italic">runs on 6 factors</text>
+      <!-- Threshold callout -->
+      <rect x="574" y="178" width="112" height="56" rx="2" fill="#0a1628"/>
+      <text x="630" y="196" text-anchor="middle" font-family="Anonymous Pro" font-size="9" fill="#8a9ab8" letter-spacing="1">THRESHOLD</text>
+      <text x="630" y="220" text-anchor="middle" font-family="Playfair Display" font-size="26" fill="#c9a84c" font-weight="700">0.70</text>
+      <text x="630" y="236" text-anchor="middle" font-family="Anonymous Pro" font-size="9" fill="#8a9ab8">P(WW | evidence)</text>
+
+      <!-- ═══════════════════════════════════════════
+           FAIL NODE (x=560–700, y=270–380)
+      ═══════════════════════════════════════════ -->
+
+      <rect x="560" y="270" width="140" height="110" rx="3" fill="#2a1010" stroke="#8a4a4a" stroke-width="1.5"/>
+      <text x="630" y="296" text-anchor="middle" font-family="Anonymous Pro" font-size="9" fill="#c88888" letter-spacing="2" font-weight="700">NOT CLASSIFIED</text>
+      <line x1="575" y1="303" x2="685" y2="303" stroke="#8a4a4a" stroke-width="0.5" opacity="0.5"/>
+      <text x="630" y="324" text-anchor="middle" font-family="Playfair Display" font-size="13" fill="#c8a0a0" font-style="italic">Classification ends.</text>
+      <text x="630" y="342" text-anchor="middle" font-family="Anonymous Pro" font-size="10" fill="#8a6060">Not a world war</text>
+      <text x="630" y="357" text-anchor="middle" font-family="Anonymous Pro" font-size="10" fill="#8a6060">candidate.</text>
+
+      <!-- ═══════════════════════════════════════════
+           THRESHOLD flow from Pass to right edge
+           (visual confirmation the 0.70 bar matters)
+      ═══════════════════════════════════════════ -->
+      <path d="M700,130 C740,130 760,160 780,170
+               L780,200 C760,190 740,210 700,210 Z"
+            fill="url(#gThresh)" opacity="0.6"/>
+      <text x="790" y="188" text-anchor="start" font-family="Anonymous Pro" font-size="10" fill="#b8930a" font-weight="700">P≥0.70</text>
+
+    </svg>
   </div>
 
-  <div class="asset-footer">
-    <div class="footer-note">Analytical framework only. Not investment advice.</div>
-    <div class="footer-brand">© Breadcoins.com</div>
+  <div class="ftr">
+    <div class="ftr-note">Analytical framework only. Not investment advice.</div>
+    <div class="ftr-brand">© Breadcoins.com</div>
   </div>
 
 </div>

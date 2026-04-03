@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+  :root { --navy:#0a1628; --gold:#b8930a; --gold-mid:#c9a84c; --navy-dim:#4a6080; --blue:#2a5a9a; --green:#1D9E75; --rule:#ddd8d0; --off:#f7f4ef; --white:#ffffff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; background:var(--white); font-family:'Anonymous Pro',monospace; }
+  .asset { width:100%; display:flex; flex-direction:column; background:var(--white); border:1px solid var(--rule); }
+  .hdr { padding:clamp(10px,2vw,18px) clamp(14px,3vw,28px); border-bottom:2px solid var(--navy); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:8px; }
+  .hdr-left { display:flex; flex-direction:column; gap:3px; }
+  .eyebrow { font-size:clamp(10px,1.8vw,12px); letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:700; }
+  .title { font-family:'Playfair Display',serif; font-size:clamp(16px,2.8vw,24px); color:var(--navy); font-weight:700; line-height:1.2; }
+  .title em { font-style:italic; color:var(--gold); }
+  .gold-rule { width:40px; height:2px; background:var(--gold-mid); margin-top:5px; }
+  .hint { font-size:clamp(9px,1.5vw,11px); color:var(--navy-dim); font-style:italic; align-self:flex-end; }
+  .tabs { display:flex; gap:2px; padding:clamp(8px,1.5vw,14px) clamp(14px,3vw,28px) 0; }
+  .tab { padding:clamp(7px,1.3vw,11px) clamp(12px,2.2vw,20px); font-size:clamp(10px,1.8vw,13px); font-family:'Anonymous Pro',monospace; border:1px solid var(--rule); background:var(--off); cursor:pointer; color:var(--navy-dim); transition:all 0.2s; -webkit-tap-highlight-color:transparent; line-height:1.3; }
+  .tab.active { background:var(--navy); color:#f0e6cc; border-color:var(--navy); font-weight:700; }
+  .body { display:flex; gap:clamp(12px,2vw,20px); padding:clamp(12px,2vw,20px) clamp(14px,3vw,28px); }
+  .chart-outer { flex:1; min-width:0; }
+  .chart-container { position:relative; width:100%; height:0; padding-bottom:65%; }
+  .chart-container canvas { position:absolute; top:0; left:0; width:100%!important; height:100%!important; }
+  .side { width:clamp(120px,24vw,200px); flex-shrink:0; display:flex; flex-direction:column; gap:clamp(6px,1.2vw,10px); justify-content:center; }
+  .wave-card { padding:clamp(8px,1.5vw,12px); background:var(--off); border-left:3px solid var(--rule); }
+  .wave-label { font-size:clamp(9px,1.5vw,11px); letter-spacing:0.1em; text-transform:uppercase; color:var(--navy-dim); margin-bottom:3px; }
+  .wave-val { font-family:'Playfair Display',serif; font-size:clamp(13px,2.2vw,17px); font-weight:700; line-height:1.2; color:var(--navy); }
+  .wave-sub { font-size:clamp(9px,1.4vw,11px); color:var(--navy-dim); line-height:1.4; margin-top:3px; }
+  .ftr { padding:clamp(6px,1.2vw,10px) clamp(14px,3vw,28px); border-top:1px solid var(--rule); display:flex; justify-content:space-between; align-items:center; background:var(--off); }
+  .ftr-note { font-size:clamp(9px,1.4vw,11px); color:var(--navy-dim); font-style:italic; }
+  .ftr-brand { font-size:clamp(9px,1.4vw,11px); letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-weight:700; }
+</style>
+</head>
+<body>
+<div class="asset">
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="eyebrow">The Real Numbers | Home Economics Journal</div>
+      <div class="title">Three Waves — <em>Where Did the Money Go Each Time?</em></div>
+      <div class="gold-rule"></div>
+    </div>
+    <div class="hint">Tap a wave to explore</div>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-wave="0">Wave 1<br>Electrification</button>
+    <button class="tab" data-wave="1">Wave 2<br>Computing</button>
+    <button class="tab" data-wave="2">Wave 3<br>AI</button>
+  </div>
+  <div class="body">
+    <div class="chart-outer">
+      <div class="chart-container"><canvas id="c"></canvas></div>
+    </div>
+    <div class="side" id="side"></div>
+  </div>
+  <div class="ftr">
+    <div class="ftr-note">Dow Jones 1920-1974. S&P 500 1975-2026. Gold spot. Bitcoin 2013-2026.</div>
+    <div class="ftr-brand">© Breadcoins.com</div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const waves = [
+  {
+    years:[1920,1925,1929,1932,1935,1940,1945,1950],
+    stocks:[108,157,381,59,150,131,192,235],
+    gold:[20,20,20,20,35,35,35,35],
+    bitcoin:null,
+    cards:[
+      {label:'Labor displaced',val:'Physical labor',sub:'Farm, craft, and manual workers replaced by the assembly line and electric machinery.'},
+      {label:'Capital went to',val:'Industrial stocks',sub:'Dow rose 253% from 1920 to 1929 as electrification drove industrial output.'},
+      {label:'Then what happened',val:'Gold caught the fall',sub:'Stocks crashed 85% in the Depression. FDR broke the gold peg in 1934. Hard assets captured the uncertainty.'},
+      {label:'The lesson',val:'One destination',sub:'Capital concentrated in stocks, then fled to gold when the system failed. It did not split.'},
+    ],
+    colors:{stocks:'#2a5a9a',gold:'#b8930a'}
+  },
+  {
+    years:[1975,1980,1985,1990,1995,2000],
+    stocks:[72,110,172,340,465,1426],
+    gold:[140,589,327,391,387,274],
+    bitcoin:null,
+    cards:[
+      {label:'Labor displaced',val:'Clerical labor',sub:'Computers eliminated typing pools, bookkeepers, and the human computer profession entirely.'},
+      {label:'Capital went to',val:'Stocks overwhelmingly',sub:'S&P 500 rose 1,872% from 1975 to 2000. The longest sustained bull market in the record.'},
+      {label:'Gold role',val:'Irrelevant for 20 years',sub:'Gold fell from $589 in 1980 to $274 by 2000. When capital has one destination, it concentrates there.'},
+      {label:'The lesson',val:'One destination',sub:'The clearest wave in the 100-year record. Stocks won and everything else lost by comparison.'},
+    ],
+    colors:{stocks:'#2a5a9a',gold:'#b8930a'}
+  },
+  {
+    years:[2020,2021,2022,2023,2024,2025,2026],
+    stocks:[3278,4678,3839,4769,5882,5979,6507],
+    gold:[1898,1829,1800,2063,2625,3300,4625],
+    bitcoin:[29374,46311,16547,42265,93429,93500,70477],
+    cards:[
+      {label:'Labor displaced',val:'Knowledge work',sub:'AI replaces analysis, writing, coding, and professional services — the highest-wage labor category.'},
+      {label:'Capital destination',val:'Three ways at once',sub:'Stocks up 14%. Gold up 44%. Bitcoin down 25%. Three different stories in a single year.'},
+      {label:'What this means',val:'No consensus yet',sub:'In prior waves capital knew where to go. This time it does not. So it buys all three and waits.'},
+      {label:'The lesson',val:'Split signal',sub:'The three-way divergence is the market\'s honest answer to a question that has never been asked before.'},
+    ],
+    colors:{stocks:'#2a5a9a',gold:'#b8930a',bitcoin:'#f7931a'}
+  }
+];
+
+let chart;
+
+function build(idx) {
+  const w = waves[idx];
+  const side = document.getElementById('side');
+  side.innerHTML = '';
+  w.cards.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'wave-card';
+    div.style.borderLeftColor = idx===2 ? 'var(--gold)' : 'var(--navy-dim)';
+    div.innerHTML = `<div class="wave-label">${c.label}</div><div class="wave-val">${c.val}</div><div class="wave-sub">${c.sub}</div>`;
+    side.appendChild(div);
+  });
+
+  const datasets = [
+    { label:'Stocks (Dow/S&P)', data:w.stocks, borderColor:w.colors.stocks, backgroundColor:'transparent', borderWidth:2.5, pointRadius:4, pointHoverRadius:7, tension:0.3 },
+    { label:'Gold ($/oz)', data:w.gold, borderColor:w.colors.gold, backgroundColor:'transparent', borderWidth:2.5, pointRadius:4, pointHoverRadius:7, tension:0.3 }
+  ];
+  if(w.bitcoin) datasets.push({
+    label:'Bitcoin ($)', data:w.bitcoin, borderColor:'#f7931a', backgroundColor:'transparent',
+    borderWidth:2, pointRadius:4, pointHoverRadius:7, tension:0.3, borderDash:[5,4]
+  });
+
+  if(chart) chart.destroy();
+  chart = new Chart(document.getElementById('c'), {
+    type:'line',
+    data:{ labels:w.years, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:true,
+      plugins:{
+        legend:{ position:'bottom', labels:{font:{family:'Anonymous Pro',size:11},color:'#4a6080',boxWidth:16,padding:10} },
+        tooltip:{ callbacks:{ label:c=>`${c.dataset.label}: $${c.parsed.y.toLocaleString()}` } }
+      },
+      scales:{
+        x:{ ticks:{font:{family:'Anonymous Pro',size:10},color:'#8a9ab8'}, grid:{color:'#ece8e2'} },
+        y:{ ticks:{font:{family:'Anonymous Pro',size:10},color:'#8a9ab8',callback:v=>'$'+v.toLocaleString()}, grid:{color:'#ece8e2'} }
+      }
+    }
+  });
+}
+
+document.getElementById('tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab');
+  if(!btn) return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  build(parseInt(btn.dataset.wave));
+});
+
+build(0);
+</script>
+</body>
+</html>

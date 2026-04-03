@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+  :root { --navy:#0a1628; --gold:#b8930a; --gold-mid:#c9a84c; --navy-dim:#4a6080; --green:#1D9E75; --red:#c0392b; --rule:#ddd8d0; --off:#f7f4ef; --white:#ffffff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; background:var(--white); font-family:'Anonymous Pro',monospace; }
+  .asset { width:100%; display:flex; flex-direction:column; background:var(--white); border:1px solid var(--rule); }
+  .hdr { padding:clamp(10px,2vw,18px) clamp(14px,3vw,28px); border-bottom:2px solid var(--navy); }
+  .eyebrow { font-size:clamp(10px,1.8vw,12px); letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:4px; }
+  .title { font-family:'Playfair Display',serif; font-size:clamp(16px,2.8vw,24px); color:var(--navy); font-weight:700; line-height:1.2; }
+  .title em { font-style:italic; color:var(--gold); }
+  .gold-rule { width:40px; height:2px; background:var(--gold-mid); margin-top:5px; }
+  .body { display:flex; gap:clamp(12px,2vw,20px); padding:clamp(12px,2vw,20px) clamp(14px,3vw,28px); }
+  .chart-outer { flex:1; min-width:0; }
+  .chart-container { position:relative; width:100%; height:0; padding-bottom:65%; }
+  .chart-container canvas { position:absolute; top:0; left:0; width:100%!important; height:100%!important; }
+  .side { width:clamp(110px,22vw,178px); flex-shrink:0; display:flex; flex-direction:column; gap:clamp(6px,1.2vw,10px); justify-content:center; }
+  .kpi { padding:clamp(8px,1.5vw,12px); border-left:3px solid var(--rule); background:var(--off); }
+  .kpi-label { font-size:clamp(9px,1.5vw,11px); letter-spacing:0.1em; text-transform:uppercase; color:var(--navy-dim); margin-bottom:4px; }
+  .kpi-val { font-family:'Playfair Display',serif; font-size:clamp(18px,3vw,26px); font-weight:700; line-height:1; }
+  .kpi-sub { font-size:clamp(9px,1.5vw,11px); color:var(--navy-dim); line-height:1.4; margin-top:4px; }
+  .legend { display:flex; gap:clamp(10px,2vw,20px); padding:0 clamp(14px,3vw,28px) clamp(6px,1.2vw,10px); flex-wrap:wrap; }
+  .leg { display:flex; align-items:center; gap:6px; font-size:clamp(10px,1.7vw,12px); color:var(--navy-dim); }
+  .leg-line { width:20px; height:3px; flex-shrink:0; }
+  .ftr { padding:clamp(6px,1.2vw,10px) clamp(14px,3vw,28px); border-top:1px solid var(--rule); display:flex; justify-content:space-between; align-items:center; background:var(--off); }
+  .ftr-note { font-size:clamp(9px,1.4vw,11px); color:var(--navy-dim); font-style:italic; }
+  .ftr-brand { font-size:clamp(9px,1.4vw,11px); letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-weight:700; }
+</style>
+</head>
+<body>
+<div class="asset">
+  <div class="hdr">
+    <div class="eyebrow">The Real Numbers | Home Economics Journal</div>
+    <div class="title">The Gap That Has to Go Somewhere — <em>At Its Widest Point in 100 Years</em></div>
+    <div class="gold-rule"></div>
+  </div>
+  <div class="body">
+    <div class="chart-outer">
+      <div class="legend">
+        <div class="leg"><div class="leg-line" style="background:#1D9E75"></div><span style="color:#1D9E75">Productivity index (1970=100)</span></div>
+        <div class="leg"><div class="leg-line" style="background:#c0392b"></div><span style="color:#c0392b">Labor share index (1970=100)</span></div>
+        <div class="leg"><div class="leg-line" style="background:rgba(184,147,10,0.5);height:10px;border-radius:2px"></div><span style="color:#b8930a">Capital income gap</span></div>
+      </div>
+      <div class="chart-container"><canvas id="c"></canvas></div>
+    </div>
+    <div class="side">
+      <div class="kpi" style="border-left-color:var(--green)">
+        <div class="kpi-label">Productivity 1970-2025</div>
+        <div class="kpi-val" style="color:var(--green)">+144%</div>
+        <div class="kpi-sub">Each worker produces more than double what they produced in 1970.</div>
+      </div>
+      <div class="kpi" style="border-left-color:var(--red)">
+        <div class="kpi-label">Labor share 1970-2025</div>
+        <div class="kpi-val" style="color:var(--red)">53%</div>
+        <div class="kpi-sub">Down from 66%. A 20% relative decline over 55 years.</div>
+      </div>
+      <div class="kpi" style="border-left-color:var(--gold)">
+        <div class="kpi-label">The gap today</div>
+        <div class="kpi-val" style="color:var(--gold)">Record</div>
+        <div class="kpi-sub">Widest in the 100-year record. Capital income at its highest relative share ever.</div>
+      </div>
+    </div>
+  </div>
+  <div class="ftr">
+    <div class="ftr-note">Both series indexed to 1970=100. Productivity: BLS nonfarm business. Labor share: BEA NIPA.</div>
+    <div class="ftr-brand">© Breadcoins.com</div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const years = [1970,1975,1980,1985,1990,1995,2000,2005,2010,2015,2020,2025];
+const prodRaw  = [121,132,140,155,168,182,218,240,258,270,278,295];
+const shareRaw = [66, 65, 65, 64, 63, 62, 63, 60, 58, 57, 58, 53];
+const prod  = prodRaw.map(v  => Math.round(v/prodRaw[0]*1000)/10);
+const share = shareRaw.map(v => Math.round(v/shareRaw[0]*1000)/10);
+
+const gapPlugin = {
+  id:'gap',
+  afterDatasetsDraw(chart) {
+    const {ctx, scales:{x,y}} = chart;
+    const n = years.length;
+    ctx.save();
+
+    // Strong opaque gold fill for the gap
+    ctx.beginPath();
+    for(let i=0;i<n;i++) {
+      const px=x.getPixelForValue(i), py=y.getPixelForValue(prod[i]);
+      i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+    }
+    for(let i=n-1;i>=0;i--) {
+      ctx.lineTo(x.getPixelForValue(i), y.getPixelForValue(share[i]));
+    }
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(184,147,10,0.22)';
+    ctx.fill();
+
+    // Gap label at midpoint
+    const midI = Math.floor(n/2);
+    const gx = x.getPixelForValue(midI);
+    const gy = (y.getPixelForValue(prod[midI]) + y.getPixelForValue(share[midI]))/2;
+    ctx.fillStyle = 'rgba(140,100,5,0.75)';
+    ctx.font = 'bold 11px Anonymous Pro';
+    ctx.textAlign = 'center';
+    ctx.fillText('Capital income gap', gx, gy-6);
+    ctx.font = '10px Anonymous Pro';
+    ctx.fillText('(this is what capital markets are pricing)', gx, gy+8);
+
+    // NOW callout at last point
+    const lastI = n-1;
+    const lx = x.getPixelForValue(lastI);
+    const prodY = y.getPixelForValue(prod[lastI]);
+    const shareY = y.getPixelForValue(share[lastI]);
+    const calloutX = lx - 12;
+
+    // Bracket
+    ctx.strokeStyle = '#b8930a';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(calloutX, prodY);
+    ctx.lineTo(calloutX+6, prodY);
+    ctx.moveTo(calloutX+6, prodY);
+    ctx.lineTo(calloutX+6, shareY);
+    ctx.moveTo(calloutX+6, shareY);
+    ctx.lineTo(calloutX, shareY);
+    ctx.stroke();
+
+    ctx.fillStyle = '#b8930a';
+    ctx.font = 'bold 10px Anonymous Pro';
+    ctx.textAlign = 'right';
+    ctx.fillText('Widest', calloutX-3, (prodY+shareY)/2-5);
+    ctx.fillText('ever', calloutX-3, (prodY+shareY)/2+7);
+
+    ctx.restore();
+  }
+};
+
+new Chart(document.getElementById('c'), {
+  type:'line',
+  plugins:[gapPlugin],
+  data:{
+    labels:years,
+    datasets:[
+      { label:'Productivity', data:prod, borderColor:'#1D9E75', backgroundColor:'transparent', borderWidth:2.5, pointRadius:3, tension:0.4 },
+      { label:'Labor share', data:share, borderColor:'#c0392b', backgroundColor:'transparent', borderWidth:2.5, pointRadius:3, tension:0.4 }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:true,
+    plugins:{
+      legend:{ display:false },
+      tooltip:{ callbacks:{ label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)} (1970=100)` } }
+    },
+    scales:{
+      x:{ ticks:{font:{family:'Anonymous Pro',size:10},color:'#8a9ab8'}, grid:{color:'#ece8e2'} },
+      y:{
+        title:{display:true,text:'Index (1970=100)',font:{family:'Anonymous Pro',size:10},color:'#8a9ab8'},
+        ticks:{font:{family:'Anonymous Pro',size:10},color:'#8a9ab8'},
+        grid:{color:'#ece8e2'}
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

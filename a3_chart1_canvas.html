@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+  :root { --navy:#0a1628; --gold:#b8930a; --gold-mid:#c9a84c; --navy-dim:#4a6080; --green:#1D9E75; --red:#c0392b; --rule:#ddd8d0; --off:#f7f4ef; --white:#ffffff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; background:var(--white); font-family:'Anonymous Pro',monospace; }
+  .asset { width:100%; display:flex; flex-direction:column; background:var(--white); border:1px solid var(--rule); }
+  .hdr { padding:clamp(10px,2vw,18px) clamp(14px,3vw,28px); border-bottom:2px solid var(--navy); }
+  .eyebrow { font-size:clamp(10px,1.8vw,12px); letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:4px; }
+  .title { font-family:'Playfair Display',serif; font-size:clamp(16px,2.8vw,24px); color:var(--navy); font-weight:700; line-height:1.2; }
+  .title em { font-style:italic; color:var(--gold); }
+  .gold-rule { width:40px; height:2px; background:var(--gold-mid); margin-top:5px; }
+  .legend { display:flex; gap:clamp(12px,2.5vw,24px); padding:clamp(8px,1.5vw,14px) clamp(14px,3vw,28px) 0; flex-wrap:wrap; }
+  .leg { display:flex; align-items:center; gap:7px; font-size:clamp(10px,1.7vw,12px); color:var(--navy-dim); }
+  .leg-line { width:22px; height:3px; flex-shrink:0; }
+  .chart-outer { padding:clamp(8px,1.5vw,14px) clamp(14px,3vw,28px) clamp(12px,2vw,20px); }
+  .chart-container { position:relative; width:100%; height:0; padding-bottom:54%; }
+  .chart-container canvas { position:absolute; top:0; left:0; width:100%!important; height:100%!important; }
+  .ftr { padding:clamp(6px,1.2vw,10px) clamp(14px,3vw,28px); border-top:1px solid var(--rule); display:flex; justify-content:space-between; align-items:center; background:var(--off); }
+  .ftr-note { font-size:clamp(9px,1.4vw,11px); color:var(--navy-dim); font-style:italic; }
+  .ftr-brand { font-size:clamp(9px,1.4vw,11px); letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-weight:700; }
+</style>
+</head>
+<body>
+<div class="asset">
+  <div class="hdr">
+    <div class="eyebrow">The Real Numbers | Home Economics Journal</div>
+    <div class="title">Productivity Rises. Labor Share Falls. <em>100 Years of the Same Story.</em></div>
+    <div class="gold-rule"></div>
+  </div>
+  <div class="legend">
+    <div class="leg"><div class="leg-line" style="background:#1D9E75"></div><span style="color:#1D9E75">Labor productivity (left axis)</span></div>
+    <div class="leg"><div class="leg-line" style="background:#c0392b"></div><span style="color:#c0392b">Labor share of GDP (right axis)</span></div>
+  </div>
+  <div class="chart-outer">
+    <div class="chart-container"><canvas id="c"></canvas></div>
+  </div>
+  <div class="ftr">
+    <div class="ftr-note">Productivity index 1947=100. Labor share: BEA NIPA. Pre-1929: Gollin (2002). Productivity pre-1947: Gordon (2016).</div>
+    <div class="ftr-brand">© Breadcoins.com</div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const years = [1920,1925,1930,1935,1940,1945,1950,1955,1960,1965,1970,1975,1980,1985,1990,1995,2000,2005,2010,2015,2020,2025];
+const prod  = [28,  34,  38,  42,  51,  62,  72,  85,  96,  112, 121, 132, 140, 155, 168, 182, 218, 240, 258, 270, 278, 295];
+const share = [55,  54,  57,  61,  60,  59,  63,  64,  65,  65,  66,  65,  65,  64,  63,  62,  63,  60,  58,  57,  58,  53];
+
+const waves = [
+  {s:0,  e:6,  color:'rgba(184,147,10,0.09)', label:'Wave 1\nElectrification'},
+  {s:11, e:16, color:'rgba(42,90,154,0.07)',  label:'Wave 2\nComputing'},
+  {s:21, e:21, color:'rgba(184,147,10,0.16)', label:'Wave 3\nAI'},
+];
+
+const wavePlugin = {
+  id:'waves',
+  beforeDraw(chart) {
+    const {ctx, chartArea:{top,bottom}, scales:{x}} = chart;
+    ctx.save();
+    waves.forEach(w => {
+      const x0 = x.getPixelForValue(w.s);
+      const x1 = x.getPixelForValue(Math.min(w.e, years.length-1)) + (w.s===w.e ? 18 : 0);
+      ctx.fillStyle = w.color;
+      ctx.fillRect(x0, top, x1-x0+2, bottom-top);
+    });
+    // Labels
+    ctx.font = 'bold 10px Anonymous Pro';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(80,80,80,0.6)';
+    [{s:0,e:6,t:'Wave 1\nElectrification'},{s:11,e:16,t:'Wave 2\nComputing'},{s:21,e:21,t:'Wave 3\nAI'}]
+    .forEach(w => {
+      const cx = (x.getPixelForValue(w.s) + x.getPixelForValue(Math.min(w.e,years.length-1))) / 2;
+      w.t.split('\n').forEach((line,i) => ctx.fillText(line, cx, top+13+i*12));
+    });
+    ctx.restore();
+  }
+};
+
+// NOW annotation plugin
+const nowPlugin = {
+  id:'now',
+  afterDraw(chart) {
+    const {ctx, chartArea:{top,bottom}, scales:{x,yProd}} = chart;
+    const nx = x.getPixelForValue(years.length-1);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(184,147,10,0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3,4]);
+    ctx.beginPath(); ctx.moveTo(nx,top); ctx.lineTo(nx,bottom); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#b8930a';
+    ctx.font = 'bold 10px Anonymous Pro';
+    ctx.textAlign = 'center';
+    ctx.fillText('NOW', nx, top+10);
+    ctx.restore();
+  }
+};
+
+new Chart(document.getElementById('c'), {
+  type: 'line',
+  plugins: [wavePlugin, nowPlugin],
+  data: {
+    labels: years,
+    datasets: [
+      {
+        label: 'Labor productivity',
+        data: prod,
+        borderColor: '#1D9E75',
+        backgroundColor: 'rgba(29,158,117,0.06)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 3,
+        pointHoverRadius: 6,
+        borderWidth: 2.5,
+        yAxisID: 'yProd',
+      },
+      {
+        label: 'Labor share of GDP',
+        data: share,
+        borderColor: '#c0392b',
+        backgroundColor: 'rgba(192,57,43,0.06)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 3,
+        pointHoverRadius: 6,
+        borderWidth: 2.5,
+        yAxisID: 'yShare',
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    interaction: { mode:'index', intersect:false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: c => c.datasetIndex === 0
+            ? `Productivity index: ${c.parsed.y} (1947=100)`
+            : `Labor share: ${c.parsed.y}% of GDP`
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { font:{family:'Anonymous Pro',size:10}, color:'#8a9ab8', maxRotation:0 },
+        grid: { color:'#ece8e2' }
+      },
+      yProd: {
+        type: 'linear',
+        position: 'left',
+        title: { display:true, text:'Productivity index (1947=100)', font:{family:'Anonymous Pro',size:10}, color:'#1D9E75' },
+        ticks: { font:{family:'Anonymous Pro',size:10}, color:'#1D9E75' },
+        grid: { color:'#ece8e2' }
+      },
+      yShare: {
+        type: 'linear',
+        position: 'right',
+        min: 46, max: 72,
+        title: { display:true, text:'Labor share (% of GDP)', font:{family:'Anonymous Pro',size:10}, color:'#c0392b' },
+        ticks: { font:{family:'Anonymous Pro',size:10}, color:'#c0392b', callback: v => v+'%' },
+        grid: { drawOnChartArea: false }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

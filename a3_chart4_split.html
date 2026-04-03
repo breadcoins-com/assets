@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+  :root { --navy:#0a1628; --gold:#b8930a; --gold-mid:#c9a84c; --navy-dim:#4a6080; --blue:#2a5a9a; --rule:#ddd8d0; --off:#f7f4ef; --white:#ffffff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; background:var(--white); font-family:'Anonymous Pro',monospace; }
+  .asset { width:100%; display:flex; flex-direction:column; background:var(--white); border:1px solid var(--rule); }
+  .hdr { padding:clamp(10px,2vw,18px) clamp(14px,3vw,28px); border-bottom:2px solid var(--navy); }
+  .eyebrow { font-size:clamp(10px,1.8vw,12px); letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:4px; }
+  .title { font-family:'Playfair Display',serif; font-size:clamp(16px,2.8vw,24px); color:var(--navy); font-weight:700; line-height:1.2; }
+  .title em { font-style:italic; color:var(--gold); }
+  .gold-rule { width:40px; height:2px; background:var(--gold-mid); margin-top:5px; }
+  .chart-outer { padding:clamp(12px,2vw,20px) clamp(14px,3vw,28px) clamp(8px,1.5vw,14px); }
+  .chart-container { position:relative; width:100%; height:0; padding-bottom:52%; }
+  .chart-container canvas { position:absolute; top:0; left:0; width:100%!important; height:100%!important; }
+  .summary { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(4px,1vw,8px); padding:0 clamp(14px,3vw,28px) clamp(12px,2vw,18px); }
+  .sum-cell { padding:clamp(8px,1.5vw,12px); border-top:3px solid transparent; background:var(--off); }
+  .sum-label { font-size:clamp(9px,1.5vw,11px); letter-spacing:0.1em; text-transform:uppercase; color:var(--navy-dim); margin-bottom:4px; }
+  .sum-val { font-family:'Playfair Display',serif; font-size:clamp(16px,2.8vw,22px); font-weight:700; line-height:1; }
+  .sum-note { font-size:clamp(9px,1.5vw,11px); color:var(--navy-dim); line-height:1.4; margin-top:3px; }
+  .ftr { padding:clamp(6px,1.2vw,10px) clamp(14px,3vw,28px); border-top:1px solid var(--rule); display:flex; justify-content:space-between; align-items:center; background:var(--off); }
+  .ftr-note { font-size:clamp(9px,1.4vw,11px); color:var(--navy-dim); font-style:italic; }
+  .ftr-brand { font-size:clamp(9px,1.4vw,11px); letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-weight:700; }
+</style>
+</head>
+<body>
+<div class="asset">
+  <div class="hdr">
+    <div class="eyebrow">The Real Numbers | Home Economics Journal</div>
+    <div class="title">The Three-Way Split — <em>Capital Going Everywhere at Once</em></div>
+    <div class="gold-rule"></div>
+  </div>
+  <div class="chart-outer">
+    <div class="chart-container"><canvas id="c"></canvas></div>
+  </div>
+  <div class="summary">
+    <div class="sum-cell" style="border-top-color:#2a5a9a">
+      <div class="sum-label">S&P 500 | 2026 YTD</div>
+      <div class="sum-val" style="color:#2a5a9a">+14%</div>
+      <div class="sum-note">Corporate earnings holding. AI capex story intact.</div>
+    </div>
+    <div class="sum-cell" style="border-top-color:#b8930a">
+      <div class="sum-label">Gold | 2026 YTD</div>
+      <div class="sum-val" style="color:#b8930a">+44%</div>
+      <div class="sum-note">Hard asset thesis confirmed. Capital order pressure.</div>
+    </div>
+    <div class="sum-cell" style="border-top-color:#f7931a">
+      <div class="sum-label">Bitcoin | 2026 YTD</div>
+      <div class="sum-val" style="color:#f7931a">-25%</div>
+      <div class="sum-note">First negative YOY this cycle. Digital thesis under pressure.</div>
+    </div>
+  </div>
+  <div class="ftr">
+    <div class="ftr-note">Annual % change. Dashed line shows Wave 2 average stocks return (1975-2000) for contrast. Data through March 27, 2026.</div>
+    <div class="ftr-brand">© Breadcoins.com</div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const years  = [2021,2022,2023,2024,2025,2026];
+const spPct  = [27,-18,24,23,2,14];
+const goldPct= [-2,-1,13,27,26,44];
+const btcPct = [58,-65,155,121,0,-25];
+
+// Wave 2 average stocks annual return for reference line
+const wave2Avg = 18;
+
+const refPlugin = {
+  id:'ref',
+  afterDraw(chart) {
+    const {ctx,chartArea:{left,right,top},scales:{y}} = chart;
+    const ry = y.getPixelForValue(wave2Avg);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(42,90,154,0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6,4]);
+    ctx.beginPath(); ctx.moveTo(left,ry); ctx.lineTo(right,ry); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(42,90,154,0.55)';
+    ctx.font = '10px Anonymous Pro';
+    ctx.textAlign = 'left';
+    ctx.fillText('Wave 2 avg stock return (+18%/yr)', left+4, ry-5);
+    ctx.restore();
+  }
+};
+
+const zeroPlugin = {
+  id:'zero',
+  afterDraw(chart) {
+    const {ctx,chartArea:{left,right},scales:{y}} = chart;
+    const y0 = y.getPixelForValue(0);
+    ctx.save();
+    ctx.strokeStyle='#ccc'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(left,y0); ctx.lineTo(right,y0); ctx.stroke();
+    ctx.restore();
+  }
+};
+
+new Chart(document.getElementById('c'), {
+  type:'bar',
+  plugins:[zeroPlugin, refPlugin],
+  data:{
+    labels:years,
+    datasets:[
+      { label:'S&P 500', data:spPct, backgroundColor:spPct.map(v=>v>=0?'rgba(42,90,154,0.85)':'rgba(42,90,154,0.35)'), borderWidth:0, barPercentage:0.26 },
+      { label:'Gold',    data:goldPct, backgroundColor:goldPct.map(v=>v>=0?'rgba(184,147,10,0.9)':'rgba(184,147,10,0.35)'), borderWidth:0, barPercentage:0.26 },
+      { label:'Bitcoin', data:btcPct, backgroundColor:btcPct.map(v=>v>=0?'rgba(247,147,26,0.85)':'rgba(247,147,26,0.35)'), borderWidth:0, barPercentage:0.26 }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:true,
+    plugins:{
+      legend:{ position:'bottom', labels:{font:{family:'Anonymous Pro',size:11},color:'#4a6080',boxWidth:14,padding:10} },
+      tooltip:{ callbacks:{ label:c=>`${c.dataset.label}: ${c.parsed.y>0?'+':''}${c.parsed.y}%` } }
+    },
+    scales:{
+      x:{ ticks:{font:{family:'Anonymous Pro',size:11},color:'#4a6080'}, grid:{display:false} },
+      y:{ ticks:{font:{family:'Anonymous Pro',size:10},color:'#8a9ab8',callback:v=>(v>0?'+':'')+v+'%'}, grid:{color:'#ece8e2'} }
+    }
+  }
+});
+</script>
+</body>
+</html>

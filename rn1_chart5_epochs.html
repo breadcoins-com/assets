@@ -7,25 +7,71 @@
   @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
   :root { --navy:#0a1628; --gold:#b8930a; --gold-mid:#c9a84c; --navy-dim:#4a6080; --blue:#2a5a9a; --rule:#ddd8d0; --off:#f7f4ef; --white:#ffffff; }
   * { margin:0; padding:0; box-sizing:border-box; }
-  html,body { width:100%; height:100%; background:var(--white); font-family:'Anonymous Pro',monospace; }
-  .asset { width:100%; aspect-ratio:4/3; display:flex; flex-direction:column; overflow:hidden; background:var(--white); }
-  .hdr { padding:clamp(8px,2vw,16px) clamp(12px,3vw,24px); border-bottom:2px solid var(--navy); flex-shrink:0; }
-  .eyebrow { font-size:clamp(9px,1.8vw,12px); letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:3px; }
-  .title { font-family:'Playfair Display',serif; font-size:clamp(14px,2.8vw,22px); color:var(--navy); font-weight:700; line-height:1.15; }
+  html, body { width:100%; background:var(--white); font-family:'Anonymous Pro',monospace; }
+  .asset { width:100%; display:flex; flex-direction:column; background:var(--white); border:1px solid var(--rule); }
+  .hdr { padding:clamp(10px,2vw,18px) clamp(14px,3vw,28px); border-bottom:2px solid var(--navy); }
+  .eyebrow { font-size:clamp(10px,1.8vw,12px); letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:4px; }
+  .title { font-family:'Playfair Display',serif; font-size:clamp(16px,2.8vw,24px); color:var(--navy); font-weight:700; line-height:1.2; }
   .title em { font-style:italic; color:var(--gold); }
-  .gold-rule { width:clamp(20px,4vw,40px); height:2px; background:var(--gold-mid); margin-top:4px; }
-  .body { flex:1; min-height:0; padding:clamp(8px,1.5vw,16px) clamp(12px,3vw,24px); display:flex; flex-direction:column; gap:clamp(6px,1.2vw,12px); overflow:hidden; }
-  .era-row { display:grid; grid-template-columns:clamp(120px,24vw,190px) 1fr auto; gap:clamp(8px,1.5vw,14px); align-items:center; }
-  .era-name { display:flex; flex-direction:column; gap:2px; }
-  .era-title { font-family:'Playfair Display',serif; font-size:clamp(12px,2vw,15px); color:var(--navy); font-weight:700; line-height:1.2; }
-  .era-years { font-size:clamp(9px,1.5vw,11px); color:var(--navy-dim); }
-  .bar-track { height:clamp(18px,3.5vw,32px); background:#ece8e2; position:relative; overflow:visible; }
-  .bar-fill { height:100%; transition:width 0.8s ease; position:relative; }
-  .bar-label { position:absolute; right:-clamp(30px,6vw,50px); top:50%; transform:translateY(-50%); font-size:clamp(10px,1.8vw,13px); font-weight:700; white-space:nowrap; }
-  .verdict { font-size:clamp(10px,1.8vw,13px); font-weight:700; text-align:right; white-space:nowrap; min-width:clamp(60px,12vw,90px); }
-  .ftr { padding:clamp(4px,1vw,8px) clamp(12px,3vw,24px); border-top:1px solid var(--rule); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; background:var(--off); }
-  .ftr-note { font-size:clamp(8px,1.4vw,11px); color:var(--navy-dim); font-style:italic; }
-  .ftr-brand { font-size:clamp(8px,1.4vw,11px); letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-weight:700; }
+  .gold-rule { width:40px; height:2px; background:var(--gold-mid); margin-top:5px; }
+
+  .era-list {
+    padding:clamp(16px,2.5vw,28px) clamp(14px,3vw,28px);
+    display:flex;
+    flex-direction:column;
+    gap:clamp(10px,2vw,18px);
+  }
+
+  .era {
+    display:grid;
+    grid-template-columns: clamp(130px,26vw,200px) 1fr clamp(70px,12vw,100px);
+    gap:clamp(10px,2vw,18px);
+    align-items:center;
+  }
+
+  .era-info { display:flex; flex-direction:column; gap:3px; }
+  .era-name { font-family:'Playfair Display',serif; font-size:clamp(13px,2.2vw,17px); color:var(--navy); font-weight:700; line-height:1.2; }
+  .era-years { font-size:clamp(10px,1.6vw,12px); color:var(--navy-dim); }
+  .era-note { font-size:clamp(9px,1.5vw,11px); color:var(--navy-dim); margin-top:2px; }
+
+  .bar-wrap { position:relative; }
+  .bar-track { height:clamp(20px,3.5vw,36px); background:#ece8e2; position:relative; overflow:hidden; }
+  .bar-fill { height:100%; transition:width 1s ease; }
+  .bar-threshold {
+    position:absolute;
+    top:0; bottom:0;
+    left:calc(100% / 3.0 * 1.0);
+    width:2px;
+    background:rgba(184,147,10,0.4);
+  }
+  .bar-axis {
+    display:flex;
+    justify-content:space-between;
+    margin-top:3px;
+    font-size:clamp(8px,1.3vw,10px);
+    color:var(--navy-dim);
+  }
+
+  .era-verdict {
+    font-family:'Playfair Display',serif;
+    font-size:clamp(14px,2.4vw,18px);
+    font-weight:700;
+    text-align:right;
+  }
+
+  .note-block {
+    margin:0 clamp(14px,3vw,28px) clamp(12px,2vw,20px);
+    padding:clamp(10px,1.8vw,14px) clamp(12px,2vw,16px);
+    border-left:3px solid var(--gold);
+    background:rgba(184,147,10,0.05);
+    font-size:clamp(10px,1.8vw,13px);
+    color:var(--navy-dim);
+    line-height:1.6;
+  }
+
+  .ftr { padding:clamp(6px,1.2vw,10px) clamp(14px,3vw,28px); border-top:1px solid var(--rule); display:flex; justify-content:space-between; align-items:center; background:var(--off); }
+  .ftr-note { font-size:clamp(9px,1.4vw,11px); color:var(--navy-dim); font-style:italic; }
+  .ftr-brand { font-size:clamp(9px,1.4vw,11px); letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-weight:700; }
 </style>
 </head>
 <body>
@@ -35,51 +81,65 @@
     <div class="title">Five Eras — <em>Who Won Each One</em></div>
     <div class="gold-rule"></div>
   </div>
-  <div class="body" id="body"></div>
+
+  <div class="era-list" id="eras"></div>
+
+  <div class="note-block">
+    Current era ratio of 1.71 matches the inflation era of the 1970s — the last time gold sustained this kind of lead over stocks. The great moderation (1983-1999) was the strongest stocks era in the 50-year record at 0.41.
+  </div>
+
   <div class="ftr">
     <div class="ftr-note">Average gold/stocks ratio per era. Above 1.0 = gold era. Below 1.0 = stocks era.</div>
     <div class="ftr-brand">© Breadcoins.com</div>
   </div>
 </div>
+
 <script>
 const eras = [
-  { title:'Inflation Era', years:'1976 | 1982', ratio:2.8, goldWon:true, note:'Oil shock. Gold surged.' },
-  { title:'Great Moderation', years:'1983 | 1999', ratio:0.41, goldWon:false, note:'Stocks dominated for 17 years.' },
-  { title:'Lost Decade', years:'2000 | 2009', ratio:0.22, goldWon:false, note:'Stocks flat. Gold recovered.' },
-  { title:'QE Era', years:'2010 | 2019', ratio:0.55, goldWon:false, note:'Stocks led. Gold faded.' },
-  { title:'Current Era', years:'2020 | present', ratio:1.71, goldWon:true, note:'Gold leads again. Ratio rising.' },
+  { name:'Inflation Era',      years:'1976 | 1982', ratio:2.8,  goldWon:true,  note:'Oil shock. Gold surged 300% in four years.' },
+  { name:'Great Moderation',   years:'1983 | 1999', ratio:0.41, goldWon:false, note:'Stocks dominated for 17 straight years.' },
+  { name:'Lost Decade',        years:'2000 | 2009', ratio:0.22, goldWon:false, note:'Stocks flat. Gold began its recovery.' },
+  { name:'QE Era',             years:'2010 | 2019', ratio:0.55, goldWon:false, note:'Stocks led. Gold faded after 2012 peak.' },
+  { name:'Current Era',        years:'2020 | present', ratio:1.71, goldWon:true, note:'Gold leads again. Ratio rising toward 2.0.' },
 ];
 
 const maxRatio = 3.0;
-const body = document.getElementById('body');
+const container = document.getElementById('eras');
 
-eras.forEach((era,i) => {
+eras.forEach((era, i) => {
   const pct = Math.min((era.ratio / maxRatio) * 100, 100);
   const color = era.goldWon ? '#b8930a' : '#2a5a9a';
-  const opacity = i === 4 ? '1.0' : '0.75';
+  const opacity = i === 4 ? '1.0' : '0.65';
+  const isCurrent = i === 4;
 
-  const row = document.createElement('div');
-  row.className = 'era-row';
-  row.innerHTML = `
-    <div class="era-name">
-      <div class="era-title">${era.title}</div>
+  const div = document.createElement('div');
+  div.className = 'era';
+  if(isCurrent) div.style.cssText = 'background:rgba(184,147,10,0.04);padding:8px;border-radius:2px;margin:-8px;';
+
+  div.innerHTML = `
+    <div class="era-info">
+      <div class="era-name" style="${isCurrent ? 'color:var(--gold)' : ''}">${era.name}</div>
       <div class="era-years">${era.years}</div>
+      <div class="era-note">${era.note}</div>
     </div>
-    <div class="bar-track">
-      <div class="bar-fill" style="width:${pct}%;background:${color};opacity:${opacity}">
-        <span class="bar-label" style="color:${color}">${era.ratio.toFixed(2)}</span>
+    <div class="bar-wrap">
+      <div class="bar-track">
+        <div class="bar-threshold"></div>
+        <div class="bar-fill" style="width:${pct}%;background:${color};opacity:${opacity}"></div>
+      </div>
+      <div class="bar-axis">
+        <span>0</span>
+        <span style="color:var(--gold)">1.0 threshold</span>
+        <span>3.0</span>
       </div>
     </div>
-    <div class="verdict" style="color:${color}">${era.goldWon ? 'Gold' : 'Stocks'}</div>
+    <div class="era-verdict" style="color:${color}">
+      ${era.ratio.toFixed(2)}<br>
+      <span style="font-size:clamp(9px,1.5vw,11px);font-family:'Anonymous Pro',monospace;font-weight:400;color:var(--navy-dim)">${era.goldWon ? 'Gold' : 'Stocks'}</span>
+    </div>
   `;
-  body.appendChild(row);
+  container.appendChild(div);
 });
-
-// Add threshold annotation note
-const note = document.createElement('div');
-note.style.cssText = 'font-size:clamp(9px,1.5vw,11px);color:#4a6080;border-left:3px solid #b8930a;padding:4px 8px;margin-top:auto;';
-note.textContent = 'Current era ratio of 1.71 matches the inflation era of the 1970s — the last time gold sustained this kind of lead over stocks.';
-body.appendChild(note);
 </script>
 </body>
 </html>

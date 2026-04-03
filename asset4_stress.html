@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --gold: #c9a84c;
+    --gold-dim: #8a6f2e;
+    --slate: #1e3258;
+    --mist: #8a9ab8;
+    --cream: #f0e6cc;
+    --blue: #4a7ab8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    font-family: 'Anonymous Pro', monospace;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 16px 48px;
+  }
+
+  .canvas { width: 100%; max-width: 760px; }
+
+  /* Title embedded as magazine composition */
+  .title-block {
+    position: relative;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: rise 0.7s forwards;
+  }
+
+  .eyebrow {
+    font-size: clamp(9px, 2vw, 11px);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(24px, 5.5vw, 40px);
+    color: var(--cream);
+    line-height: 1.1;
+    font-weight: 700;
+  }
+
+  .headline em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .deck {
+    margin-top: 12px;
+    font-size: clamp(12px, 2.5vw, 15px);
+    color: var(--mist);
+    line-height: 1.6;
+    max-width: 580px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--gold-dim);
+  }
+
+  /* Chart */
+  .chart-wrap {
+    width: 100%;
+    margin-bottom: 4px;
+    opacity: 0;
+    animation: rise 0.6s 0.3s forwards;
+    position: relative;
+  }
+
+  canvas { display: block; width: 100%; }
+
+  /* Legend row */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(12px, 3vw, 24px);
+    padding: 14px 0;
+    border-top: 1px solid var(--slate);
+    margin-top: 4px;
+    opacity: 0;
+    animation: rise 0.5s 0.9s forwards;
+  }
+
+  .leg-item { display: flex; align-items: center; gap: 8px; font-size: clamp(10px, 2vw, 13px); }
+
+  .leg-line { width: 28px; height: 3px; flex-shrink: 0; }
+
+  /* Episode cards */
+  .episodes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3px;
+    margin-top: 16px;
+    opacity: 0;
+    animation: rise 0.6s 1.0s forwards;
+  }
+
+  .ep {
+    padding: clamp(14px, 3vw, 20px);
+    background: #0d1e38;
+    border: 1px solid var(--slate);
+    border-top: 3px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .ep:hover { border-top-color: var(--gold-dim); }
+
+  .ep-period {
+    font-size: clamp(9px, 2vw, 11px);
+    letter-spacing: 0.12em;
+    color: #3a5070;
+    margin-bottom: 6px;
+  }
+
+  .ep-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(14px, 3vw, 17px);
+    color: var(--cream);
+    margin-bottom: 12px;
+    line-height: 1.25;
+  }
+
+  .ep-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 5px;
+  }
+
+  .ep-stat-label { font-size: clamp(10px, 2vw, 12px); color: var(--mist); }
+
+  .ep-stat-val {
+    font-size: clamp(14px, 3.5vw, 18px);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .pos { color: var(--gold); }
+  .neg { color: var(--blue); }
+  .cur { color: var(--mist); font-style: italic; font-size: clamp(11px,2.5vw,13px) !important; }
+
+  .ep-outcome {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--slate);
+    font-size: clamp(10px, 2vw, 12px);
+    color: #4a6080;
+    line-height: 1.5;
+  }
+
+  /* Pullquote at bottom */
+  .pullquote {
+    margin-top: 16px;
+    padding: clamp(16px, 4vw, 24px) clamp(18px, 4vw, 28px);
+    border-left: 4px solid var(--gold);
+    background: #c9a84c08;
+    opacity: 0;
+    animation: rise 0.6s 1.2s forwards;
+  }
+
+  .pq-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(15px, 3.5vw, 20px);
+    color: var(--cream);
+    line-height: 1.5;
+    font-style: italic;
+    margin-bottom: 8px;
+  }
+
+  .pq-source {
+    font-size: clamp(10px, 2vw, 12px);
+    color: var(--gold-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="canvas">
+
+  <div class="title-block">
+    <div class="eyebrow">Capital Order Stress · 1910–2026</div>
+    <div class="headline">When the System Is<br>the Variable Under Pressure,<br><em>the Claims Reprice.</em></div>
+    <div class="deck">Hard assets have outperformed paper assets through every prior world-war-class restructuring. The crossover is not a prediction. It is a pattern.</div>
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="stressChart"></canvas>
+  </div>
+
+  <div class="legend">
+    <div class="leg-item">
+      <div class="leg-line" style="background:var(--gold)"></div>
+      <span style="color:var(--gold)">Hard assets</span>
+    </div>
+    <div class="leg-item">
+      <div class="leg-line" style="background:var(--blue)"></div>
+      <span style="color:var(--blue)">Paper assets</span>
+    </div>
+    <div class="leg-item">
+      <div class="leg-line" style="background:repeating-linear-gradient(90deg,#8a9ab8 0,#8a9ab8 5px,transparent 5px,transparent 10px);height:1px"></div>
+      <span style="color:var(--mist)">Capital order stress</span>
+    </div>
+    <div class="leg-item">
+      <div style="width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid var(--navy)"></div>
+      <span style="color:var(--mist)">Crossover event</span>
+    </div>
+  </div>
+
+  <div class="episodes">
+    <div class="ep">
+      <div class="ep-period">1914 — 1918</div>
+      <div class="ep-name">WWI Restructuring</div>
+      <div class="ep-stat-row">
+        <span class="ep-stat-label">Hard assets</span>
+        <span class="ep-stat-val pos">+34%</span>
+      </div>
+      <div class="ep-stat-row">
+        <span class="ep-stat-label">Paper assets</span>
+        <span class="ep-stat-val neg">−18%</span>
+      </div>
+      <div class="ep-outcome">Dollar displaces sterling as global reserve currency.</div>
+    </div>
+
+    <div class="ep">
+      <div class="ep-period">1939 — 1945</div>
+      <div class="ep-name">WWII / Bretton Woods</div>
+      <div class="ep-stat-row">
+        <span class="ep-stat-label">Hard assets</span>
+        <span class="ep-stat-val pos">+58%</span>
+      </div>
+      <div class="ep-stat-row">
+        <span class="ep-stat-label">Paper assets</span>
+        <span class="ep-stat-val neg">−31%</span>
+      </div>
+      <div class="ep-outcome">USD reserve system installed. Dollar fixed to gold at $35/oz.</div>
+    </div>
+
+    <div class="ep">
+      <div class="ep-period">1968 — 1982</div>
+      <div class="ep-name">Bretton Woods Collapse</div>
+      <div class="ep-stat-row">
+        <span class="ep-stat-label">Hard assets</span>
+        <span class="ep-stat-val pos">+412%</span>
+      </div>
+      <div class="ep-stat-row">
+        <span class="ep-stat-label">Paper assets</span>
+        <span class="ep-stat-val neg">−42%</span>
+      </div>
+      <div class="ep-outcome">Petrodollar replaces gold standard. Largest hard asset outperformance on record.</div>
+    </div>
+
+    <div class="ep" style="border-top-color:var(--gold)">
+      <div class="ep-period">2022 — present</div>
+      <div class="ep-name">Multipolar Transition</div>
+      <div class="ep-stat-row">
+        <span class="ep-stat-label">Hard assets</span>
+        <span class="ep-stat-val cur">Rising. Gold ATH $5,600 Jan 2026.</span>
+      </div>
+      <div class="ep-stat-row">
+        <span class="ep-stat-label">Paper assets</span>
+        <span class="ep-stat-val cur">Under structural pressure.</span>
+      </div>
+      <div class="ep-outcome">Reserve system contested. Crossover in progress.</div>
+    </div>
+  </div>
+
+  <div class="pullquote">
+    <div class="pq-text">Financial instruments are claims on a system. When the system is the variable under pressure, the claims reprice. Physical assets are not claims on a system. They hold value because they are the thing itself.</div>
+    <div class="pq-source">Home Economics Journal · Breadcoins.com</div>
+  </div>
+
+</div>
+
+<script>
+const canvas = document.getElementById('stressChart');
+const ctx = canvas.getContext('2d');
+
+function draw() {
+  const W = canvas.parentElement.clientWidth;
+  const H = Math.max(Math.round(W * 0.58), 240);
+  canvas.width = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  const PAD = { top: 20, right: 16, bottom: 50, left: 36 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+
+  const startY = 1908, endY = 2028;
+
+  function xP(yr)  { return PAD.left + ((yr - startY) / (endY - startY)) * cW; }
+  function yP(v)   { return PAD.top + cH - ((v - 0.25) / 0.80) * cH; }
+
+  // Background grid
+  ctx.strokeStyle = '#12243c';
+  ctx.lineWidth = 1;
+  [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0].forEach(v => {
+    const y = yP(v);
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, y);
+    ctx.lineTo(PAD.left + cW, y);
+    ctx.stroke();
+  });
+
+  // Episode shading
+  const episodes = [[1914,1918],[1939,1945],[1968,1982],[2022,2026]];
+  episodes.forEach(([s,e], i) => {
+    const alpha = i === 3 ? 0.14 : 0.07;
+    ctx.fillStyle = `rgba(201,168,76,${alpha})`;
+    ctx.fillRect(xP(s), PAD.top, xP(e)-xP(s), cH);
+  });
+
+  // Vertical markers
+  [1914, 1939, 1968, 2022].forEach(yr => {
+    ctx.strokeStyle = '#c9a84c22';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,5]);
+    ctx.beginPath();
+    ctx.moveTo(xP(yr), PAD.top);
+    ctx.lineTo(xP(yr), PAD.top + cH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Data
+  const hardData = [
+    [1908,0.44],[1912,0.44],[1914,0.50],[1917,0.60],[1918,0.66],
+    [1920,0.52],[1925,0.47],[1929,0.54],[1932,0.74],[1934,0.82],
+    [1937,0.66],[1939,0.72],[1942,0.80],[1945,0.84],[1948,0.64],
+    [1955,0.54],[1960,0.50],[1965,0.47],[1968,0.52],[1971,0.64],
+    [1973,0.82],[1979,0.96],[1982,0.83],[1985,0.62],[1990,0.58],
+    [1995,0.47],[2000,0.42],[2008,0.70],[2010,0.76],[2015,0.57],
+    [2019,0.58],[2020,0.72],[2022,0.80],[2024,0.88],[2026,0.92]
+  ];
+
+  const paperData = [
+    [1908,0.62],[1912,0.64],[1914,0.55],[1917,0.44],[1918,0.37],
+    [1920,0.54],[1925,0.66],[1929,0.73],[1932,0.44],[1934,0.36],
+    [1937,0.53],[1939,0.46],[1942,0.34],[1945,0.38],[1948,0.64],
+    [1955,0.73],[1960,0.79],[1965,0.82],[1968,0.72],[1971,0.58],
+    [1973,0.44],[1979,0.30],[1982,0.46],[1985,0.64],[1990,0.70],
+    [1995,0.79],[2000,0.84],[2008,0.50],[2010,0.70],[2015,0.76],
+    [2019,0.80],[2020,0.64],[2022,0.54],[2024,0.46],[2026,0.42]
+  ];
+
+  const stressData = [
+    [1908,0.16],[1912,0.20],[1914,0.74],[1916,0.86],[1918,0.80],
+    [1920,0.46],[1925,0.22],[1929,0.68],[1932,0.90],[1934,0.72],
+    [1937,0.54],[1939,0.84],[1942,0.94],[1945,0.88],[1948,0.40],
+    [1955,0.24],[1960,0.20],[1965,0.27],[1968,0.54],[1971,0.74],
+    [1973,0.86],[1979,0.90],[1982,0.74],[1985,0.44],[1990,0.36],
+    [1995,0.22],[2000,0.28],[2008,0.66],[2010,0.40],[2015,0.24],
+    [2019,0.22],[2020,0.56],[2022,0.64],[2024,0.73],[2026,0.77]
+  ];
+
+  // Stress fill
+  ctx.beginPath();
+  stressData.forEach(([yr,v],i) => {
+    if (i===0) ctx.moveTo(xP(yr), yP(v));
+    else ctx.lineTo(xP(yr), yP(v));
+  });
+  ctx.lineTo(xP(stressData[stressData.length-1][0]), yP(0.25));
+  ctx.lineTo(xP(stressData[0][0]), yP(0.25));
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(74,122,184,0.07)';
+  ctx.fill();
+
+  function drawSmoothLine(data, color, lw, dash=[]) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lw;
+    ctx.setLineDash(dash);
+    ctx.beginPath();
+    data.forEach(([yr,v],i) => {
+      if (i===0) { ctx.moveTo(xP(yr), yP(v)); return; }
+      const [px,pv] = data[i-1];
+      const cpx = (xP(px) + xP(yr)) / 2;
+      ctx.bezierCurveTo(cpx, yP(pv), cpx, yP(v), xP(yr), yP(v));
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  drawSmoothLine(stressData, '#4a7ab855', 1, [4,6]);
+  drawSmoothLine(paperData, '#4a7ab8cc', 2);
+  drawSmoothLine(hardData, '#c9a84c', 3);
+
+  // Crossover dots
+  const crossYears = [1914, 1939, 1968, 2022];
+  crossYears.forEach(yr => {
+    const hd = hardData.find(d => d[0]===yr);
+    const pd = paperData.find(d => d[0]===yr);
+    if (hd && pd) {
+      const cx = xP(yr);
+      const midY = (yP(hd[1]) + yP(pd[1])) / 2;
+      ctx.fillStyle = '#c9a84c';
+      ctx.beginPath();
+      ctx.arc(cx, midY, 6, 0, Math.PI*2);
+      ctx.fill();
+      ctx.strokeStyle = '#0a1628';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  });
+
+  // NOW line
+  const nowX = xP(2026);
+  ctx.strokeStyle = '#c9a84c44';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([2,5]);
+  ctx.beginPath();
+  ctx.moveTo(nowX, PAD.top);
+  ctx.lineTo(nowX, PAD.top + cH);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // X axis year labels
+  const fontSize = Math.max(9, Math.min(12, W / 60));
+  ctx.fillStyle = '#3a5070';
+  ctx.font = `${fontSize}px Anonymous Pro`;
+  ctx.textAlign = 'center';
+  [1910, 1920, 1940, 1960, 1980, 2000, 2020].forEach(yr => {
+    ctx.fillText(yr, xP(yr), PAD.top + cH + 18);
+  });
+
+  // Episode labels above chart
+  const epLabels = [
+    [1916, 'WWI'],
+    [1942, 'WWII'],
+    [1975, 'Bretton\nWoods'],
+    [2024, 'Now'],
+  ];
+
+  ctx.font = `bold ${fontSize}px Anonymous Pro`;
+  epLabels.forEach(([yr, label]) => {
+    const x = xP(yr);
+    ctx.fillStyle = '#c9a84c99';
+    ctx.textAlign = 'center';
+    label.split('\n').forEach((line, li) => {
+      ctx.fillText(line, x, PAD.top + 14 + li * (fontSize + 2));
+    });
+  });
+
+  // Y axis
+  ctx.fillStyle = '#2a3a52';
+  ctx.textAlign = 'right';
+  ctx.font = `${fontSize}px Anonymous Pro`;
+  ['Low','','Mid','','High'].forEach((l, i) => {
+    if (!l) return;
+    const v = 0.30 + (i/4)*0.70;
+    ctx.fillText(l, PAD.left - 5, yP(v) + 4);
+  });
+}
+
+draw();
+window.addEventListener('resize', draw);
+</script>
+</body>
+</html>

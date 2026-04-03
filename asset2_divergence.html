@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --gold: #c9a84c;
+    --gold-dim: #8a6f2e;
+    --slate: #1e3258;
+    --mist: #8a9ab8;
+    --cream: #f0e6cc;
+    --blue: #4a7ab8;
+    --blue-dim: #2a4a78;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    font-family: 'Anonymous Pro', monospace;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 16px 48px;
+  }
+
+  .canvas { width: 100%; max-width: 720px; }
+
+  .title-block {
+    margin-bottom: 32px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--gold-dim);
+    opacity: 0;
+    animation: rise 0.7s forwards;
+  }
+
+  .eyebrow {
+    font-size: clamp(9px, 2vw, 11px);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 5vw, 36px);
+    color: var(--cream);
+    line-height: 1.15;
+    font-weight: 700;
+  }
+
+  .deck {
+    margin-top: 10px;
+    font-size: clamp(12px, 2.5vw, 14px);
+    color: var(--mist);
+    line-height: 1.6;
+  }
+
+  /* Chart */
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: rise 0.6s 0.3s forwards;
+  }
+
+  canvas { display: block; width: 100%; }
+
+  /* Conflict cards below chart */
+  .conflicts {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 20px;
+    opacity: 0;
+    animation: rise 0.6s 0.8s forwards;
+  }
+
+  .conflict-card {
+    display: grid;
+    grid-template-columns: clamp(120px, 30%, 180px) 1fr 1fr;
+    gap: 3px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .conflict-card:hover { opacity: 0.85; }
+  .conflict-card.active .name-cell { border-left-color: var(--gold); }
+
+  .name-cell {
+    background: #0d1e38;
+    border: 1px solid var(--slate);
+    border-left: 3px solid transparent;
+    padding: clamp(10px, 2vw, 14px) clamp(10px, 2vw, 16px);
+    transition: border-color 0.2s;
+  }
+
+  .conflict-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(12px, 2.5vw, 15px);
+    color: var(--cream);
+    line-height: 1.2;
+    margin-bottom: 3px;
+  }
+
+  .conflict-years {
+    font-size: clamp(9px, 2vw, 11px);
+    color: #3a5070;
+    letter-spacing: 0.08em;
+  }
+
+  .score-cell {
+    background: #0d1e38;
+    border: 1px solid var(--slate);
+    padding: clamp(10px, 2vw, 14px) clamp(10px, 2vw, 16px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .model-label {
+    font-size: clamp(8px, 1.8vw, 10px);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .score-num {
+    font-size: clamp(18px, 4.5vw, 26px);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .score-bar {
+    height: 3px;
+    background: #1a2a44;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .score-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.8s ease;
+  }
+
+  .verdict {
+    font-size: clamp(9px, 2vw, 10px);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: clamp(16px, 4vw, 28px);
+    padding: 14px 0;
+    border-top: 1px solid var(--slate);
+    margin-top: 20px;
+    opacity: 0;
+    animation: rise 0.5s 1.1s forwards;
+  }
+
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: clamp(10px, 2vw, 12px);
+  }
+
+  .leg-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Divergence callout */
+  .divergence-note {
+    margin-top: 20px;
+    padding: clamp(14px, 3vw, 20px);
+    background: #c9a84c0d;
+    border-left: 3px solid var(--gold);
+    opacity: 0;
+    animation: rise 0.5s 1.2s forwards;
+  }
+
+  .div-label {
+    font-size: clamp(9px, 2vw, 10px);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .div-text {
+    font-size: clamp(12px, 2.5vw, 14px);
+    color: var(--mist);
+    line-height: 1.6;
+  }
+
+  .div-text strong { color: var(--cream); }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="canvas">
+
+  <div class="title-block">
+    <div class="eyebrow">Scoring Matrix</div>
+    <div class="headline">The Same Facts.<br>Two Different Answers.</div>
+    <div class="deck">The Correlates of War model and the economic restructuring model agree on every observable event. They disagree on what the observations mean.</div>
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="divergeChart"></canvas>
+  </div>
+
+  <div class="conflicts" id="conflictCards">
+    <!-- Injected by JS -->
+  </div>
+
+  <div class="legend">
+    <div class="leg-item">
+      <div class="leg-dot" style="background:#4a7ab8"></div>
+      <span style="color:#4a7ab8">Correlates of War</span>
+    </div>
+    <div class="leg-item">
+      <div class="leg-dot" style="background:#c9a84c"></div>
+      <span style="color:#c9a84c">Economic Restructuring</span>
+    </div>
+    <div class="leg-item">
+      <div style="width:24px;height:1px;background:repeating-linear-gradient(90deg,#8a9ab8 0,#8a9ab8 4px,transparent 4px,transparent 8px)"></div>
+      <span style="color:#8a9ab8">0.70 threshold</span>
+    </div>
+  </div>
+
+  <div class="divergence-note">
+    <div class="div-label">The gap</div>
+    <div class="div-text">WWI and WWII: both models agree. Korea and Vietnam: the grouping question splits them. The present conflict: <strong>a 0.27 gap</strong> — the widest in the dataset. The instrument determines the answer.</div>
+  </div>
+
+</div>
+
+<script>
+const conflicts = [
+  { name: 'World War I',    years: '1914–1918', cow: 0.96, eco: 0.97, verdict: ['Classified','Classified'] },
+  { name: 'World War II',   years: '1939–1945', cow: 0.98, eco: 0.99, verdict: ['Classified','Classified'] },
+  { name: 'Korea + Vietnam',years: '1950–1975 · grouped', cow: 0.84, eco: 0.86, verdict: ['Above threshold','Above threshold'] },
+  { name: 'Korea / Vietnam',years: '1950–1975 · individual', cow: 0.50, eco: 0.55, verdict: ['Ambiguous','Ambiguous'] },
+  { name: 'Present Conflict',years: '2022–present', cow: 0.61, eco: 0.88, verdict: ['Below threshold','Above threshold'], highlight: true },
+];
+
+// Build cards
+const container = document.getElementById('conflictCards');
+conflicts.forEach((c, i) => {
+  const card = document.createElement('div');
+  card.className = 'conflict-card' + (c.highlight ? ' active' : '');
+  card.innerHTML = `
+    <div class="name-cell" style="border-left-color:${c.highlight ? 'var(--gold)' : 'transparent'}">
+      <div class="conflict-name">${c.name}</div>
+      <div class="conflict-years">${c.years}</div>
+    </div>
+    <div class="score-cell">
+      <div class="model-label" style="color:#4a7ab8">Correlates of War</div>
+      <div class="score-num" style="color:${c.cow >= 0.70 ? '#4a7ab8' : '#3a4a62'}">${c.cow.toFixed(2)}</div>
+      <div class="score-bar"><div class="score-fill" data-w="${c.cow*100}" style="background:#4a7ab8"></div></div>
+      <div class="verdict" style="color:${c.cow >= 0.70 ? '#4a7ab8' : '#3a4a62'}">${c.verdict[0]}</div>
+    </div>
+    <div class="score-cell">
+      <div class="model-label" style="color:var(--gold-dim)">Econ. Restructuring</div>
+      <div class="score-num" style="color:${c.eco >= 0.70 ? 'var(--gold)' : '#3a4a62'}">${c.eco.toFixed(2)}</div>
+      <div class="score-bar"><div class="score-fill" data-w="${c.eco*100}" style="background:var(--gold)"></div></div>
+      <div class="verdict" style="color:${c.eco >= 0.70 ? 'var(--gold)' : '#3a4a62'}">${c.verdict[1]}</div>
+    </div>
+  `;
+  container.appendChild(card);
+});
+
+// Animate bars on load
+setTimeout(() => {
+  document.querySelectorAll('.score-fill').forEach(el => {
+    el.style.width = el.dataset.w + '%';
+  });
+}, 900);
+
+// Chart
+const canvas = document.getElementById('divergeChart');
+const ctx = canvas.getContext('2d');
+
+function drawChart() {
+  const W = canvas.parentElement.clientWidth;
+  const H = Math.round(W * 0.52);
+  canvas.width = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  const PAD = { top: 24, right: 20, bottom: 44, left: 44 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+
+  const labels = ['WWI','WWII','Korea+VN\n(grouped)','Korea/VN\n(indiv.)','Present'];
+  const cowScores = [0.96, 0.98, 0.84, 0.50, 0.61];
+  const ecoScores = [0.97, 0.99, 0.86, 0.55, 0.88];
+  const n = labels.length;
+
+  function xPos(i) { return PAD.left + (i / (n-1)) * cW; }
+  function yPos(v) { return PAD.top + cH - (v - 0.3) / 0.75 * cH; }
+
+  // Grid lines
+  ctx.strokeStyle = '#1a2a44';
+  ctx.lineWidth = 1;
+  [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0].forEach(v => {
+    if (v < 0.31 || v > 1.01) return;
+    const y = yPos(v);
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, y);
+    ctx.lineTo(PAD.left + cW, y);
+    ctx.stroke();
+    ctx.fillStyle = '#2a3a52';
+    ctx.font = `${10}px Anonymous Pro`;
+    ctx.textAlign = 'right';
+    ctx.fillText(v.toFixed(1), PAD.left - 6, y + 4);
+  });
+
+  // Threshold line
+  const ty = yPos(0.70);
+  ctx.strokeStyle = '#8a9ab855';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5, 7]);
+  ctx.beginPath();
+  ctx.moveTo(PAD.left, ty);
+  ctx.lineTo(PAD.left + cW, ty);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#8a9ab888';
+  ctx.font = `9px Anonymous Pro`;
+  ctx.textAlign = 'left';
+  ctx.fillText('0.70 threshold', PAD.left + 4, ty - 5);
+
+  // Fill gap between lines for present conflict
+  const gapIdx = 4;
+  const gx = xPos(gapIdx);
+  const gy1 = yPos(cowScores[gapIdx]);
+  const gy2 = yPos(ecoScores[gapIdx]);
+  ctx.fillStyle = 'rgba(201,168,76,0.08)';
+  ctx.fillRect(gx - 2, Math.min(gy1, gy2), 4, Math.abs(gy1 - gy2));
+
+  // Shade gap between all points
+  ctx.beginPath();
+  cowScores.forEach((v, i) => {
+    if (i === 0) ctx.moveTo(xPos(i), yPos(v));
+    else ctx.lineTo(xPos(i), yPos(v));
+  });
+  ecoScores.slice().reverse().forEach((v, i) => {
+    ctx.lineTo(xPos(n-1-i), yPos(v));
+  });
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(201,168,76,0.04)';
+  ctx.fill();
+
+  // Draw lines
+  function drawLine(scores, color, lw) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lw;
+    ctx.beginPath();
+    scores.forEach((v, i) => {
+      if (i === 0) ctx.moveTo(xPos(i), yPos(v));
+      else ctx.lineTo(xPos(i), yPos(v));
+    });
+    ctx.stroke();
+    // Dots
+    scores.forEach((v, i) => {
+      ctx.fillStyle = i === 4 ? color : color + 'aa';
+      ctx.beginPath();
+      ctx.arc(xPos(i), yPos(v), i === 4 ? 6 : 4, 0, Math.PI*2);
+      ctx.fill();
+      ctx.strokeStyle = '#0a1628';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    });
+  }
+
+  drawLine(cowScores, '#4a7ab8', 2);
+  drawLine(ecoScores, '#c9a84c', 2.5);
+
+  // Gap annotation at present
+  const pgx = xPos(4);
+  const pgy1 = yPos(cowScores[4]);
+  const pgy2 = yPos(ecoScores[4]);
+  ctx.strokeStyle = '#c9a84c55';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([2, 3]);
+  ctx.beginPath();
+  ctx.moveTo(pgx + 10, pgy1);
+  ctx.lineTo(pgx + 10, pgy2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#c9a84c';
+  ctx.font = `bold 11px Anonymous Pro`;
+  ctx.textAlign = 'left';
+  ctx.fillText('Δ0.27', pgx + 14, (pgy1 + pgy2) / 2 + 4);
+
+  // X labels
+  ctx.fillStyle = '#4a6080';
+  ctx.font = `10px Anonymous Pro`;
+  ctx.textAlign = 'center';
+  labels.forEach((l, i) => {
+    const lines = l.split('\n');
+    lines.forEach((line, li) => {
+      ctx.fillText(line, xPos(i), PAD.top + cH + 14 + li * 13);
+    });
+  });
+}
+
+drawChart();
+window.addEventListener('resize', drawChart);
+</script>
+</body>
+</html>

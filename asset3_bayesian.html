@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --gold: #c9a84c;
+    --gold-dim: #8a6f2e;
+    --gold-faint: #c9a84c12;
+    --slate: #1e3258;
+    --mist: #8a9ab8;
+    --cream: #f0e6cc;
+    --blue: #4a7ab8;
+    --blue-dim: #2a4a78;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    font-family: 'Anonymous Pro', monospace;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 16px 48px;
+  }
+
+  .canvas { width: 100%; max-width: 680px; }
+
+  .title-block {
+    margin-bottom: 32px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--gold-dim);
+    opacity: 0;
+    animation: rise 0.7s forwards;
+  }
+
+  .eyebrow {
+    font-size: clamp(9px, 2vw, 11px);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 5vw, 36px);
+    color: var(--cream);
+    line-height: 1.15;
+    font-weight: 700;
+  }
+
+  .deck {
+    margin-top: 10px;
+    font-size: clamp(12px, 2.5vw, 14px);
+    color: var(--mist);
+    line-height: 1.6;
+  }
+
+  .tap-hint {
+    margin-top: 8px;
+    font-size: clamp(10px, 2vw, 12px);
+    color: var(--gold-dim);
+    letter-spacing: 0.1em;
+  }
+
+  /* Prior bar */
+  .prior-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: clamp(12px, 3vw, 18px) clamp(14px, 3vw, 20px);
+    background: #060e1c;
+    border: 1px solid var(--slate);
+    margin-bottom: 4px;
+    opacity: 0;
+    animation: rise 0.5s 0.2s forwards;
+  }
+
+  .prior-num {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 8vw, 48px);
+    font-weight: 700;
+    color: #3a4a62;
+    line-height: 1;
+    min-width: 80px;
+  }
+
+  .prior-label { font-size: clamp(9px, 2vw, 11px); letter-spacing: 0.15em; text-transform: uppercase; color: #3a4a62; margin-bottom: 4px; }
+  .prior-desc  { font-size: clamp(11px, 2.5vw, 13px); color: #3a5070; line-height: 1.5; }
+
+  /* Chain */
+  .chain {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    opacity: 0;
+    animation: rise 0.6s 0.5s forwards;
+  }
+
+  .event-node {
+    cursor: pointer;
+    position: relative;
+    border: 1px solid var(--slate);
+    background: #0d1e38;
+    transition: border-color 0.2s, background 0.2s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .event-node:hover,
+  .event-node.open {
+    border-color: var(--gold-dim);
+    background: #0f2040;
+  }
+
+  .event-node.open { border-color: var(--gold); }
+
+  .node-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    padding: clamp(14px, 3vw, 20px) clamp(14px, 3vw, 20px);
+    align-items: center;
+  }
+
+  .event-text {
+    font-size: clamp(13px, 3vw, 16px);
+    color: var(--cream);
+    line-height: 1.4;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .node-scores {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .score-cow {
+    font-size: clamp(16px, 4vw, 22px);
+    font-weight: 700;
+    color: var(--blue);
+    line-height: 1;
+  }
+
+  .score-eco {
+    font-size: clamp(16px, 4vw, 22px);
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .score-label {
+    font-size: clamp(8px, 1.8vw, 10px);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: right;
+  }
+
+  /* Expand panel */
+  .node-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, opacity 0.25s ease;
+    opacity: 0;
+  }
+
+  .event-node.open .node-detail {
+    max-height: 300px;
+    opacity: 1;
+  }
+
+  .detail-inner {
+    padding: clamp(12px, 3vw, 18px) clamp(14px, 3vw, 20px) clamp(14px, 3vw, 20px);
+    border-top: 1px solid var(--slate);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .detail-left { display: flex; flex-direction: column; gap: 8px; }
+  .detail-right { display: flex; flex-direction: column; gap: 8px; }
+
+  .bf-block {
+    padding: clamp(8px, 2vw, 12px);
+    background: var(--navy);
+  }
+
+  .bf-label {
+    font-size: clamp(8px, 1.8vw, 10px);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .bf-val {
+    font-size: clamp(18px, 4.5vw, 26px);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .bf-desc {
+    font-size: clamp(10px, 2vw, 12px);
+    color: var(--mist);
+    line-height: 1.5;
+    margin-top: 6px;
+  }
+
+  .jump-block {
+    padding: clamp(8px, 2vw, 12px);
+    background: var(--gold-faint);
+    border-left: 3px solid var(--gold-dim);
+  }
+
+  .jump-label {
+    font-size: clamp(8px, 1.8vw, 10px);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 4px;
+  }
+
+  .jump-val {
+    font-size: clamp(14px, 3.5vw, 18px);
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1.2;
+  }
+
+  /* Progress bar */
+  .progress-track {
+    height: 4px;
+    background: var(--slate);
+    margin-top: 3px;
+    position: relative;
+  }
+
+  .progress-fill-cow {
+    position: absolute;
+    top: 0; left: 0;
+    height: 50%;
+    background: var(--blue);
+    transition: width 0.6s ease;
+  }
+
+  .progress-fill-eco {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 50%;
+    background: var(--gold);
+    transition: width 0.6s ease;
+  }
+
+  /* Threshold */
+  .threshold-marker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--mist);
+    opacity: 0.3;
+    left: 70%;
+  }
+
+  /* Final state */
+  .final-state {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    margin-top: 3px;
+    opacity: 0;
+    animation: rise 0.5s 0.9s forwards;
+  }
+
+  .final-cell {
+    padding: clamp(16px, 4vw, 24px);
+    text-align: center;
+  }
+
+  .final-cow { background: #0d1e38; border: 1px solid var(--blue-dim); border-top: 3px solid var(--blue); }
+  .final-eco { background: #0d1e38; border: 1px solid var(--gold-dim); border-top: 3px solid var(--gold); }
+
+  .final-model { font-size: clamp(9px, 2vw, 11px); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 10px; }
+  .final-score { font-family: 'Playfair Display', serif; font-size: clamp(36px, 9vw, 52px); font-weight: 700; line-height: 1; margin-bottom: 8px; }
+  .final-verdict { font-size: clamp(11px, 2.5vw, 13px); color: var(--mist); line-height: 1.5; }
+  .final-verdict strong { color: var(--cream); }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 20px;
+    padding: 14px 0;
+    border-top: 1px solid var(--slate);
+    margin-top: 16px;
+    opacity: 0;
+    animation: rise 0.5s 1.0s forwards;
+  }
+
+  .leg-item { display: flex; align-items: center; gap: 7px; font-size: clamp(10px, 2vw, 11px); }
+  .leg-dot  { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="canvas">
+
+  <div class="title-block">
+    <div class="eyebrow">Bayesian Update Chain</div>
+    <div class="headline">Evidence Arrives.<br>The Posterior Climbs.</div>
+    <div class="deck">Each event updates the probability that the current conflict qualifies as a world war. The two models start close. They do not stay that way.</div>
+    <div class="tap-hint">↓ Tap any event to see the evidence weight</div>
+  </div>
+
+  <div class="prior-bar">
+    <div class="prior-num">0.15</div>
+    <div>
+      <div class="prior-label">Prior P(WW)</div>
+      <div class="prior-desc">Base rate — 2 confirmed world wars across ~13 major multi-state conflicts since 1900.</div>
+    </div>
+  </div>
+
+  <div class="chain" id="chain"></div>
+
+  <div class="final-state">
+    <div class="final-cell final-cow">
+      <div class="final-model" style="color:var(--blue)">Correlates of War</div>
+      <div class="final-score" style="color:var(--blue)">0.61</div>
+      <div class="final-verdict"><strong>Below threshold.</strong> China and Russia remain in the supporting set. One crossing changes this.</div>
+    </div>
+    <div class="final-cell final-eco">
+      <div class="final-model" style="color:var(--gold)">Economic Restructuring</div>
+      <div class="final-score" style="color:var(--gold)">0.88</div>
+      <div class="final-verdict"><strong>Above threshold.</strong> Forced reallocation of global economic sovereignty is in progress.</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div><span style="color:var(--blue)">Correlates of War</span></div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--gold)"></div><span style="color:var(--gold)">Economic Restructuring</span></div>
+  </div>
+
+</div>
+
+<script>
+const events = [
+  {
+    text: 'Russia-Ukraine: 40+ NATO states with active material support, fourth year of sustained combat',
+    cow: 0.36, eco: 0.43,
+    bfCow: 3.2, bfEco: 4.1,
+    prevCow: 0.15, prevEco: 0.15,
+    detail: 'S1 threshold cleared. Great-power proxy engagement confirmed. Coalition continuity factor active. CoW model and economic model both update strongly — first evidence event carries the largest single Bayes factor.'
+  },
+  {
+    text: 'Houthi attacks: 100+ vessel strikes, 60+ nations affected, Strait of Hormuz under pressure',
+    cow: 0.49, eco: 0.68,
+    bfCow: 2.1, bfEco: 3.8,
+    prevCow: 0.36, prevEco: 0.43,
+    detail: 'S2 domain count rises: kinetic + economic + maritime chokepoint simultaneously active. 20% of global petroleum transit affected. Economic model weights chokepoint control heavily as a strategic instrument — not a side effect.'
+  },
+  {
+    text: 'Iranian cyber operations against US and Canadian critical infrastructure and financial systems',
+    cow: 0.53, eco: 0.79,
+    bfCow: 1.4, bfEco: 2.2,
+    prevCow: 0.49, prevEco: 0.68,
+    detail: 'S2 domain 3 confirmed: cyber. S3 instrument 1 active: deliberate targeting of economic infrastructure. CoW model discounts cyber heavily — no armed forces, no formal combatants. Economic model treats infrastructure targeting as equivalent to kinetic supply disruption.'
+  },
+  {
+    text: 'BRICS de-dollarization: coordinated reserve diversification by Russia, China, Iran, Gulf states',
+    cow: 0.57, eco: 0.84,
+    bfCow: 1.2, bfEco: 3.1,
+    prevCow: 0.53, prevEco: 0.79,
+    detail: 'S3 instrument 2: reserve currency pressure as deliberate strategic weapon. CoW model treats financial coordination as background geopolitics — weak evidence. Economic restructuring model treats this as the primary objective of the conflict, not a side effect. Largest model divergence on a single factor.'
+  },
+  {
+    text: 'Documented Chinese and Russian material support to Iran; 2025 Russia-Iran treaty signed',
+    cow: 0.59, eco: 0.86,
+    bfCow: 1.1, bfEco: 1.4,
+    prevCow: 0.57, prevEco: 0.84,
+    detail: 'Actor set overlap confirmed: Russia-Ukraine actor set intersects Iran-Gaza actor set through shared state backing and coordinated strategic pressure. No mutual defense obligation in the 2025 treaty — proxy penalty partially applied. Both models update modestly.'
+  },
+  {
+    text: 'Direct US-Iran combat, late February 2026. China and Russia remain in the supporting set.',
+    cow: 0.61, eco: 0.88,
+    bfCow: 1.05, bfEco: 1.3,
+    prevCow: 0.59, prevEco: 0.86,
+    detail: 'The decisive observable. CoW model: China and Russia not co-belligerent — principal-power direct engagement still absent, posterior holds below threshold. Economic model: US-Iran kinetic confirms escalation ladder, proxy mechanism doing strategic work. Final gap: 0.27.'
+  },
+];
+
+const chain = document.getElementById('chain');
+
+events.forEach((e, i) => {
+  const node = document.createElement('div');
+  node.className = 'event-node';
+
+  const jumpCow = ((e.cow - e.prevCow) * 100).toFixed(0);
+  const jumpEco = ((e.eco - e.prevEco) * 100).toFixed(0);
+
+  node.innerHTML = `
+    <div class="node-header">
+      <div class="event-text">${e.text}</div>
+      <div class="node-scores">
+        <div class="score-cow">${e.cow.toFixed(2)}</div>
+        <div class="score-eco">${e.eco.toFixed(2)}</div>
+        <div class="score-label" style="color:var(--mist)">posterior</div>
+      </div>
+    </div>
+    <div class="progress-track">
+      <div class="threshold-marker"></div>
+      <div class="progress-fill-cow" style="width:${e.cow * 100}%"></div>
+      <div class="progress-fill-eco" style="width:${e.eco * 100}%"></div>
+    </div>
+    <div class="node-detail">
+      <div class="detail-inner">
+        <div class="detail-left">
+          <div class="bf-block" style="border-left:3px solid var(--blue-dim)">
+            <div class="bf-label" style="color:var(--blue)">CoW Bayes Factor</div>
+            <div class="bf-val" style="color:var(--blue)">${e.bfCow}</div>
+          </div>
+          <div class="jump-block" style="border-left-color:var(--blue-dim);background:#4a7ab812">
+            <div class="jump-label" style="color:var(--blue-dim)">Posterior jump</div>
+            <div class="jump-val" style="color:var(--blue)">${e.prevCow.toFixed(2)} → ${e.cow.toFixed(2)} (+${jumpCow}pp)</div>
+          </div>
+        </div>
+        <div class="detail-right">
+          <div class="bf-block" style="border-left:3px solid var(--gold-dim)">
+            <div class="bf-label" style="color:var(--gold)">Econ. Bayes Factor</div>
+            <div class="bf-val" style="color:var(--gold)">${e.bfEco}</div>
+          </div>
+          <div class="jump-block">
+            <div class="jump-label">Posterior jump</div>
+            <div class="jump-val">${e.prevEco.toFixed(2)} → ${e.eco.toFixed(2)} (+${jumpEco}pp)</div>
+          </div>
+        </div>
+        <div style="grid-column:1/-1">
+          <div class="bf-desc">${e.detail}</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  node.addEventListener('click', () => {
+    const isOpen = node.classList.contains('open');
+    document.querySelectorAll('.event-node').forEach(n => n.classList.remove('open'));
+    if (!isOpen) node.classList.add('open');
+  });
+
+  chain.appendChild(node);
+});
+</script>
+</body>
+</html>

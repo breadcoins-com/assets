@@ -4,516 +4,247 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap');
 
   :root {
-    --navy: #0a1628;
-    --gold: #c9a84c;
-    --gold-dim: #8a6f2e;
-    --gold-faint: #c9a84c18;
-    --slate: #1e3258;
-    --mist: #8a9ab8;
-    --cream: #f0e6cc;
-    --fail: #3a2a1a;
-    --fail-border: #6a3a1a;
+    --white:    #ffffff;
+    --off:      #f7f4ef;
+    --navy:     #0a1628;
+    --navy-mid: #1e3258;
+    --navy-dim: #4a6080;
+    --gold:     #b8930a;
+    --gold-mid: #c9a84c;
+    --rule:     #ddd8d0;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; color: var(--navy); }
 
-  body {
-    background: var(--navy);
-    font-family: 'Anonymous Pro', monospace;
-    min-height: 100vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 32px 16px 48px;
+  .asset { width: 100%; aspect-ratio: 16/9; display: flex; flex-direction: column; background: var(--white); overflow: hidden; }
+
+  .asset-header {
+    padding: clamp(8px,1.8vw,16px) clamp(14px,3vw,28px);
+    border-bottom: 2px solid var(--navy);
+    display: flex; align-items: flex-end;
+    flex-shrink: 0; gap: 12px;
   }
+  .header-left { display: flex; flex-direction: column; gap: 3px; }
+  .asset-eyebrow { font-size: clamp(11px,1.2vw,13px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+  .asset-title { font-family: 'Playfair Display', serif; font-size: clamp(15px,2.2vw,24px); color: var(--navy); font-weight: 700; line-height: 1.15; }
+  .asset-title em { font-style: italic; color: var(--gold); }
+  .gold-rule { width: clamp(24px,4vw,48px); height: 2px; background: var(--gold-mid); margin-top: 3px; }
 
-  .canvas {
-    width: 100%;
-    max-width: 700px;
-  }
+  .asset-body { flex: 1; min-height: 0; display: flex; gap: clamp(6px,1.2vw,14px); padding: clamp(8px,1.5vw,16px) clamp(14px,3vw,28px); overflow: hidden; }
 
-  /* Embedded title — magazine style */
-  .title-block {
-    position: relative;
-    margin-bottom: 40px;
-    padding: 0 0 20px 0;
-    border-bottom: 1px solid var(--gold-dim);
-    opacity: 0;
-    animation: rise 0.7s ease forwards;
-  }
-
-  .title-eyebrow {
-    font-size: clamp(9px, 2vw, 11px);
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 10px;
-  }
-
-  .title-main {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(22px, 5vw, 34px);
-    color: var(--cream);
-    line-height: 1.15;
-    font-weight: 700;
-  }
-
-  .title-sub {
-    margin-top: 10px;
-    font-size: clamp(12px, 2.5vw, 14px);
-    color: var(--mist);
-    line-height: 1.6;
-    max-width: 540px;
-  }
-
-  /* Flow diagram */
-  .flow {
+  /* Left column: three source nodes */
+  .sources-col {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: clamp(4px,0.8vw,8px);
+    width: clamp(100px,20vw,190px);
+    flex-shrink: 0;
+    justify-content: center;
   }
 
-  /* Input sources */
-  .sources {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    margin-bottom: 0;
-    opacity: 0;
-    animation: rise 0.6s 0.2s ease forwards;
+  .src-node {
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--gold-mid);
+    background: var(--off);
+    padding: clamp(5px,1vw,10px) clamp(6px,1.2vw,12px);
   }
 
-  .source-node {
-    background: var(--slate);
-    border: 1px solid #2a4268;
-    padding: clamp(12px, 3vw, 18px) clamp(10px, 2vw, 16px);
-    text-align: center;
-    position: relative;
-    cursor: default;
-    transition: border-color 0.2s;
-  }
+  .src-tag { font-size: clamp(11px,1.1vw,12px); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 2px; }
+  .src-name { font-family: 'Playfair Display', serif; font-size: clamp(12px,1.4vw,15px); color: var(--navy); line-height: 1.2; }
+  .src-desc { font-size: clamp(10px,1vw,11px); color: var(--navy-dim); line-height: 1.3; margin-top: 2px; }
 
-  .source-node:hover { border-color: var(--gold-dim); }
+  /* SVG converge */
+  .converge-svg { width: clamp(28px,4vw,44px); flex-shrink: 0; align-self: stretch; }
 
-  .source-label {
-    font-size: clamp(9px, 2vw, 11px);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 6px;
-  }
+  /* Center: gates */
+  .gates-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: clamp(4px,0.8vw,8px); justify-content: center; }
 
-  .source-desc {
-    font-size: clamp(11px, 2.5vw, 13px);
-    color: var(--cream);
-    line-height: 1.4;
-    font-weight: 700;
-  }
-
-  .source-detail {
-    margin-top: 5px;
-    font-size: clamp(10px, 2vw, 11px);
-    color: var(--mist);
-    line-height: 1.4;
-  }
-
-  /* Converging flow lines via SVG */
-  .flow-svg-wrap {
-    width: 100%;
-    opacity: 0;
-    animation: rise 0.5s 0.5s ease forwards;
-  }
-
-  /* Gate nodes */
   .gate {
-    opacity: 0;
-    animation: rise 0.6s ease forwards;
-  }
-
-  .gate-inner {
-    background: var(--gold-faint);
-    border: 2px solid var(--gold);
-    padding: clamp(14px, 3vw, 22px) clamp(16px, 4vw, 28px);
-    text-align: center;
+    border: 1px solid var(--navy-mid);
+    background: var(--white);
+    padding: clamp(5px,1vw,10px) clamp(8px,1.5vw,14px);
     position: relative;
   }
 
-  .gate-label {
-    font-size: clamp(9px, 2vw, 11px);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 8px;
-  }
+  .gate.primary { border-color: var(--navy); border-width: 2px; }
 
-  .gate-question {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(15px, 3.5vw, 20px);
-    color: var(--cream);
-    line-height: 1.3;
-    font-style: italic;
-  }
+  .gate-tag { font-size: clamp(10px,1vw,11px); letter-spacing: 0.15em; text-transform: uppercase; color: var(--navy-dim); margin-bottom: 3px; }
+  .gate-q { font-family: 'Playfair Display', serif; font-size: clamp(12px,1.4vw,15px); color: var(--navy); line-height: 1.3; font-style: italic; }
 
-  /* Branch outputs */
   .branch-row {
-    display: grid;
-    grid-template-columns: 1fr 60px 1fr;
-    gap: 0;
-    opacity: 0;
-    animation: rise 0.5s ease forwards;
-  }
-
-  .branch-yes {
-    background: var(--gold-faint);
-    border: 1px solid var(--gold-dim);
-    border-right: none;
-    padding: clamp(10px, 2.5vw, 16px);
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
+    gap: clamp(4px,0.8vw,8px);
   }
 
-  .branch-no {
-    background: var(--fail);
-    border: 1px solid var(--fail-border);
-    border-left: none;
-    padding: clamp(10px, 2.5vw, 16px);
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-  }
-
-  .branch-center {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-  }
-
-  .branch-tag {
-    font-size: clamp(9px, 2vw, 10px);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    font-weight: 700;
-  }
-
-  .tag-yes { color: var(--gold); border: 1px solid var(--gold-dim); }
-  .tag-no  { color: #8a5a3a; border: 1px solid var(--fail-border); }
-
-  .branch-text {
-    font-size: clamp(11px, 2.5vw, 13px);
-    color: var(--mist);
-    line-height: 1.5;
-  }
-
-  /* Connector line segment */
-  .connector {
-    width: 2px;
-    background: var(--gold-dim);
-    margin: 0 auto;
-  }
-
-  .connector-h {
-    height: clamp(16px, 3vw, 24px);
-  }
-
-  /* Bayesian layer */
-  .bayes-block {
-    opacity: 0;
-    animation: rise 0.6s ease forwards;
-    background: #060e1c;
-    border: 2px solid var(--gold);
-    padding: clamp(18px, 4vw, 28px);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .bayes-block::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  }
-
-  .bayes-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(16px, 3.5vw, 22px);
-    color: var(--cream);
-    margin-bottom: 18px;
-    font-style: italic;
-  }
-
-  .factors-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
-    margin-bottom: 18px;
-  }
-
-  .factor {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: clamp(8px, 2vw, 12px);
-    background: var(--navy);
-    border-left: 3px solid var(--gold-dim);
-  }
-
-  .factor-num {
-    font-size: clamp(16px, 4vw, 22px);
-    font-weight: 700;
-    color: var(--gold-dim);
-    line-height: 1;
-    min-width: 24px;
-  }
-
-  .factor-text {
-    font-size: clamp(11px, 2.5vw, 13px);
-    color: var(--mist);
+  .branch {
+    flex: 1;
+    padding: clamp(4px,0.8vw,8px) clamp(6px,1.2vw,10px);
+    font-size: clamp(10px,1.1vw,12px);
     line-height: 1.4;
   }
 
-  .threshold-bar {
+  .branch-yes { background: #f0f7f0; border: 1px solid #8ab88a; border-left: 3px solid #4a8a4a; color: var(--navy-dim); }
+  .branch-no  { background: #fff4f0; border: 1px solid #c8a0a0; border-left: 3px solid #8a4a4a; color: var(--navy-dim); }
+  .branch-tag { font-weight: 700; margin-bottom: 2px; font-size: clamp(10px,1.1vw,12px); }
+  .yes-tag { color: #2a6a2a; }
+  .no-tag  { color: #8a2a2a; }
+
+  /* Right: Bayes block */
+  .bayes-col {
+    width: clamp(110px,22vw,200px);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px,0.8vw,8px);
+    justify-content: center;
+  }
+
+  .bayes-header {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(12px,1.4vw,15px);
+    color: var(--navy);
+    font-style: italic;
+    padding-bottom: clamp(4px,0.8vw,8px);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: clamp(2px,0.5vw,4px);
+  }
+
+  .factor-row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: clamp(10px, 2vw, 14px) clamp(12px, 3vw, 18px);
-    background: var(--gold-faint);
-    border: 1px solid var(--gold-dim);
+    gap: clamp(5px,1vw,8px);
+    padding: clamp(3px,0.6vw,6px) clamp(5px,1vw,8px);
+    background: var(--off);
+    border-left: 2px solid var(--gold-mid);
   }
 
-  .threshold-num {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(28px, 7vw, 42px);
-    font-weight: 700;
-    color: var(--gold);
-    line-height: 1;
+  .factor-num { font-size: clamp(11px,1.3vw,14px); font-weight: 700; color: var(--gold); min-width: 18px; }
+  .factor-text { font-size: clamp(10px,1.1vw,12px); color: var(--navy-dim); line-height: 1.2; }
+
+  .threshold-box {
+    margin-top: clamp(3px,0.6vw,6px);
+    padding: clamp(4px,0.8vw,8px) clamp(5px,1vw,8px);
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    gap: clamp(6px,1.2vw,10px);
   }
 
-  .threshold-label {
-    font-size: clamp(11px, 2.5vw, 13px);
-    color: var(--mist);
-    line-height: 1.5;
+  .thresh-num { font-family: 'Playfair Display', serif; font-size: clamp(18px,3vw,28px); font-weight: 700; color: var(--gold-mid); line-height: 1; }
+  .thresh-label { font-size: clamp(10px,1.1vw,12px); color: #8a9ab8; line-height: 1.3; }
+  .thresh-label strong { color: #f0e6cc; display: block; }
+
+  .asset-footer {
+    padding: clamp(5px,1vw,9px) clamp(14px,3vw,28px);
+    border-top: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0; background: var(--off);
   }
-
-  .threshold-label strong { color: var(--cream); display: block; }
-
-  /* Outcomes at bottom */
-  .outcomes {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    margin-top: 6px;
-    opacity: 0;
-    animation: rise 0.6s ease forwards;
-  }
-
-  .outcome {
-    padding: clamp(14px, 3vw, 20px);
-    text-align: center;
-  }
-
-  .outcome-classified {
-    background: var(--gold-faint);
-    border: 2px solid var(--gold);
-  }
-
-  .outcome-rejected {
-    background: var(--fail);
-    border: 2px solid var(--fail-border);
-  }
-
-  .outcome-icon {
-    font-size: clamp(24px, 6vw, 36px);
-    margin-bottom: 8px;
-    line-height: 1;
-  }
-
-  .outcome-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(14px, 3vw, 18px);
-    color: var(--cream);
-    margin-bottom: 6px;
-  }
-
-  .outcome-desc {
-    font-size: clamp(10px, 2.5vw, 12px);
-    color: var(--mist);
-    line-height: 1.5;
-  }
-
-  /* Animation delays per section */
-  .gate:nth-of-type(1) { animation-delay: 0.55s; }
-  .branch-row:nth-of-type(1) { animation-delay: 0.7s; }
-  .gate:nth-of-type(2) { animation-delay: 0.85s; }
-  .branch-row:nth-of-type(2) { animation-delay: 1.0s; }
-  .gate:nth-of-type(3) { animation-delay: 1.1s; }
-  .branch-row:nth-of-type(3) { animation-delay: 1.2s; }
-  .bayes-block { animation-delay: 1.3s; }
-  .outcomes { animation-delay: 1.5s; }
-
-  @keyframes rise {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Thin connector between elements */
-  .vconnect {
-    width: 2px;
-    height: clamp(14px, 3vw, 22px);
-    background: var(--gold-dim);
-    margin: 0 auto;
-    opacity: 0;
-    animation: rise 0.3s ease forwards;
-  }
+  .footer-note { font-size: clamp(10px,1vw,11px); color: var(--navy-dim); letter-spacing: 0.08em; font-style: italic; }
+  .footer-brand { font-size: clamp(10px,1vw,11px); letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
 </style>
 </head>
 <body>
-<div class="canvas">
+<div class="asset">
 
-  <!-- Embedded magazine title -->
-  <div class="title-block">
-    <div class="title-eyebrow">Classification Framework</div>
-    <div class="title-main">How Do You Measure<br>a War You Can't See?</div>
-    <div class="title-sub">Three gates. Six evidence factors. One threshold. The instrument determines the answer.</div>
-  </div>
-
-  <!-- Source inputs -->
-  <div class="sources">
-    <div class="source-node">
-      <div class="source-label">S1</div>
-      <div class="source-desc">Nation Set</div>
-      <div class="source-detail">6+ sovereign states with active belligerent roles</div>
-    </div>
-    <div class="source-node">
-      <div class="source-label">S2</div>
-      <div class="source-desc">Domain Set</div>
-      <div class="source-detail">3+ conflict domains active simultaneously</div>
-    </div>
-    <div class="source-node">
-      <div class="source-label">S3</div>
-      <div class="source-desc">Economic Set</div>
-      <div class="source-detail">2+ economic instruments as deliberate weapons</div>
+  <div class="asset-header">
+    <div class="header-left">
+      <div class="asset-eyebrow">Parlay Economics | Home Economics Journal</div>
+      <div class="asset-title">How Do You Measure <em>a War You Cannot See?</em></div>
+      <div class="gold-rule"></div>
     </div>
   </div>
 
-  <!-- SVG converging flow -->
-  <div class="flow-svg-wrap">
-    <svg viewBox="0 0 700 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
-      <!-- Three lines converging from thirds to center -->
-      <line x1="117" y1="0" x2="350" y2="80" stroke="#8a6f2e" stroke-width="1.5" opacity="0.7"/>
-      <line x1="350" y1="0" x2="350" y2="80" stroke="#8a6f2e" stroke-width="1.5" opacity="0.7"/>
-      <line x1="583" y1="0" x2="350" y2="80" stroke="#8a6f2e" stroke-width="1.5" opacity="0.7"/>
-      <circle cx="350" cy="80" r="4" fill="#c9a84c"/>
-    </svg>
-  </div>
+  <div class="asset-body">
 
-  <!-- Gate 1 -->
-  <div class="gate">
-    <div class="gate-inner">
-      <div class="gate-label">Gate 1 — Necessary Condition</div>
-      <div class="gate-question">Do all three sets hold simultaneously?</div>
-    </div>
-  </div>
-
-  <div class="branch-row" style="animation-delay:0.7s">
-    <div class="branch-yes">
-      <div class="branch-tag tag-yes">Yes — continue</div>
-      <div class="branch-text">All three threshold conditions met. Bayesian classifier may run.</div>
-    </div>
-    <div class="branch-center">
-      <div style="width:1px;height:100%;background:#2a4268;margin:0 auto;"></div>
-    </div>
-    <div class="branch-no">
-      <div class="branch-tag tag-no">No — terminate</div>
-      <div class="branch-text" style="text-align:right">Classification ends. Conflict is not a world war candidate.</div>
-    </div>
-  </div>
-
-  <div class="vconnect" style="animation-delay:0.95s"></div>
-
-  <!-- Gate 2 -->
-  <div class="gate" style="animation-delay:1.0s">
-    <div class="gate-inner">
-      <div class="gate-label">Gate 2 — Proxy Penalty</div>
-      <div class="gate-question">Are supporting states discounted against direct belligerents?</div>
-    </div>
-  </div>
-
-  <div class="branch-row" style="animation-delay:1.15s">
-    <div class="branch-yes">
-      <div class="branch-tag tag-yes">Applied</div>
-      <div class="branch-text">Prevents the entire Cold War from classifying as a single 45-year world war.</div>
-    </div>
-    <div class="branch-center"></div>
-    <div class="branch-no">
-      <div class="branch-tag tag-no">Ignored</div>
-      <div class="branch-text" style="text-align:right">Framework collapses. Sympathy equals co-belligerence. Classification becomes useless.</div>
-    </div>
-  </div>
-
-  <div class="vconnect" style="animation-delay:1.25s"></div>
-
-  <!-- Bayesian layer -->
-  <div class="bayes-block">
-    <div class="bayes-title">The Bayesian layer updates on six factors</div>
-    <div class="factors-grid">
-      <div class="factor">
-        <div class="factor-num">01</div>
-        <div class="factor-text">Great-power involvement</div>
+    <!-- Source nodes -->
+    <div class="sources-col">
+      <div class="src-node">
+        <div class="src-tag">S1</div>
+        <div class="src-name">Nation Set</div>
+        <div class="src-desc">6+ sovereign states with active belligerent roles</div>
       </div>
-      <div class="factor">
-        <div class="factor-num">02</div>
-        <div class="factor-text">Multi-theater activity</div>
+      <div class="src-node">
+        <div class="src-tag">S2</div>
+        <div class="src-name">Domain Set</div>
+        <div class="src-desc">3+ conflict domains active simultaneously</div>
       </div>
-      <div class="factor">
-        <div class="factor-num">03</div>
-        <div class="factor-text">Coalition continuity</div>
-      </div>
-      <div class="factor">
-        <div class="factor-num">04</div>
-        <div class="factor-text">Economic shock magnitude</div>
-      </div>
-      <div class="factor">
-        <div class="factor-num">05</div>
-        <div class="factor-text">Mobilization depth</div>
-      </div>
-      <div class="factor">
-        <div class="factor-num">06</div>
-        <div class="factor-text">Proxy penalty applied</div>
+      <div class="src-node">
+        <div class="src-tag">S3</div>
+        <div class="src-name">Economic Set</div>
+        <div class="src-desc">2+ economic instruments as deliberate weapons</div>
       </div>
     </div>
-    <div class="threshold-bar">
-      <div class="threshold-num">0.70</div>
-      <div class="threshold-label">
-        <strong>Classification threshold</strong>
-        Posterior probability required for world war classification. Values 0.50–0.69 enter the ambiguous zone.
+
+    <!-- Converging SVG -->
+    <div class="converge-svg">
+      <svg viewBox="0 0 44 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+        <line x1="22" y1="14" x2="22" y2="50" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/>
+        <line x1="22" y1="50" x2="22" y2="50" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/>
+        <line x1="22" y1="86" x2="22" y2="50" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/>
+        <line x1="4" y1="14" x2="22" y2="50" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/>
+        <line x1="40" y1="86" x2="22" y2="50" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/>
+        <circle cx="22" cy="50" r="4" fill="#b8930a"/>
+        <line x1="22" y1="50" x2="44" y2="50" stroke="#b8930a" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <!-- Gates -->
+    <div class="gates-col">
+      <div class="gate primary">
+        <div class="gate-tag">Gate 1 | Necessary condition</div>
+        <div class="gate-q">Do all three sets hold simultaneously?</div>
+      </div>
+      <div class="branch-row">
+        <div class="branch branch-yes">
+          <div class="branch-tag yes-tag">Yes | Continue</div>
+          All threshold conditions met. Bayesian classifier runs.
+        </div>
+        <div class="branch branch-no">
+          <div class="branch-tag no-tag">No | Terminate</div>
+          Not a world war candidate. Classification ends.
+        </div>
+      </div>
+      <div class="gate">
+        <div class="gate-tag">Gate 2 | Proxy penalty applied</div>
+        <div class="gate-q">Supporting states discounted against direct belligerents?</div>
+      </div>
+      <div class="branch-row">
+        <div class="branch branch-yes">
+          <div class="branch-tag yes-tag">Applied</div>
+          Prevents Cold War classifying as one 45-year world war.
+        </div>
+        <div class="branch branch-no">
+          <div class="branch-tag no-tag">Ignored</div>
+          Framework collapses. Sympathy equals co-belligerence.
+        </div>
       </div>
     </div>
+
+    <!-- Bayes panel -->
+    <div class="bayes-col">
+      <div class="bayes-header">Six Bayes factors update the posterior</div>
+      <div class="factor-row"><div class="factor-num">01</div><div class="factor-text">Great-power involvement</div></div>
+      <div class="factor-row"><div class="factor-num">02</div><div class="factor-text">Multi-theater activity</div></div>
+      <div class="factor-row"><div class="factor-num">03</div><div class="factor-text">Coalition continuity</div></div>
+      <div class="factor-row"><div class="factor-num">04</div><div class="factor-text">Economic shock magnitude</div></div>
+      <div class="factor-row"><div class="factor-num">05</div><div class="factor-text">Mobilization depth</div></div>
+      <div class="factor-row"><div class="factor-num">06</div><div class="factor-text">Proxy penalty</div></div>
+      <div class="threshold-box">
+        <div class="thresh-num">0.70</div>
+        <div class="thresh-label"><strong>Classification threshold</strong>P(WW | evidence) required</div>
+      </div>
+    </div>
+
   </div>
 
-  <div class="vconnect" style="animation-delay:1.5s"></div>
-
-  <!-- Final outcomes -->
-  <div class="outcomes">
-    <div class="outcome outcome-classified">
-      <div class="outcome-icon">◆</div>
-      <div class="outcome-title">Classified</div>
-      <div class="outcome-desc">P(WW | evidence) ≥ 0.70. The conflict enters the historical record as a world war candidate.</div>
-    </div>
-    <div class="outcome outcome-rejected">
-      <div class="outcome-icon">◇</div>
-      <div class="outcome-title">Not classified</div>
-      <div class="outcome-desc">Posterior below threshold. Regional conflict with global side effects. Watch the sets.</div>
-    </div>
+  <div class="asset-footer">
+    <div class="footer-note">Analytical framework only. Not investment advice.</div>
+    <div class="footer-brand">© Breadcoins.com</div>
   </div>
 
 </div>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+  :root { --navy:#0a1628; --gold:#b8930a; --gold-mid:#c9a84c; --navy-dim:#4a6080; --blue:#2a5a9a; --rule:#ddd8d0; --off:#f7f4ef; --white:#ffffff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:100%; height:100%; background:var(--white); font-family:'Anonymous Pro',monospace; }
+  .asset { width:100%; aspect-ratio:4/3; display:flex; flex-direction:column; overflow:hidden; background:var(--white); }
+  .hdr { padding:clamp(8px,2vw,16px) clamp(12px,3vw,24px); border-bottom:2px solid var(--navy); flex-shrink:0; }
+  .eyebrow { font-size:clamp(9px,1.8vw,12px); letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:3px; }
+  .title { font-family:'Playfair Display',serif; font-size:clamp(14px,2.8vw,22px); color:var(--navy); font-weight:700; line-height:1.15; }
+  .title em { font-style:italic; color:var(--gold); }
+  .gold-rule { width:clamp(20px,4vw,40px); height:2px; background:var(--gold-mid); margin-top:4px; }
+  .body { flex:1; min-height:0; padding:clamp(6px,1.2vw,12px) clamp(12px,3vw,24px); overflow:hidden; position:relative; }
+  canvas { position:absolute; top:0; left:0; width:100%; height:100%; }
+  .ftr { padding:clamp(4px,1vw,8px) clamp(12px,3vw,24px); border-top:1px solid var(--rule); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; background:var(--off); }
+  .ftr-note { font-size:clamp(8px,1.4vw,11px); color:var(--navy-dim); font-style:italic; }
+  .ftr-brand { font-size:clamp(8px,1.4vw,11px); letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-weight:700; }
+</style>
+</head>
+<body>
+<div class="asset">
+  <div class="hdr">
+    <div class="eyebrow">The Real Numbers | Home Economics Journal</div>
+    <div class="title">50 Years of Stocks and Gold — <em>Five Economic Eras</em></div>
+    <div class="gold-rule"></div>
+  </div>
+  <div class="body"><canvas id="c"></canvas></div>
+  <div class="ftr">
+    <div class="ftr-note">Annual gain (Y_t = P_t minus P_{t-52wk}). S&P 500 1975-2026. Gold spot price.</div>
+    <div class="ftr-brand">© Breadcoins.com</div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const years = [];
+for(let y=1976;y<=2026;y++) years.push(y);
+
+// S&P annual gains (approximate absolute index point changes)
+const sp500 = [
+  90,35,-25,35,25,90,140,60,40,80,120,55,80,170,200,240,180,270,310,-110,-250,-200,130,120,
+  140,190,200,160,-500,-250,200,190,280,430,550,380,280,-80,400,330,350,490,800,600,
+  -400,-450,550,750,600,530,600,830,700,789
+];
+
+// Gold annual gains (approximate $/oz changes)
+const gold = [
+  35,60,120,190,300,95,-65,-85,-45,-25,45,35,60,12,8,15,25,35,75,-30,45,65,85,75,
+  95,135,145,215,280,195,-80,-175,-30,45,65,55,100,125,180,280,350,420,300,200,
+  -200,-45,180,250,280,350,400,500,700,1645
+];
+
+const eras = [
+  {label:'Inflation Era',start:1976,end:1982,color:'rgba(184,147,10,0.08)'},
+  {label:'Great Moderation',start:1983,end:1999,color:'rgba(42,90,154,0.06)'},
+  {label:'Lost Decade',start:2000,end:2009,color:'rgba(184,147,10,0.08)'},
+  {label:'QE Era',start:2010,end:2019,color:'rgba(42,90,154,0.06)'},
+  {label:'Current',start:2020,end:2026,color:'rgba(184,147,10,0.13)'},
+];
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+function draw() {
+  const W = canvas.parentElement.clientWidth;
+  const H = canvas.parentElement.clientHeight;
+  canvas.width = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  canvas.style.width = W+'px';
+  canvas.style.height = H+'px';
+
+  const PAD = {top:24,right:16,bottom:32,left:44};
+  const cW = W-PAD.left-PAD.right;
+  const cH = H-PAD.top-PAD.bottom;
+  const dpr = devicePixelRatio;
+  ctx.scale(dpr,dpr);
+
+  const minV = -550, maxV = 1700;
+  const n = years.length;
+
+  function xP(i) { return PAD.left + (i/(n-1))*cW; }
+  function yP(v) { return PAD.top + cH - ((v-minV)/(maxV-minV))*cH; }
+
+  const fs = Math.max(9, W*0.028);
+
+  // Era shading
+  eras.forEach(era => {
+    const si = years.indexOf(era.start);
+    const ei = years.indexOf(era.end);
+    ctx.fillStyle = era.color;
+    ctx.fillRect(xP(si), PAD.top, xP(ei)-xP(si), cH);
+  });
+
+  // Era labels
+  ctx.font = `bold ${fs*0.85}px Anonymous Pro`;
+  ctx.textAlign = 'center';
+  eras.forEach(era => {
+    const si = years.indexOf(era.start);
+    const ei = years.indexOf(era.end);
+    ctx.fillStyle = '#8a9ab8';
+    ctx.fillText(era.label, (xP(si)+xP(ei))/2, PAD.top+fs);
+  });
+
+  // Zero line
+  ctx.strokeStyle = '#ccc';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD.left, yP(0));
+  ctx.lineTo(PAD.left+cW, yP(0));
+  ctx.stroke();
+
+  // Grid
+  ctx.strokeStyle = '#ece8e2';
+  [-400,-200,0,200,400,600,800,1000,1200,1400,1600].forEach(v => {
+    if(v === 0) return;
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, yP(v));
+    ctx.lineTo(PAD.left+cW, yP(v));
+    ctx.stroke();
+    ctx.fillStyle = '#8a9ab8';
+    ctx.font = `${fs*0.85}px Anonymous Pro`;
+    ctx.textAlign = 'right';
+    ctx.fillText(v > 0 ? '+'+v : v, PAD.left-4, yP(v)+3);
+  });
+
+  // Lines
+  function drawLine(data, color, lw) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lw;
+    ctx.beginPath();
+    data.forEach((v,i) => i===0 ? ctx.moveTo(xP(i),yP(v)) : ctx.lineTo(xP(i),yP(v)));
+    ctx.stroke();
+  }
+
+  drawLine(sp500, '#2a5a9a', 2);
+  drawLine(gold, '#b8930a', 2.5);
+
+  // X axis labels
+  ctx.fillStyle = '#8a9ab8';
+  ctx.font = `${fs*0.85}px Anonymous Pro`;
+  ctx.textAlign = 'center';
+  [1976,1985,1995,2005,2015,2026].forEach(yr => {
+    const i = years.indexOf(yr);
+    if(i>=0) ctx.fillText(yr, xP(i), PAD.top+cH+16);
+  });
+
+  // Legend
+  ctx.font = `bold ${fs}px Anonymous Pro`;
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#2a5a9a';
+  ctx.fillRect(PAD.left, PAD.top+cH-fs*1.8, 18, 3);
+  ctx.fillText('S&P 500', PAD.left+22, PAD.top+cH-fs*1.2);
+  ctx.fillStyle = '#b8930a';
+  ctx.fillRect(PAD.left+90, PAD.top+cH-fs*1.8, 18, 3);
+  ctx.fillText('Gold', PAD.left+112, PAD.top+cH-fs*1.2);
+
+  // NOW marker
+  const nowI = years.indexOf(2026);
+  ctx.strokeStyle = '#b8930a66';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([2,4]);
+  ctx.beginPath();
+  ctx.moveTo(xP(nowI), PAD.top);
+  ctx.lineTo(xP(nowI), PAD.top+cH);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#b8930a';
+  ctx.font = `bold ${fs}px Anonymous Pro`;
+  ctx.textAlign = 'center';
+  ctx.fillText('NOW', xP(nowI), PAD.top+fs*1.2);
+}
+
+draw();
+window.addEventListener('resize', () => { ctx.setTransform(1,0,0,1,0,0); draw(); });
+</script>
+</body>
+</html>

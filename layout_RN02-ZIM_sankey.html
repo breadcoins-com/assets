@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+  :root { --navy:#0a1628; --gold:#b8930a; --gold-mid:#c9a84c; --navy-dim:#4a6080; --rule:#ddd8d0; --off:#f7f4ef; --white:#ffffff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; background:var(--white); font-family:'Anonymous Pro',monospace; }
+  .exhibit { width:100%; background:var(--white); border:1px solid var(--rule); }
+  .hdr { padding:20px 28px 14px; border-bottom:2px solid var(--navy); }
+  .eyebrow { font-size:13px; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:6px; }
+  .title { font-family:'Playfair Display',serif; font-size:26px; color:var(--navy); font-weight:700; }
+  .title em { font-style:italic; color:var(--gold); }
+  .subtitle { font-size:14px; color:var(--navy-dim); margin-top:7px; line-height:1.6; }
+  .gold-rule { width:40px; height:2px; background:var(--gold-mid); margin-top:10px; }
+  .chart-wrap { width:100%; position:relative; padding-bottom:74%; overflow:hidden; background:var(--white); }
+  .chart-wrap svg { position:absolute; top:0; left:0; width:100%!important; height:100%!important; }
+  .tip { position:fixed; background:var(--navy); color:#e8d5a0; font-family:'Anonymous Pro',monospace; font-size:14px; padding:10px 14px; pointer-events:none; opacity:0; transition:opacity 0.1s; z-index:100; border-left:3px solid var(--gold); max-width:280px; line-height:1.6; }
+  .tip.show { opacity:1; }
+  .ftr { padding:10px 28px; border-top:1px solid var(--rule); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; background:var(--off); }
+  .ftr-note { font-size:12px; color:var(--navy-dim); font-style:italic; }
+  .ftr-brand { font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); font-weight:700; }
+</style>
+</head>
+<body>
+<div class="exhibit">
+  <div class="hdr">
+    <div class="eyebrow">The Real Numbers &nbsp;|&nbsp; Home Economics Journal</div>
+    <div class="title">Sizzle vs. <em>Steak</em></div>
+    <div class="subtitle">Six sources. Eight communication types. Which one feeds you?</div>
+    <div class="gold-rule"></div>
+  </div>
+  <div class="chart-wrap">
+    <svg id="sk" viewBox="0 0 1100 810" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div class="ftr">
+    <div class="ftr-note">6 sources · 8 communication types · 130 total points classified</div>
+    <div class="ftr-brand">Breadcoins.com</div>
+  </div>
+</div>
+<div class="tip" id="tip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-sankey/0.12.3/d3-sankey.min.js"></script>
+<script>
+const VW=1100, VH=810;
+const L=160, R=320, T=20, B=20;
+
+const NODES = [
+  {id:0, name:'Fortune / Roytburg',      g:'source', color:'#3a9a6a', lines:['Fortune','Roytburg']},
+  {id:1, name:'Fortune / Lichtenberg',   g:'source', color:'#7a5aaa', lines:['Fortune','Lichtenberg']},
+  {id:2, name:'The Conversation',        g:'source', color:'#3a8aaa', lines:['Conversation','Oil Shock']},
+  {id:3, name:'Fortune / DB Petrodollar',g:'source', color:'#8a3a6a', lines:['Fortune','Petrodollar']},
+  {id:4, name:'The Conversation',        g:'source', color:'#7a8a3a', lines:['Conversation','Cape Route']},
+  {id:5, name:'CNBC',                    g:'source', color:'#3a5a9a', lines:['CNBC']},
+  {id:6,  name:'Logical Inference',   g:'sig', color:'#6aaa8a'},
+  {id:7,  name:'Verified Fact',       g:'sig', color:'#7aaaba'},
+  {id:8,  name:'Interview',           g:'sig', color:'#9a7aba'},
+  {id:9,  name:'Question raised',     g:'sig', color:'#c8a040'},
+  {id:10, name:'Bare statement',      g:'noi', color:'#9aaaca'},
+  {id:11, name:'Appeal to authority', g:'noi', color:'#c07070'},
+  {id:12, name:'Unanchored stat',     g:'noi', color:'#c8a855'},
+  {id:13, name:'Causal claim',        g:'noi', color:'#9aaaca'},
+  {id:14, name:'Steak',  g:'out-sig', color:'#b8930a'},
+  {id:15, name:'Sizzle', g:'out-noi', color:'#0a1628'},
+];
+
+const RAW = [
+  [0,7,15],[0,6,4],[0,10,1],[0,13,1],
+  [1,7,17],[1,6,4],[1,8,14],[1,10,2],[1,11,1],[1,13,2],
+  [2,7,9],[2,6,5],[2,9,2],[2,10,2],[2,13,1],
+  [3,7,8],[3,6,3],[3,8,2],[3,11,2],[3,13,1],
+  [4,7,8],[4,6,4],[4,9,1],[4,10,2],[4,13,1],
+  [5,7,9],[5,6,2],[5,8,3],[5,10,2],[5,11,1],[5,13,1],
+];
+
+const TO={6:14,7:14,8:14,9:14,10:15,11:15,12:15,13:15};
+const links=[];
+RAW.forEach(([s,t,v])=>{ if(v===0) return; links.push({source:s,target:t,value:v}); links.push({source:t,target:TO[t],value:v}); });
+const svg=d3.select('#sk');
+const tip=document.getElementById('tip');
+const sk=d3.sankey().nodeId(d=>d.id).nodeWidth(20).nodePadding(14).extent([[L,T],[VW-R,VH-B]]);
+const g=sk({nodes:NODES.map(d=>({...d})),links:links.map(d=>({...d}))});
+svg.append('g').attr('fill','none').selectAll('path').data(g.links).join('path')
+  .attr('d',d3.sankeyLinkHorizontal())
+  .attr('stroke',d=>g.nodes[d.source.index].color||'#888')
+  .attr('stroke-width',d=>Math.max(1,d.width)).attr('opacity',0.28)
+  .on('mousemove',(e,d)=>{ tip.innerHTML=`<b style="color:var(--gold)">${d.source.name} &rarr; ${d.target.name}</b><br>${d.value} points`; tip.className='tip show'; tip.style.left=Math.min(e.clientX+14,window.innerWidth-300)+'px'; tip.style.top=(e.clientY-10)+'px'; d3.select(e.currentTarget).attr('opacity',0.7); })
+  .on('mouseleave',(e)=>{ tip.className='tip'; d3.select(e.currentTarget).attr('opacity',0.28); });
+svg.append('g').selectAll('rect').data(g.nodes).join('rect')
+  .attr('x',d=>d.x0).attr('y',d=>d.y0).attr('width',d=>d.x1-d.x0).attr('height',d=>Math.max(2,d.y1-d.y0))
+  .attr('fill',d=>d.color||'#888').attr('rx',2)
+  .on('mousemove',(e,d)=>{ tip.innerHTML=`<b style="color:var(--gold)">${d.name}</b><br>${d.value} points`; tip.className='tip show'; tip.style.left=Math.min(e.clientX+14,window.innerWidth-300)+'px'; tip.style.top=(e.clientY-10)+'px'; })
+  .on('mouseleave',()=>tip.className='tip');
+g.nodes.forEach(d=>{
+  const cy=(d.y0+d.y1)/2; const barH=d.y1-d.y0;
+  if(d.g==='source'){
+    const lines=d.lines||[d.name]; const lineH=20;
+    const startY=cy-((lines.length-1)*lineH)/2;
+    lines.forEach((line,i)=>{ svg.append('text').attr('x',d.x0-10).attr('y',startY+i*lineH).attr('text-anchor','end').attr('dominant-baseline','central').attr('font-family','Anonymous Pro, monospace').attr('font-size',18).attr('font-weight','700').attr('fill',d.color||'#0a1628').text(line); });
+  } else if(d.g==='sig'||d.g==='noi'){
+    const outNode=g.nodes.find(n=>n.g==='out-sig'||n.g==='out-noi');
+    const anchorX=outNode?outNode.x0-10:d.x1+10;
+    const outLinks=g.links.filter(l=>l.source.id===d.id);
+    let labelY=cy;
+    if(outLinks.length>0){ const avgY1=outLinks.reduce((a,l)=>a+l.y1,0)/outLinks.length; labelY=(cy+avgY1)/2; }
+    if(barH>4){ svg.append('text').attr('x',anchorX).attr('y',labelY).attr('text-anchor','end').attr('dominant-baseline','central').attr('font-family','Anonymous Pro, monospace').attr('font-size',15).attr('font-weight','700').attr('fill','#1a2a3a').text(d.name); }
+  } else if(d.g==='out-sig'||d.g==='out-noi'){
+    const labelLines=d.g==='out-sig'?['Steak']:['Sizzle'];
+    const subLabel=d.g==='out-sig'?'Coherent Signal':'Noise';
+    const lineH=38; const startY=cy-20;
+    labelLines.forEach((line,i)=>{ svg.append('text').attr('x',d.x1+18).attr('y',startY+i*lineH).attr('text-anchor','start').attr('dominant-baseline','central').attr('font-family','Anonymous Pro, monospace').attr('font-size',40).attr('font-weight','700').attr('fill',d.color||'#888').text(line); });
+    svg.append('text').attr('x',d.x1+18).attr('y',startY+labelLines.length*lineH-10).attr('text-anchor','start').attr('dominant-baseline','central').attr('font-family','Anonymous Pro, monospace').attr('font-size',14).attr('font-weight','400').attr('fill',d.color||'#888').attr('opacity',0.75).text(subLabel);
+    svg.append('text').attr('x',d.x1+18).attr('y',startY+labelLines.length*lineH+14).attr('text-anchor','start').attr('dominant-baseline','central').attr('font-family','Anonymous Pro, monospace').attr('font-size',16).attr('font-weight','400').attr('fill',d.color||'#888').text(`${d.value} Points`);
+  }
+});
+</script>
+</body>
+</html>

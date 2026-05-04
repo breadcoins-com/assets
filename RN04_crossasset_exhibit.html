@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RN04 Cross-Asset Five-Year Chart</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+  :root {
+    --navy: #0a1628;
+    --gold: #b8930a;
+    --gold-mid: #c9a84c;
+    --navy-dim: #4a6080;
+    --green: #1D9E75;
+    --red: #c0392b;
+    --blue: #2a5a9a;
+    --rule: #ddd8d0;
+    --off: #f7f4ef;
+    --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; }
+  .asset { width: 100%; display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--rule); }
+  .hdr { padding: clamp(10px, 2vw, 18px) clamp(14px, 3vw, 28px); border-bottom: 2px solid var(--navy); }
+  .eyebrow { font-size: clamp(10px, 1.8vw, 12px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 4px; }
+  .title { font-family: 'Playfair Display', serif; font-size: clamp(16px, 2.8vw, 22px); color: var(--navy); font-weight: 700; line-height: 1.2; }
+  .title em { font-style: italic; color: var(--gold); }
+  .sub { font-size: clamp(11px, 1.8vw, 13px); color: var(--navy-dim); margin-top: 6px; line-height: 1.4; }
+  .gold-rule { width: 40px; height: 2px; background: var(--gold-mid); margin-top: 8px; }
+  .legend { display: flex; gap: clamp(14px, 3vw, 28px); padding: clamp(10px, 1.8vw, 14px) clamp(14px, 3vw, 28px) 0; flex-wrap: wrap; }
+  .leg { display: flex; align-items: center; gap: 8px; font-size: clamp(10px, 1.7vw, 12px); color: var(--navy); font-weight: 700; }
+  .leg-line { width: 22px; height: 3px; flex-shrink: 0; }
+  .leg-val { color: var(--navy-dim); font-weight: 400; margin-left: 4px; }
+  .chart-outer { padding: clamp(8px, 1.5vw, 14px) clamp(14px, 3vw, 28px) clamp(8px, 1.5vw, 14px); }
+  .chart-container { position: relative; width: 100%; height: 0; padding-bottom: 50%; }
+  .chart-container canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; }
+  .ftr { padding: clamp(8px, 1.4vw, 12px) clamp(14px, 3vw, 28px); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; background: var(--off); flex-wrap: wrap; gap: 6px; }
+  .ftr-note { font-size: clamp(9px, 1.4vw, 11px); color: var(--navy-dim); font-style: italic; }
+  .ftr-brand { font-size: clamp(9px, 1.4vw, 11px); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="asset">
+  <div class="hdr">
+    <div class="eyebrow">The Real Numbers | Cross-Asset Returns</div>
+    <div class="title">Five Years, <em>Three Assets</em>, One Common Baseline</div>
+    <div class="sub">Each line indexed to 100 at May 2021. Values above 100 mean a gain. Values below 100 mean a loss.</div>
+    <div class="gold-rule"></div>
+  </div>
+  <div class="legend">
+    <div class="leg"><div class="leg-line" style="background: #f59e0b;"></div>Bitcoin <span class="leg-val">213</span></div>
+    <div class="leg"><div class="leg-line" style="background: #2a5a9a;"></div>S&amp;P 500 (SPY) <span class="leg-val">172</span></div>
+    <div class="leg"><div class="leg-line" style="background: #1D9E75;"></div>Oil (WTI) <span class="leg-val">161</span></div>
+  </div>
+  <div class="chart-outer">
+    <div class="chart-container"><canvas id="chart"></canvas></div>
+  </div>
+  <div class="ftr">
+    <div class="ftr-note">Sources: SPY and BTC daily closes via Tastytrade. WTI monthly via U.S. EIA series DCOILWTICO.</div>
+    <div class="ftr-brand">Breadcoins.com</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script>
+const SPY_DATA = [{"x":"2021-05-01","y":100.0},{"x":"2021-06-01","y":100.35},{"x":"2021-07-01","y":102.94},{"x":"2021-08-01","y":104.65},{"x":"2021-09-01","y":108.06},{"x":"2021-10-01","y":103.82},{"x":"2021-11-01","y":110.01},{"x":"2021-12-01","y":107.74},{"x":"2022-01-01","y":114.24},{"x":"2022-02-01","y":108.31},{"x":"2022-03-01","y":102.87},{"x":"2022-04-01","y":108.29},{"x":"2022-05-01","y":99.15},{"x":"2022-06-01","y":97.95},{"x":"2022-07-01","y":91.14},{"x":"2022-08-01","y":98.23},{"x":"2022-09-01","y":94.79},{"x":"2022-10-01","y":87.66},{"x":"2022-11-01","y":91.95},{"x":"2022-12-01","y":97.41},{"x":"2023-01-01","y":91.06},{"x":"2023-02-01","y":98.23},{"x":"2023-03-01","y":94.39},{"x":"2023-04-01","y":98.27},{"x":"2023-05-01","y":99.36},{"x":"2023-06-01","y":100.87},{"x":"2023-07-01","y":106.12},{"x":"2023-08-01","y":109.16},{"x":"2023-09-01","y":107.89},{"x":"2023-10-01","y":102.18},{"x":"2023-11-01","y":101.07},{"x":"2023-12-01","y":109.78},{"x":"2024-01-01","y":113.02},{"x":"2024-02-01","y":116.98},{"x":"2024-03-01","y":122.64},{"x":"2024-04-01","y":124.86},{"x":"2024-05-01","y":119.65},{"x":"2024-06-01","y":126.21},{"x":"2024-07-01","y":130.4},{"x":"2024-08-01","y":129.85},{"x":"2024-09-01","y":132.02},{"x":"2024-10-01","y":135.97},{"x":"2024-11-01","y":136.55},{"x":"2024-12-01","y":144.34},{"x":"2025-01-01","y":139.8},{"x":"2025-02-01","y":142.94},{"x":"2025-03-01","y":139.59},{"x":"2025-04-01","y":134.14},{"x":"2025-05-01","y":133.54},{"x":"2025-06-01","y":141.73},{"x":"2025-07-01","y":147.7},{"x":"2025-08-01","y":148.67},{"x":"2025-09-01","y":153.11},{"x":"2025-10-01","y":159.84},{"x":"2025-11-01","y":163.4},{"x":"2025-12-01","y":162.67},{"x":"2026-01-01","y":163.36},{"x":"2026-02-01","y":166.29},{"x":"2026-03-01","y":164.13},{"x":"2026-04-01","y":156.68},{"x":"2026-05-01","y":172.33}];
+const BTC_DATA = [{"x":"2021-05-01","y":100.0},{"x":"2021-06-01","y":99.76},{"x":"2021-07-01","y":90.2},{"x":"2021-08-01","y":107.91},{"x":"2021-09-01","y":134.43},{"x":"2021-10-01","y":129.51},{"x":"2021-11-01","y":167.27},{"x":"2021-12-01","y":154.98},{"x":"2022-01-01","y":128.13},{"x":"2022-02-01","y":104.53},{"x":"2022-03-01","y":120.52},{"x":"2022-04-01","y":126.62},{"x":"2022-05-01","y":106.04},{"x":"2022-06-01","y":81.04},{"x":"2022-07-01","y":52.14},{"x":"2022-08-01","y":62.21},{"x":"2022-09-01","y":54.84},{"x":"2022-10-01","y":52.6},{"x":"2022-11-01","y":55.81},{"x":"2022-12-01","y":46.31},{"x":"2023-01-01","y":45.25},{"x":"2023-02-01","y":64.77},{"x":"2023-03-01","y":63.79},{"x":"2023-04-01","y":77.8},{"x":"2023-05-01","y":75.97},{"x":"2023-06-01","y":73.65},{"x":"2023-07-01","y":83.05},{"x":"2023-08-01","y":80.68},{"x":"2023-09-01","y":70.09},{"x":"2023-10-01","y":76.46},{"x":"2023-11-01","y":92.84},{"x":"2023-12-01","y":105.94},{"x":"2024-01-01","y":115.7},{"x":"2024-02-01","y":116.89},{"x":"2024-03-01","y":167.23},{"x":"2024-04-01","y":181.23},{"x":"2024-05-01","y":155.99},{"x":"2024-06-01","y":184.46},{"x":"2024-07-01","y":171.27},{"x":"2024-08-01","y":175.39},{"x":"2024-09-01","y":156.61},{"x":"2024-10-01","y":167.25},{"x":"2024-11-01","y":189.2},{"x":"2024-12-01","y":263.09},{"x":"2025-01-01","y":259.37},{"x":"2025-02-01","y":272.09},{"x":"2025-03-01","y":233.72},{"x":"2025-04-01","y":230.18},{"x":"2025-05-01","y":263.79},{"x":"2025-06-01","y":285.18},{"x":"2025-07-01","y":289.48},{"x":"2025-08-01","y":310.89},{"x":"2025-09-01","y":302.08},{"x":"2025-10-01","y":322.44},{"x":"2025-11-01","y":300.97},{"x":"2025-12-01","y":236.71},{"x":"2026-01-01","y":240.52},{"x":"2026-02-01","y":205.14},{"x":"2026-03-01","y":181.68},{"x":"2026-04-01","y":181.21},{"x":"2026-05-01","y":212.67}];
+const WTI_DATA = [{"x":"2021-05-01","y":100.0},{"x":"2021-06-01","y":107.91},{"x":"2021-07-01","y":113.59},{"x":"2021-08-01","y":105.22},{"x":"2021-09-01","y":110.06},{"x":"2021-10-01","y":124.85},{"x":"2021-11-01","y":121.58},{"x":"2021-12-01","y":110.15},{"x":"2022-01-01","y":127.83},{"x":"2022-02-01","y":140.46},{"x":"2022-03-01","y":166.67},{"x":"2022-04-01","y":156.34},{"x":"2022-05-01","y":168.62},{"x":"2022-06-01","y":176.41},{"x":"2022-07-01","y":153.9},{"x":"2022-08-01","y":140.52},{"x":"2022-09-01","y":129.17},{"x":"2022-10-01","y":134.49},{"x":"2022-11-01","y":129.6},{"x":"2022-12-01","y":117.42},{"x":"2023-01-01","y":120.06},{"x":"2023-02-01","y":118.06},{"x":"2023-03-01","y":112.57},{"x":"2023-04-01","y":122.04},{"x":"2023-05-01","y":109.95},{"x":"2023-06-01","y":107.94},{"x":"2023-07-01","y":116.85},{"x":"2023-08-01","y":125.02},{"x":"2023-09-01","y":137.37},{"x":"2023-10-01","y":131.55},{"x":"2023-11-01","y":119.34},{"x":"2023-12-01","y":110.06},{"x":"2024-01-01","y":112.3},{"x":"2024-02-01","y":117.59},{"x":"2024-03-01","y":124.85},{"x":"2024-04-01","y":129.51},{"x":"2024-05-01","y":122.92},{"x":"2024-06-01","y":122.53},{"x":"2024-07-01","y":125.65},{"x":"2024-08-01","y":117.79},{"x":"2024-09-01","y":107.9},{"x":"2024-10-01","y":110.58},{"x":"2024-11-01","y":108.59},{"x":"2024-12-01","y":107.71},{"x":"2025-01-01","y":116.51},{"x":"2025-02-01","y":111.9},{"x":"2025-03-01","y":103.78},{"x":"2025-04-01","y":92.5},{"x":"2025-05-01","y":88.05},{"x":"2025-06-01","y":92.86},{"x":"2025-07-01","y":100.0},{"x":"2025-08-01","y":98.11},{"x":"2025-09-01","y":96.54},{"x":"2025-10-01","y":92.44},{"x":"2025-11-01","y":96.01},{"x":"2025-12-01","y":100.31},{"x":"2026-01-01","y":109.22},{"x":"2026-02-01","y":121.27},{"x":"2026-03-01","y":142.09},{"x":"2026-04-01","y":158.53},{"x":"2026-05-01","y":161.01}];
+
+new Chart(document.getElementById('chart'), {
+  type: 'line',
+  data: {
+    datasets: [
+      { label: 'Bitcoin', data: BTC_DATA, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.05)', borderWidth: 2.2, pointRadius: 0, pointHoverRadius: 5, tension: 0.25, fill: false },
+      { label: 'S&P 500 (SPY)', data: SPY_DATA, borderColor: '#2a5a9a', backgroundColor: 'rgba(42,90,154,0.05)', borderWidth: 2.2, pointRadius: 0, pointHoverRadius: 5, tension: 0.25, fill: false },
+      { label: 'Oil (WTI)', data: WTI_DATA, borderColor: '#1D9E75', backgroundColor: 'rgba(29,158,117,0.05)', borderWidth: 2.2, pointRadius: 0, pointHoverRadius: 5, tension: 0.25, fill: false }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#0a1628',
+        titleFont: { family: 'Anonymous Pro', size: 11, weight: 'bold' },
+        bodyFont: { family: 'Anonymous Pro', size: 11 },
+        padding: 10,
+        callbacks: {
+          title: (items) => {
+            const d = new Date(items[0].parsed.x);
+            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+          },
+          label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(0)}`
+        }
+      }
+    },
+    scales: {
+      x: {
+        type: 'time',
+        time: { unit: 'year', displayFormats: { year: 'yyyy' } },
+        ticks: { font: { family: 'Anonymous Pro', size: 11 }, color: '#4a6080' },
+        grid: { display: false }
+      },
+      y: {
+        min: 40,
+        max: 340,
+        ticks: {
+          font: { family: 'Anonymous Pro', size: 11 },
+          color: '#4a6080',
+          callback: (v) => v
+        },
+        grid: { color: '#ece8e2' },
+        title: { display: true, text: 'Indexed value (May 2021 = 100)', font: { family: 'Anonymous Pro', size: 11 }, color: '#4a6080' }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

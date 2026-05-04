@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RN04 One-Year vs Five-Year Returns</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+  :root {
+    --navy: #0a1628;
+    --gold: #b8930a;
+    --gold-mid: #c9a84c;
+    --navy-dim: #4a6080;
+    --green: #1D9E75;
+    --red: #c0392b;
+    --blue: #2a5a9a;
+    --orange: #f59e0b;
+    --rule: #ddd8d0;
+    --off: #f7f4ef;
+    --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; }
+  .asset { width: 100%; display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--rule); }
+  .hdr { padding: clamp(10px, 2vw, 18px) clamp(14px, 3vw, 28px); border-bottom: 2px solid var(--navy); }
+  .eyebrow { font-size: clamp(10px, 1.8vw, 12px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 4px; }
+  .title { font-family: 'Playfair Display', serif; font-size: clamp(16px, 2.8vw, 22px); color: var(--navy); font-weight: 700; line-height: 1.2; }
+  .title em { font-style: italic; color: var(--gold); }
+  .sub { font-size: clamp(11px, 1.8vw, 13px); color: var(--navy-dim); margin-top: 6px; line-height: 1.4; }
+  .gold-rule { width: 40px; height: 2px; background: var(--gold-mid); margin-top: 8px; }
+
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(10px, 2vw, 24px); padding: clamp(14px, 2.5vw, 24px) clamp(14px, 3vw, 28px); }
+  @media (max-width: 600px) { .panels { grid-template-columns: 1fr; } }
+
+  .panel { display: flex; flex-direction: column; gap: 10px; }
+  .panel-head { display: flex; flex-direction: column; gap: 2px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); }
+  .panel-eyebrow { font-size: clamp(10px, 1.6vw, 11px); letter-spacing: 0.18em; text-transform: uppercase; color: var(--navy-dim); font-weight: 700; }
+  .panel-title { font-family: 'Playfair Display', serif; font-size: clamp(14px, 2.4vw, 18px); color: var(--navy); font-weight: 700; }
+
+  .bars { display: flex; flex-direction: column; gap: clamp(10px, 1.8vw, 14px); padding: clamp(8px, 1.4vw, 12px) 0; }
+  .bar-row { display: grid; grid-template-columns: clamp(50px, 11vw, 80px) 1fr clamp(50px, 11vw, 78px); align-items: center; gap: clamp(6px, 1vw, 12px); }
+  .bar-label { font-size: clamp(10px, 1.7vw, 12px); font-weight: 700; color: var(--navy); }
+  .bar-track { position: relative; height: clamp(22px, 3.5vw, 28px); background: var(--off); border-left: 2px solid var(--navy); }
+  .bar-fill { position: absolute; top: 0; bottom: 0; left: 0; transition: width 0.6s ease; }
+  .bar-fill.negative { left: auto; right: 100%; }
+  .bar-zero { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--navy); left: 0; }
+  .bar-value { font-size: clamp(11px, 1.8vw, 13px); font-weight: 700; text-align: right; }
+  .bar-value.pos { color: var(--green); }
+  .bar-value.neg { color: var(--red); }
+
+  .panel-note { font-size: clamp(10px, 1.5vw, 11px); color: var(--navy-dim); padding-top: 8px; line-height: 1.5; font-style: italic; }
+  .panel-note .winner { color: var(--navy); font-weight: 700; font-style: normal; }
+
+  .ftr { padding: clamp(8px, 1.4vw, 12px) clamp(14px, 3vw, 28px); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; background: var(--off); flex-wrap: wrap; gap: 6px; }
+  .ftr-note { font-size: clamp(9px, 1.4vw, 11px); color: var(--navy-dim); font-style: italic; }
+  .ftr-brand { font-size: clamp(9px, 1.4vw, 11px); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="asset">
+  <div class="hdr">
+    <div class="eyebrow">The Real Numbers | The Window Matters</div>
+    <div class="title">Same Three Investments, <em>Different Answer</em></div>
+    <div class="sub">The order of returns flips depending on when you started. One year tells one story. Five years tells the opposite.</div>
+    <div class="gold-rule"></div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-eyebrow">May 2025 to May 2026</div>
+        <div class="panel-title">One-Year Return</div>
+      </div>
+      <div class="bars" id="bars-1y"></div>
+      <div class="panel-note">Oil wins by a wide margin. <span class="winner">A war and a fight over the Strait of Hormuz</span> drove crude up 83 percent. Bitcoin lost ground.</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-eyebrow">May 2021 to May 2026</div>
+        <div class="panel-title">Five-Year Return</div>
+      </div>
+      <div class="bars" id="bars-5y"></div>
+      <div class="panel-note">Bitcoin wins. The order is exactly reversed. <span class="winner">Holding period</span> is the variable that flipped the ranking.</div>
+    </div>
+  </div>
+
+  <div class="ftr">
+    <div class="ftr-note">Sources: SPY and BTC daily closes via Tastytrade. WTI spot via U.S. EIA series DCOILWTICO.</div>
+    <div class="ftr-brand">Breadcoins.com</div>
+  </div>
+</div>
+
+<script>
+const COLORS = { btc: '#f59e0b', spy: '#2a5a9a', wti: '#1D9E75' };
+
+const data1y = [
+  { label: 'Oil (WTI)', value: 82.9, key: 'wti' },
+  { label: 'S&P 500',  value: 29.0, key: 'spy' },
+  { label: 'Bitcoin',  value: -19.4, key: 'btc' }
+];
+
+const data5y = [
+  { label: 'Bitcoin',  value: 112.7, key: 'btc' },
+  { label: 'S&P 500',  value: 72.3, key: 'spy' },
+  { label: 'Oil (WTI)', value: 61.0, key: 'wti' }
+];
+
+// Use the same x-axis scale across both panels so they compare visually.
+// Range: -30 to +120 (covers all values cleanly)
+const X_MIN = -30;
+const X_MAX = 120;
+const TOTAL_RANGE = X_MAX - X_MIN;
+
+function renderBars(containerId, data) {
+  const c = document.getElementById(containerId);
+  data.forEach(row => {
+    const wrap = document.createElement('div');
+    wrap.className = 'bar-row';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'bar-label';
+    lbl.textContent = row.label;
+
+    const track = document.createElement('div');
+    track.className = 'bar-track';
+
+    // Zero line position within the track
+    const zeroPct = (-X_MIN / TOTAL_RANGE) * 100;
+    const zero = document.createElement('div');
+    zero.className = 'bar-zero';
+    zero.style.left = zeroPct + '%';
+    track.appendChild(zero);
+
+    const fill = document.createElement('div');
+    fill.className = 'bar-fill';
+    fill.style.background = COLORS[row.key];
+    if (row.value >= 0) {
+      fill.style.left = zeroPct + '%';
+      fill.style.width = (row.value / TOTAL_RANGE) * 100 + '%';
+    } else {
+      fill.style.right = (100 - zeroPct) + '%';
+      fill.style.left = 'auto';
+      fill.style.width = (Math.abs(row.value) / TOTAL_RANGE) * 100 + '%';
+    }
+    track.appendChild(fill);
+
+    const val = document.createElement('div');
+    val.className = 'bar-value ' + (row.value >= 0 ? 'pos' : 'neg');
+    val.textContent = (row.value >= 0 ? '+' : '') + row.value.toFixed(1) + '%';
+
+    wrap.appendChild(lbl);
+    wrap.appendChild(track);
+    wrap.appendChild(val);
+    c.appendChild(wrap);
+  });
+}
+
+renderBars('bars-1y', data1y);
+renderBars('bars-5y', data5y);
+</script>
+</body>
+</html>

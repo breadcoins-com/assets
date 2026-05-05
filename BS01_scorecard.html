@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BS01 Four Tools at a Glance</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+  :root {
+    --navy: #0a1628;
+    --gold: #b8930a;
+    --gold-mid: #c9a84c;
+    --navy-dim: #4a6080;
+    --green: #1D9E75;
+    --teal: #2a8a9a;
+    --blue: #2a5a9a;
+    --amber: #d99528;
+    --red: #c0392b;
+    --purple: #7f77dd;
+    --rule: #ddd8d0;
+    --off: #f7f4ef;
+    --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; color: var(--navy); }
+  .asset { width: 100%; display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--rule); }
+  .hdr { padding: clamp(12px, 2vw, 20px) clamp(14px, 3vw, 28px); border-bottom: 2px solid var(--navy); }
+  .eyebrow { font-size: clamp(10px, 1.8vw, 12px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 4px; }
+  .title { font-family: 'Playfair Display', serif; font-size: clamp(18px, 3vw, 26px); color: var(--navy); font-weight: 700; line-height: 1.15; }
+  .title em { font-style: italic; color: var(--gold); }
+  .sub { font-size: clamp(11px, 1.8vw, 13px); color: var(--navy-dim); margin-top: 8px; line-height: 1.45; max-width: 700px; }
+  .gold-rule { width: 40px; height: 2px; background: var(--gold-mid); margin-top: 10px; }
+
+  .body { padding: clamp(16px, 3vw, 28px) clamp(14px, 3vw, 28px); }
+
+  .layer-tag { display: flex; gap: clamp(20px, 4vw, 40px); margin-bottom: clamp(8px, 1.5vw, 14px); padding-left: clamp(60px, 8vw, 90px); }
+  .layer-tag div { font-size: clamp(9px, 1.4vw, 11px); letter-spacing: 0.18em; text-transform: uppercase; color: var(--navy-dim); font-weight: 700; flex: 1; }
+  .layer-tag .accounting-label { color: var(--navy); }
+  .layer-tag .treasury-label { color: var(--amber); }
+
+  .diagram-svg { width: 100%; height: auto; display: block; }
+
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(8px, 1.5vw, 14px); margin-top: clamp(16px, 3vw, 24px); }
+  @media (max-width: 800px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .cards { grid-template-columns: 1fr; } }
+
+  .card { padding: clamp(12px, 1.8vw, 16px); border: 1px solid var(--rule); background: var(--off); position: relative; }
+  .card.q { border-top: 4px solid var(--green); }
+  .card.qb { border-top: 4px solid var(--blue); }
+  .card.x { border-top: 4px solid var(--purple); }
+  .card.y { border-top: 4px solid var(--amber); }
+
+  .card-name { font-family: 'Playfair Display', serif; font-size: clamp(14px, 2vw, 16px); font-weight: 700; color: var(--navy); margin-bottom: 2px; line-height: 1.15; }
+  .card-price { font-size: clamp(9px, 1.4vw, 10px); color: var(--navy-dim); margin-bottom: 10px; letter-spacing: 0.04em; }
+  .card-thesis { font-size: clamp(10px, 1.5vw, 11px); color: var(--navy); line-height: 1.45; font-weight: 700; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
+  .card-job { font-size: clamp(9px, 1.4vw, 10px); color: var(--navy-dim); line-height: 1.45; margin-top: 6px; }
+  .card-job strong { color: var(--navy); font-weight: 700; }
+  .card-fit { margin-top: 12px; padding: 8px; background: var(--white); border-left: 3px solid var(--gold-mid); font-size: clamp(9px, 1.4vw, 10px); line-height: 1.45; color: var(--navy); }
+  .card-fit-tag { font-size: clamp(8px, 1.1vw, 9px); letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); font-weight: 700; display: block; margin-bottom: 3px; }
+
+  .ftr { padding: clamp(8px, 1.4vw, 12px) clamp(14px, 3vw, 28px); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; background: var(--off); flex-wrap: wrap; gap: 6px; }
+  .ftr-note { font-size: clamp(9px, 1.4vw, 11px); color: var(--navy-dim); font-style: italic; }
+  .ftr-brand { font-size: clamp(9px, 1.4vw, 11px); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="asset">
+  <div class="hdr">
+    <div class="eyebrow">Build the Stack | Where Each Tool Meets You</div>
+    <div class="title">Two Layers of the Stack. <em>Four Tools.</em></div>
+    <div class="sub">The accounting layer is correct and slow. The treasury layer is fast and approximate. Real corporates run both functions side by side. So should the in-between operator. The vertical axis on the accounting side is how much accounting discipline the tool requires from you to start. The treasury side is realtime and cloud-native by design.</div>
+    <div class="gold-rule"></div>
+  </div>
+
+  <div class="body">
+
+    <div class="layer-tag">
+      <div class="accounting-label">Accounting Layer · Books of record · Daily and monthly</div>
+      <div class="treasury-label">Treasury Layer · Realtime · Decisions today</div>
+    </div>
+
+    <svg class="diagram-svg" viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="diagTitle diagDesc">
+      <title id="diagTitle">Four tools mapped against two layers of the household balance sheet</title>
+      <desc id="diagDesc">Quicken, QuickBooks, and Xero sit on the accounting layer at different floors of accounting discipline required. Yahoo Finance sits in a parallel treasury layer providing realtime market data and cloud-synced views.</desc>
+
+      <defs>
+        <linearGradient id="qGrad" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="#1D9E75" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="#1D9E75" stop-opacity="0.25"/>
+        </linearGradient>
+        <linearGradient id="qbGrad" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="#2a5a9a" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="#2a5a9a" stop-opacity="0.25"/>
+        </linearGradient>
+        <linearGradient id="xGrad" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="#7f77dd" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="#7f77dd" stop-opacity="0.25"/>
+        </linearGradient>
+        <linearGradient id="yGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#d99528" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#d99528" stop-opacity="0.15"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Y-axis label, vertical -->
+      <text x="22" y="200" font-family="Anonymous Pro, monospace" font-size="11" font-weight="700" fill="#0a1628" letter-spacing="2" transform="rotate(-90 22 200)" text-anchor="middle">ACCOUNTING DISCIPLINE</text>
+
+      <!-- Y-axis tick labels (right-aligned at x=78) -->
+      <text x="78" y="62" font-family="Anonymous Pro, monospace" font-size="11" fill="#0a1628" font-weight="700" text-anchor="end">FULL ERP</text>
+      <text x="78" y="76" font-family="Anonymous Pro, monospace" font-size="9" fill="#4a6080" text-anchor="end">multi-entity, audit trail</text>
+
+      <text x="78" y="148" font-family="Anonymous Pro, monospace" font-size="11" fill="#0a1628" font-weight="700" text-anchor="end">ACCRUAL + DOUBLE-ENTRY</text>
+      <text x="78" y="162" font-family="Anonymous Pro, monospace" font-size="9" fill="#4a6080" text-anchor="end">CPA-readable balance sheet</text>
+
+      <text x="78" y="234" font-family="Anonymous Pro, monospace" font-size="11" fill="#0a1628" font-weight="700" text-anchor="end">CASH + DOUBLE-ENTRY</text>
+      <text x="78" y="248" font-family="Anonymous Pro, monospace" font-size="9" fill="#4a6080" text-anchor="end">chart of accounts required</text>
+
+      <text x="78" y="320" font-family="Anonymous Pro, monospace" font-size="11" fill="#0a1628" font-weight="700" text-anchor="end">CASH + CATEGORIES</text>
+      <text x="78" y="334" font-family="Anonymous Pro, monospace" font-size="9" fill="#4a6080" text-anchor="end">no chart of accounts needed</text>
+
+      <!-- Horizontal reference lines (accounting side only) -->
+      <line x1="90" y1="70" x2="535" y2="70" stroke="#ddd8d0" stroke-width="0.5" stroke-dasharray="3 3"/>
+      <line x1="90" y1="145" x2="535" y2="145" stroke="#ddd8d0" stroke-width="0.5" stroke-dasharray="3 3"/>
+      <line x1="90" y1="230" x2="535" y2="230" stroke="#ddd8d0" stroke-width="0.5" stroke-dasharray="3 3"/>
+      <line x1="90" y1="320" x2="535" y2="320" stroke="#ddd8d0" stroke-width="0.5" stroke-dasharray="3 3"/>
+
+      <!-- Operator-starting-point line -->
+      <line x1="90" y1="320" x2="535" y2="320" stroke="#0a1628" stroke-width="1.5"/>
+      <text x="100" y="340" font-family="Anonymous Pro, monospace" font-size="9" fill="#0a1628" font-weight="700" letter-spacing="1.2">WHERE THE IN-BETWEEN OPERATOR STARTS</text>
+
+      <!-- Vertical separator between accounting layer and treasury layer -->
+      <line x1="555" y1="50" x2="555" y2="370" stroke="#0a1628" stroke-width="1" stroke-dasharray="2 4"/>
+
+      <!-- ============ QUICKEN ZONE ============ -->
+      <path d="M 110 320 L 110 305 L 230 220 L 230 145 L 110 145 L 110 320 Z" fill="url(#qGrad)" opacity="0.95"/>
+      <path d="M 110 320 L 110 305 L 230 220 L 230 145" fill="none" stroke="#1D9E75" stroke-width="2"/>
+
+      <text x="170" y="248" font-family="Playfair Display, serif" font-size="15" font-weight="700" fill="#0a1628" text-anchor="middle">Quicken</text>
+      <text x="170" y="266" font-family="Anonymous Pro, monospace" font-size="10" fill="#0a1628" text-anchor="middle">$96 / yr</text>
+
+      <circle cx="110" cy="320" r="4.5" fill="#1D9E75" stroke="#0a1628" stroke-width="1.5"/>
+      <text x="118" y="296" font-family="Anonymous Pro, monospace" font-size="8.5" fill="#0a1628" font-style="italic">floor: cash + categories</text>
+      <text x="170" y="368" font-family="Anonymous Pro, monospace" font-size="9.5" fill="#1D9E75" font-weight="700" text-anchor="middle">MEETS YOU AT THE START</text>
+
+      <!-- ============ QUICKBOOKS ZONE ============ -->
+      <path d="M 270 230 L 270 230 L 380 110 L 380 90 L 270 90 L 270 230 Z" fill="url(#qbGrad)" opacity="0.95"/>
+      <path d="M 270 230 L 380 110 L 380 90" fill="none" stroke="#2a5a9a" stroke-width="2"/>
+
+      <text x="325" y="170" font-family="Playfair Display, serif" font-size="15" font-weight="700" fill="#0a1628" text-anchor="middle">QuickBooks</text>
+      <text x="325" y="188" font-family="Anonymous Pro, monospace" font-size="10" fill="#0a1628" text-anchor="middle">$1,380 / yr</text>
+
+      <circle cx="270" cy="230" r="4.5" fill="#2a5a9a" stroke="#0a1628" stroke-width="1.5"/>
+      <text x="278" y="222" font-family="Anonymous Pro, monospace" font-size="8.5" fill="#0a1628" font-style="italic">floor: cash + double-entry</text>
+      <text x="325" y="368" font-family="Anonymous Pro, monospace" font-size="9.5" fill="#2a5a9a" font-weight="700" text-anchor="middle">SOME ACCOUNTING REQUIRED</text>
+
+      <!-- ============ XERO ZONE ============ -->
+      <path d="M 415 145 L 415 115 L 530 70 L 530 60 L 415 60 L 415 145 Z" fill="url(#xGrad)" opacity="0.95"/>
+      <path d="M 415 145 L 415 115 L 530 70 L 530 60" fill="none" stroke="#7f77dd" stroke-width="2"/>
+
+      <text x="472" y="100" font-family="Playfair Display, serif" font-size="15" font-weight="700" fill="#0a1628" text-anchor="middle">Xero</text>
+      <text x="472" y="118" font-family="Anonymous Pro, monospace" font-size="10" fill="#0a1628" text-anchor="middle">$540 / yr</text>
+
+      <circle cx="415" cy="145" r="4.5" fill="#7f77dd" stroke="#0a1628" stroke-width="1.5"/>
+      <text x="423" y="137" font-family="Anonymous Pro, monospace" font-size="8.5" fill="#0a1628" font-style="italic">floor: accrual + double-entry</text>
+      <text x="472" y="368" font-family="Anonymous Pro, monospace" font-size="9.5" fill="#7f77dd" font-weight="700" text-anchor="middle">FULL ERP DAY ONE</text>
+
+      <!-- ============ TREASURY LAYER (right side) ============ -->
+
+      <!-- Yahoo zone fills the parallel column at full height -->
+      <rect x="585" y="60" width="155" height="280" fill="url(#yGrad)" stroke="#d99528" stroke-width="2"/>
+
+      <!-- Yahoo title -->
+      <text x="662" y="95" font-family="Playfair Display, serif" font-size="15" font-weight="700" fill="#0a1628" text-anchor="middle">Yahoo Finance</text>
+      <text x="662" y="113" font-family="Anonymous Pro, monospace" font-size="10" fill="#0a1628" text-anchor="middle">free</text>
+
+      <!-- Treasury icons stack: pulse / cloud / device -->
+      <!-- Pulse line -->
+      <text x="600" y="155" font-family="Anonymous Pro, monospace" font-size="9" fill="#0a1628" font-weight="700" letter-spacing="1">REALTIME</text>
+      <polyline points="600,170 612,170 618,160 624,180 630,165 636,172 648,172 654,162 660,178 666,168 672,172 720,172"
+                fill="none" stroke="#d99528" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+
+      <!-- Cloud sync -->
+      <text x="600" y="208" font-family="Anonymous Pro, monospace" font-size="9" fill="#0a1628" font-weight="700" letter-spacing="1">CLOUD-SYNCED</text>
+      <!-- Three small device rectangles -->
+      <rect x="603" y="220" width="22" height="14" rx="2" fill="none" stroke="#d99528" stroke-width="1.2"/>
+      <text x="614" y="230" font-family="Anonymous Pro, monospace" font-size="6" fill="#0a1628" text-anchor="middle">web</text>
+
+      <rect x="635" y="220" width="14" height="18" rx="2" fill="none" stroke="#d99528" stroke-width="1.2"/>
+      <text x="642" y="231" font-family="Anonymous Pro, monospace" font-size="6" fill="#0a1628" text-anchor="middle">ios</text>
+
+      <rect x="659" y="220" width="14" height="18" rx="2" fill="none" stroke="#d99528" stroke-width="1.2"/>
+      <text x="666" y="231" font-family="Anonymous Pro, monospace" font-size="6" fill="#0a1628" text-anchor="middle">and</text>
+
+      <rect x="683" y="220" width="22" height="14" rx="2" fill="none" stroke="#d99528" stroke-width="1.2"/>
+      <text x="694" y="230" font-family="Anonymous Pro, monospace" font-size="6" fill="#0a1628" text-anchor="middle">tv</text>
+
+      <!-- Watchlist preview -->
+      <text x="600" y="262" font-family="Anonymous Pro, monospace" font-size="9" fill="#0a1628" font-weight="700" letter-spacing="1">WATCHLIST</text>
+      <line x1="600" y1="270" x2="725" y2="270" stroke="#d99528" stroke-width="0.5" opacity="0.6"/>
+      <text x="600" y="284" font-family="Anonymous Pro, monospace" font-size="9" fill="#0a1628">SPY</text>
+      <text x="725" y="284" font-family="Anonymous Pro, monospace" font-size="9" fill="#1D9E75" text-anchor="end" font-weight="700">+0.42%</text>
+      <text x="600" y="298" font-family="Anonymous Pro, monospace" font-size="9" fill="#0a1628">GLD</text>
+      <text x="725" y="298" font-family="Anonymous Pro, monospace" font-size="9" fill="#1D9E75" text-anchor="end" font-weight="700">+1.18%</text>
+      <text x="600" y="312" font-family="Anonymous Pro, monospace" font-size="9" fill="#0a1628">TLT</text>
+      <text x="725" y="312" font-family="Anonymous Pro, monospace" font-size="9" fill="#c0392b" text-anchor="end" font-weight="700">-0.31%</text>
+      <text x="600" y="326" font-family="Anonymous Pro, monospace" font-size="9" fill="#0a1628">EUR/USD</text>
+      <text x="725" y="326" font-family="Anonymous Pro, monospace" font-size="9" fill="#1D9E75" text-anchor="end" font-weight="700">+0.07%</text>
+
+      <!-- Yahoo caption -->
+      <text x="662" y="368" font-family="Anonymous Pro, monospace" font-size="9.5" fill="#d99528" font-weight="700" text-anchor="middle">TREASURY WORKSTATION</text>
+      <text x="662" y="382" font-family="Anonymous Pro, monospace" font-size="9" fill="#4a6080" text-anchor="middle">runs alongside any of the three</text>
+
+    </svg>
+
+    <div class="cards">
+      <div class="card q">
+        <div class="card-name">Quicken</div>
+        <div class="card-price">$96 / year · single user · 14k US/CA banks</div>
+        <div class="card-thesis">Adapts to the operator. Cash or accrual. Single or double entry. Books and net worth in one login.</div>
+
+        <div class="card-job"><strong>GL.</strong> Built in background as you categorize.</div>
+        <div class="card-job"><strong>Subledger.</strong> Basic A/R and A/P. No aged buckets.</div>
+        <div class="card-job"><strong>Reporting.</strong> P&amp;L and Schedule C clean. Balance sheet loose.</div>
+        <div class="card-job"><strong>Mgmt reporting.</strong> Business + personal + investments in one dashboard.</div>
+        <div class="card-job"><strong>Banking.</strong> Mature since 1983. 87% match first pass.</div>
+
+        <div class="card-fit">
+          <span class="card-fit-tag">Best Fit</span>
+          Solo operator. Own books. CPA at year end.
+        </div>
+      </div>
+
+      <div class="card qb">
+        <div class="card-name">QuickBooks Plus</div>
+        <div class="card-price">$1,380 / year · 5 users · US standard</div>
+        <div class="card-thesis">Hides the accounting machinery behind a setup wizard. Path of least resistance for outside CPAs.</div>
+
+        <div class="card-job"><strong>GL.</strong> Double-entry. Wizard pre-builds chart of accounts.</div>
+        <div class="card-job"><strong>Subledger.</strong> Aged A/R and A/P. Inventory at Plus.</div>
+        <div class="card-job"><strong>Reporting.</strong> US small business standard for 20 years.</div>
+        <div class="card-job"><strong>Mgmt reporting.</strong> Class, location, project profitability.</div>
+        <div class="card-job"><strong>Banking.</strong> Deepest integrations: Stripe, Shopify, payroll.</div>
+
+        <div class="card-fit">
+          <span class="card-fit-tag">Best Fit</span>
+          Growing business. W-2 employees. Outside CPA.
+        </div>
+      </div>
+
+      <div class="card x">
+        <div class="card-name">Xero</div>
+        <div class="card-price">$540 / year · unlimited users · 21k banks</div>
+        <div class="card-thesis">Full ERP discipline in a small package. Smart at matching, not at deciding. Powerful for those who already know.</div>
+
+        <div class="card-job"><strong>GL.</strong> Double-entry from setup. Chart of accounts required.</div>
+        <div class="card-job"><strong>Subledger.</strong> Aged buckets standard. Fixed asset register native.</div>
+        <div class="card-job"><strong>Reporting.</strong> Clean global format. Fewer US CPAs fluent.</div>
+        <div class="card-job"><strong>Mgmt reporting.</strong> Tracking categories. Project module at top tier.</div>
+        <div class="card-job"><strong>Banking.</strong> JAX AI auto-match 80%. Some feeds carry fees.</div>
+
+        <div class="card-fit">
+          <span class="card-fit-tag">Best Fit</span>
+          Multi-user shop. International billing. Knows accounting.
+        </div>
+      </div>
+
+      <div class="card y">
+        <div class="card-name">Yahoo Finance</div>
+        <div class="card-price">free · realtime feeds · web + mobile + TV</div>
+        <div class="card-thesis">Treasury workstation. Fast and approximate. Runs in parallel to whichever accounting tool you picked.</div>
+
+        <div class="card-job"><strong>Realtime.</strong> Streaming equity, FX, fixed income, commodities.</div>
+        <div class="card-job"><strong>Cloud.</strong> Same view across web, iOS, Android, TV.</div>
+        <div class="card-job"><strong>Watchlists.</strong> Unlimited tickers. Custom alerts.</div>
+        <div class="card-job"><strong>Holdings.</strong> Cost basis, dividends, performance.</div>
+        <div class="card-job"><strong>Cash side.</strong> News, earnings dates, FX rates.</div>
+
+        <div class="card-fit">
+          <span class="card-fit-tag">Best Fit</span>
+          Anyone with market-priced assets in the household balance sheet.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="ftr">
+    <div class="ftr-note">Lens: ease of use and automation on the accounting layer. Speed and cloud architecture on the treasury layer. Tested Q1 2026.</div>
+    <div class="ftr-brand">Breadcoins.com</div>
+  </div>
+</div>
+</body>
+</html>

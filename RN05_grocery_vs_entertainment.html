@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RN05 Where Discretionary Money Shifted</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+  :root {
+    --navy: #0a1628;
+    --gold: #b8930a;
+    --gold-mid: #c9a84c;
+    --navy-dim: #4a6080;
+    --green: #1D9E75;
+    --red: #c0392b;
+    --blue: #2a5a9a;
+    --orange: #f59e0b;
+    --rule: #ddd8d0;
+    --off: #f7f4ef;
+    --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; }
+  .asset { width: 100%; display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--rule); }
+  .hdr { padding: clamp(10px, 2vw, 18px) clamp(14px, 3vw, 28px); border-bottom: 2px solid var(--navy); }
+  .eyebrow { font-size: clamp(10px, 1.8vw, 12px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 4px; }
+  .title { font-family: 'Playfair Display', serif; font-size: clamp(16px, 2.8vw, 22px); color: var(--navy); font-weight: 700; line-height: 1.2; }
+  .title em { font-style: italic; color: var(--gold); }
+  .sub { font-size: clamp(11px, 1.8vw, 13px); color: var(--navy-dim); margin-top: 6px; line-height: 1.4; }
+  .gold-rule { width: 40px; height: 2px; background: var(--gold-mid); margin-top: 8px; }
+
+  .body { padding: clamp(14px, 2.5vw, 24px) clamp(14px, 3vw, 28px); }
+  .flow-svg { width: 100%; height: auto; display: block; }
+
+  .legend-row { display: flex; gap: clamp(10px, 2vw, 20px); padding: clamp(8px, 1.4vw, 12px) clamp(14px, 3vw, 28px) 0; flex-wrap: wrap; justify-content: center; }
+  .leg { display: flex; align-items: center; gap: 7px; font-size: clamp(10px, 1.6vw, 12px); color: var(--navy-dim); }
+  .leg-dot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+
+  .ftr { padding: clamp(8px, 1.4vw, 12px) clamp(14px, 3vw, 28px); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; background: var(--off); flex-wrap: wrap; gap: 6px; }
+  .ftr-note { font-size: clamp(9px, 1.4vw, 11px); color: var(--navy-dim); font-style: italic; }
+  .ftr-brand { font-size: clamp(9px, 1.4vw, 11px); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="asset">
+  <div class="hdr">
+    <div class="eyebrow">The Real Numbers | Where the Money Went</div>
+    <div class="title">Fifty Dollars a Week, <em>Reshuffled</em></div>
+    <div class="sub">The average household grocery bill rose from $120 a week in 2020 to $170 a week now. Here is where the extra money came from, and where the rest of the entertainment dollar went instead.</div>
+    <div class="gold-rule"></div>
+  </div>
+
+  <div class="body">
+    <svg class="flow-svg" viewBox="0 0 760 460" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <!-- Source columns (left) -->
+      <!-- Categories that LOST budget share -->
+      <g font-family="'Anonymous Pro', monospace">
+        <text x="20" y="34" font-size="13" font-weight="700" fill="#0a1628" letter-spacing="2">CUT BACK</text>
+        <line x1="20" y1="42" x2="155" y2="42" stroke="#c9a84c" stroke-width="2"/>
+
+        <!-- Restaurants (largest cut) -->
+        <rect x="20" y="60" width="170" height="56" fill="#c0392b" opacity="0.85"/>
+        <text x="30" y="82" font-size="13" fill="#ffffff" font-weight="700">Restaurants</text>
+        <text x="30" y="102" font-size="11" fill="#ffffff" opacity="0.85">66% of strained households</text>
+
+        <!-- Streaming -->
+        <rect x="20" y="135" width="170" height="44" fill="#c0392b" opacity="0.7"/>
+        <text x="30" y="155" font-size="13" fill="#ffffff" font-weight="700">Streaming</text>
+        <text x="30" y="171" font-size="10" fill="#ffffff" opacity="0.85">Netflix down 19% in 12 mo</text>
+
+        <!-- Clothing -->
+        <rect x="20" y="200" width="170" height="40" fill="#c0392b" opacity="0.55"/>
+        <text x="30" y="218" font-size="13" fill="#ffffff" font-weight="700">Clothing</text>
+        <text x="30" y="232" font-size="10" fill="#ffffff" opacity="0.85">Shifted to grocery line</text>
+
+        <!-- Casual middle: chain dining -->
+        <rect x="20" y="262" width="170" height="40" fill="#c0392b" opacity="0.4"/>
+        <text x="30" y="280" font-size="13" fill="#ffffff" font-weight="700">Multiplex / Casual</text>
+        <text x="30" y="294" font-size="10" fill="#ffffff" opacity="0.85">Hollowing out fastest</text>
+      </g>
+
+      <!-- Destination columns (right) -->
+      <g font-family="'Anonymous Pro', monospace">
+        <text x="565" y="34" font-size="13" font-weight="700" fill="#0a1628" letter-spacing="2">SPENT MORE</text>
+        <line x1="565" y1="42" x2="740" y2="42" stroke="#c9a84c" stroke-width="2"/>
+
+        <!-- Groceries (biggest gain) -->
+        <rect x="565" y="60" width="175" height="78" fill="#1D9E75" opacity="0.9"/>
+        <text x="575" y="84" font-size="13" fill="#ffffff" font-weight="700">Groceries</text>
+        <text x="575" y="102" font-size="11" fill="#ffffff" opacity="0.9">$120 → $170 a week</text>
+        <text x="575" y="118" font-size="11" fill="#ffffff" opacity="0.9">+42% in five years</text>
+        <text x="575" y="132" font-size="10" fill="#ffffff" opacity="0.7">Walmart +33%, Kroger +18%</text>
+
+        <!-- Live entertainment (smaller but real) -->
+        <rect x="565" y="160" width="175" height="62" fill="#1D9E75" opacity="0.7"/>
+        <text x="575" y="182" font-size="13" fill="#ffffff" font-weight="700">Live Events</text>
+        <text x="575" y="198" font-size="10" fill="#ffffff" opacity="0.9">159M concertgoers in 2025</text>
+        <text x="575" y="212" font-size="10" fill="#ffffff" opacity="0.9">Live Nation +19%</text>
+
+        <!-- Bulk / Membership -->
+        <rect x="565" y="240" width="175" height="50" fill="#1D9E75" opacity="0.55"/>
+        <text x="575" y="260" font-size="13" fill="#ffffff" font-weight="700">Memberships</text>
+        <text x="575" y="276" font-size="10" fill="#ffffff" opacity="0.9">Costco fees +14% YoY</text>
+      </g>
+
+      <!-- Flow paths -->
+      <!-- Restaurants -> Groceries (largest flow) -->
+      <path d="M 195 88 C 350 88, 410 85, 562 90" stroke="#1D9E75" stroke-width="22" fill="none" opacity="0.18" stroke-linecap="round"/>
+      <!-- Restaurants -> Live Events (smaller flow) -->
+      <path d="M 195 102 C 340 110, 420 165, 562 175" stroke="#1D9E75" stroke-width="10" fill="none" opacity="0.18" stroke-linecap="round"/>
+
+      <!-- Streaming -> Live Events -->
+      <path d="M 195 157 C 350 158, 420 178, 562 188" stroke="#1D9E75" stroke-width="14" fill="none" opacity="0.16" stroke-linecap="round"/>
+      <!-- Streaming -> Groceries (small) -->
+      <path d="M 195 152 C 340 130, 420 110, 562 110" stroke="#1D9E75" stroke-width="6" fill="none" opacity="0.16" stroke-linecap="round"/>
+
+      <!-- Clothing -> Groceries -->
+      <path d="M 195 220 C 340 210, 410 130, 562 120" stroke="#1D9E75" stroke-width="10" fill="none" opacity="0.16" stroke-linecap="round"/>
+      <!-- Clothing -> Memberships -->
+      <path d="M 195 222 C 340 230, 420 250, 562 258" stroke="#1D9E75" stroke-width="10" fill="none" opacity="0.16" stroke-linecap="round"/>
+
+      <!-- Multiplex -> Live -->
+      <path d="M 195 282 C 340 280, 420 215, 562 200" stroke="#1D9E75" stroke-width="8" fill="none" opacity="0.14" stroke-linecap="round"/>
+      <!-- Multiplex -> Memberships -->
+      <path d="M 195 285 C 340 280, 420 270, 562 265" stroke="#1D9E75" stroke-width="6" fill="none" opacity="0.14" stroke-linecap="round"/>
+
+      <!-- Center label -->
+      <text x="380" y="345" font-family="'Playfair Display', serif" font-size="13" fill="#4a6080" text-anchor="middle" font-style="italic">The discretionary dollar did not disappear. It moved.</text>
+
+      <!-- Bottom callouts -->
+      <g font-family="'Anonymous Pro', monospace">
+        <text x="20" y="385" font-size="11" font-weight="700" fill="#0a1628">WHO LOST</text>
+        <text x="20" y="403" font-size="10" fill="#4a6080">Netflix down 19% in twelve months</text>
+        <text x="20" y="418" font-size="10" fill="#4a6080">Casual chain dining hollowing out</text>
+        <text x="20" y="433" font-size="10" fill="#4a6080">Cheap recurring subscriptions</text>
+
+        <text x="395" y="385" font-size="11" font-weight="700" fill="#0a1628">WHO WON</text>
+        <text x="395" y="403" font-size="10" fill="#4a6080">Walmart up 33% on retail-media revenue</text>
+        <text x="395" y="418" font-size="10" fill="#4a6080">Live Nation: 159 million fans, $25.2B revenue</text>
+        <text x="395" y="433" font-size="10" fill="#4a6080">Costco fees: $1.35 billion in one quarter</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="ftr">
+    <div class="ftr-note">Sources: FMI 2026 grocery shopper survey, U.S. Bureau of Labor Statistics, YouGov February 2026 budget survey, Live Nation 2025 results, FinanceCharts TTM returns.</div>
+    <div class="ftr-brand">Breadcoins.com</div>
+  </div>
+</div>
+</body>
+</html>

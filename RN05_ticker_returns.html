@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RN05 Six Tickers Twelve Months</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+  :root {
+    --navy: #0a1628;
+    --gold: #b8930a;
+    --gold-mid: #c9a84c;
+    --navy-dim: #4a6080;
+    --green: #1D9E75;
+    --red: #c0392b;
+    --blue: #2a5a9a;
+    --orange: #f59e0b;
+    --rule: #ddd8d0;
+    --off: #f7f4ef;
+    --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; background: var(--white); font-family: 'Anonymous Pro', monospace; }
+  .asset { width: 100%; display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--rule); }
+  .hdr { padding: clamp(10px, 2vw, 18px) clamp(14px, 3vw, 28px); border-bottom: 2px solid var(--navy); }
+  .eyebrow { font-size: clamp(10px, 1.8vw, 12px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 4px; }
+  .title { font-family: 'Playfair Display', serif; font-size: clamp(16px, 2.8vw, 22px); color: var(--navy); font-weight: 700; line-height: 1.2; }
+  .title em { font-style: italic; color: var(--gold); }
+  .sub { font-size: clamp(11px, 1.8vw, 13px); color: var(--navy-dim); margin-top: 6px; line-height: 1.4; }
+  .gold-rule { width: 40px; height: 2px; background: var(--gold-mid); margin-top: 8px; }
+
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(10px, 2vw, 24px); padding: clamp(14px, 2.5vw, 24px) clamp(14px, 3vw, 28px); }
+  @media (max-width: 600px) { .panels { grid-template-columns: 1fr; } }
+
+  .panel { display: flex; flex-direction: column; gap: 10px; }
+  .panel-head { display: flex; flex-direction: column; gap: 2px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); }
+  .panel-eyebrow { font-size: clamp(10px, 1.6vw, 11px); letter-spacing: 0.18em; text-transform: uppercase; color: var(--navy-dim); font-weight: 700; }
+  .panel-title { font-family: 'Playfair Display', serif; font-size: clamp(14px, 2.4vw, 18px); color: var(--navy); font-weight: 700; }
+
+  .bars { display: flex; flex-direction: column; gap: clamp(8px, 1.4vw, 12px); padding: clamp(8px, 1.4vw, 12px) 0; }
+  .bar-row { display: grid; grid-template-columns: clamp(80px, 16vw, 110px) 1fr clamp(50px, 11vw, 78px); align-items: center; gap: clamp(6px, 1vw, 12px); }
+  .bar-label { font-size: clamp(10px, 1.7vw, 12px); font-weight: 700; color: var(--navy); }
+  .bar-label .ticker { font-size: clamp(9px, 1.4vw, 10px); color: var(--navy-dim); font-weight: 400; margin-left: 4px; }
+  .bar-track { position: relative; height: clamp(20px, 3.2vw, 26px); background: var(--off); border-left: 2px solid var(--navy); }
+  .bar-fill { position: absolute; top: 0; bottom: 0; left: 0; transition: width 0.6s ease; }
+  .bar-zero { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--navy); }
+  .bar-value { font-size: clamp(11px, 1.8vw, 13px); font-weight: 700; text-align: right; }
+  .bar-value.pos { color: var(--green); }
+  .bar-value.neg { color: var(--red); }
+
+  .panel-note { font-size: clamp(10px, 1.5vw, 11px); color: var(--navy-dim); padding-top: 8px; line-height: 1.5; font-style: italic; }
+  .panel-note .key { color: var(--navy); font-weight: 700; font-style: normal; }
+
+  .ftr { padding: clamp(8px, 1.4vw, 12px) clamp(14px, 3vw, 28px); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; background: var(--off); flex-wrap: wrap; gap: 6px; }
+  .ftr-note { font-size: clamp(9px, 1.4vw, 11px); color: var(--navy-dim); font-style: italic; }
+  .ftr-brand { font-size: clamp(9px, 1.4vw, 11px); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="asset">
+  <div class="hdr">
+    <div class="eyebrow">The Real Numbers | Twelve-Month Returns</div>
+    <div class="title">The Money Moved. <em>The Tickers Show It.</em></div>
+    <div class="sub">Six big public companies on either side of the household budget. The ones who sell groceries are winning. The ones who sell streaming are losing. Live entertainment is the surprise on the entertainment side.</div>
+    <div class="gold-rule"></div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-eyebrow">Where the dollar went</div>
+        <div class="panel-title">Grocery and Retail</div>
+      </div>
+      <div class="bars" id="bars-grocery"></div>
+      <div class="panel-note">All three are up. <span class="key">Walmart</span> won not just on groceries but on a $6.4 billion advertising business growing at 41 percent. <span class="key">Costco</span>'s membership fee revenue, almost pure profit, hit $1.35 billion in one quarter.</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-eyebrow">Where the dollar left</div>
+        <div class="panel-title">Entertainment</div>
+      </div>
+      <div class="bars" id="bars-entertainment"></div>
+      <div class="panel-note"><span class="key">Live Nation</span> set records: 159 million fans, $25.2 billion in revenue, Bruno Mars selling 2.1 million tickets in a single day. <span class="key">Netflix</span> peaked at $134 in June and trades at $92 today. The split inside entertainment is the whole story.</div>
+    </div>
+  </div>
+
+  <div class="ftr">
+    <div class="ftr-note">Sources: FinanceCharts TTM total returns as of May 2026. Walmart return per Motley Fool May 2026. All figures dividend-adjusted.</div>
+    <div class="ftr-brand">Breadcoins.com</div>
+  </div>
+</div>
+
+<script>
+const COLORS = {
+  green: '#1D9E75',
+  green_light: '#5cb799',
+  green_lighter: '#8fcfb6',
+  red: '#c0392b',
+  red_light: '#d96a5b',
+  blue: '#2a5a9a',
+};
+
+const grocery = [
+  { name: 'Walmart',  ticker: 'WMT',  value: 33.0, color: COLORS.green },
+  { name: 'Live Nation*', ticker: '', value: null, color: 'transparent' },
+  { name: 'Kroger',   ticker: 'KR',   value: 18.0, color: COLORS.green_light },
+  { name: 'Costco',   ticker: 'COST', value: 14.0, color: COLORS.green_lighter }
+];
+
+// Reorder: just three grocery
+const grocery_clean = [
+  { name: 'Walmart',  ticker: 'WMT',  value: 33.0, color: COLORS.green },
+  { name: 'Kroger',   ticker: 'KR',   value: 18.0, color: COLORS.green_light },
+  { name: 'Costco',   ticker: 'COST', value: 14.0, color: COLORS.green_lighter }
+];
+
+const entertainment = [
+  { name: 'Live Nation', ticker: 'LYV',  value: 19.0, color: COLORS.green },
+  { name: 'Disney',      ticker: 'DIS',  value: 18.0, color: COLORS.green_lighter },
+  { name: 'Netflix',     ticker: 'NFLX', value: -19.0, color: COLORS.red }
+];
+
+// Use same scale across both panels for honest visual comparison
+const X_MIN = -25;
+const X_MAX = 40;
+const TOTAL_RANGE = X_MAX - X_MIN;
+const ZERO_PCT = (-X_MIN / TOTAL_RANGE) * 100;
+
+function renderBars(containerId, data) {
+  const c = document.getElementById(containerId);
+  data.forEach(row => {
+    const wrap = document.createElement('div');
+    wrap.className = 'bar-row';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'bar-label';
+    lbl.innerHTML = row.name + (row.ticker ? '<span class="ticker">' + row.ticker + '</span>' : '');
+
+    const track = document.createElement('div');
+    track.className = 'bar-track';
+
+    const zero = document.createElement('div');
+    zero.className = 'bar-zero';
+    zero.style.left = ZERO_PCT + '%';
+    track.appendChild(zero);
+
+    const fill = document.createElement('div');
+    fill.className = 'bar-fill';
+    fill.style.background = row.color;
+    if (row.value >= 0) {
+      fill.style.left = ZERO_PCT + '%';
+      fill.style.width = (row.value / TOTAL_RANGE) * 100 + '%';
+    } else {
+      const w = (Math.abs(row.value) / TOTAL_RANGE) * 100;
+      fill.style.left = (ZERO_PCT - w) + '%';
+      fill.style.width = w + '%';
+    }
+    track.appendChild(fill);
+
+    const val = document.createElement('div');
+    val.className = 'bar-value ' + (row.value >= 0 ? 'pos' : 'neg');
+    val.textContent = (row.value >= 0 ? '+' : '') + row.value.toFixed(0) + '%';
+
+    wrap.appendChild(lbl);
+    wrap.appendChild(track);
+    wrap.appendChild(val);
+    c.appendChild(wrap);
+  });
+}
+
+renderBars('bars-grocery', grocery_clean);
+renderBars('bars-entertainment', entertainment);
+</script>
+</body>
+</html>
